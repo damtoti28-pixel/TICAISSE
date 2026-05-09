@@ -324,6 +324,12 @@ footer a:hover{color:var(--accent2);}
       <p class="box-sub" style="margin-bottom:0">Entrez vos identifiants</p>
     </div>
     <div id="loginErr" class="err" style="display:none"></div>
+    <div id="bioLoginWrap" style="display:none;margin-bottom:1rem">
+      <button onclick="loginBio()" style="width:100%;padding:.85rem;border-radius:12px;border:2px solid var(--accent);background:var(--surface2);color:var(--accent);font-family:'Syne',sans-serif;font-weight:700;font-size:.92rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.6rem;transition:.2s">
+        <span style="font-size:1.4rem">👆</span> Empreinte / Face ID
+      </button>
+      <div style="text-align:center;margin:.6rem 0;color:var(--muted);font-size:.73rem">— ou entrez vos identifiants —</div>
+    </div>
     <div class="form-group"><label>Identifiant</label><input type="text" id="loginUser" placeholder="votre identifiant"/></div>
     <div class="form-group"><label>Mot de passe</label><input type="password" id="loginPass" placeholder="••••••••"/></div>
     <button class="btn btn-primary" onclick="doLogin()">Se connecter →</button>
@@ -630,6 +636,20 @@ footer a:hover{color:var(--accent2);}
   </div>
 </div>
 
+
+<!-- MODAL PROPOSITION BIOMÉTRIE -->
+<div class="modal-bg" id="modalBio">
+  <div class="modal" style="text-align:center">
+    <div style="font-size:2.5rem;margin-bottom:.8rem">👆</div>
+    <h3 style="text-align:center;margin-bottom:.5rem">Activer la connexion biométrique ?</h3>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:1.2rem">Les prochaines fois, connectez-vous en un seul toucher avec votre empreinte digitale ou Face ID.</p>
+    <div style="display:flex;gap:.7rem;justify-content:center">
+      <button class="btn-sm btn-outline" onclick="refuserBio()" style="padding:.6rem 1.2rem">Non merci</button>
+      <button class="btn-sm btn-primary" onclick="activerBio()" style="padding:.6rem 1.5rem">👆 Activer</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -690,6 +710,7 @@ function chooseRole(role){
     sv('loginUser',''); sv('loginPass','');
     document.getElementById('loginUser').dataset.role=role;
     show('loginPage');
+    checkBioAvailable(role);
   }
 }
 function backToRole(){hide('loginPage');hide('setupPage');show('rolePage');}
@@ -730,6 +751,11 @@ function doLogin(){
   cu=found; hide('loginPage');
   document.getElementById('appLayout').style.display='block';
   initApp();
+  // Proposer la biométrie si pas encore activée
+  const bioData=gd(bioKey(cu.role),null);
+  if(!bioData && window.PublicKeyCredential){
+    setTimeout(()=>document.getElementById('modalBio').classList.add('open'),800);
+  }
 }
 function logout(){
   cu=null; selOperO=null; numO=''; souscO=false;
@@ -1210,6 +1236,87 @@ function toast(msg){
 document.addEventListener('keydown',e=>{
   if(e.key==='Enter'&&document.getElementById('loginPage').style.display==='flex') doLogin();
 });
+
+
+// ═══════════════════════════════════════════════
+//  BIOMÉTRIE — WebAuthn / Passkey
+// ═══════════════════════════════════════════════
+
+function bioKey(role){ return 'bio_cred_'+role; }
+
+async function activerBio(){
+  closeModals();
+  if(!window.PublicKeyCredential){ toast('⚠️ Biométrie non supportée sur cet appareil'); return; }
+  try {
+    const challenge = new Uint8Array(32);
+    crypto.getRandomValues(challenge);
+    const userId = new TextEncoder().encode(cu.login);
+    const cred = await navigator.credentials.create({
+      publicKey: {
+        challenge,
+        rp: { name: 'TICAISSE' },
+        user: { id: userId, name: cu.login, displayName: cu.nom },
+        pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+        authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required' },
+        timeout: 60000,
+      }
+    });
+    // Sauvegarder l'identifiant de la credential
+    const credId = btoa(String.fromCharCode(...new Uint8Array(cred.rawId)));
+    const bioData = { credId, login: cu.login, role: cu.role, nom: cu.nom };
+    sd(bioKey(cu.role), bioData);
+    toast('✅ Biométrie activée ! Connexion rapide disponible.');
+  } catch(e) {
+    if(e.name==='NotAllowedError') toast('⚠️ Action annulée.');
+    else toast('⚠️ Erreur : '+e.message);
+  }
+}
+
+function refuserBio(){
+  closeModals();
+  toast('Connexion par identifiants uniquement.');
+}
+
+async function loginBio(){
+  const role = document.getElementById('loginUser').dataset.role;
+  const bioData = gd(bioKey(role), null);
+  if(!bioData){ toast('⚠️ Aucune biométrie enregistrée pour ce rôle'); return; }
+  if(!window.PublicKeyCredential){ toast('⚠️ Biométrie non supportée'); return; }
+  try {
+    const challenge = new Uint8Array(32);
+    crypto.getRandomValues(challenge);
+    const credIdBytes = Uint8Array.from(atob(bioData.credId), c => c.charCodeAt(0));
+    await navigator.credentials.get({
+      publicKey: {
+        challenge,
+        allowCredentials: [{ type: 'public-key', id: credIdBytes }],
+        userVerification: 'required',
+        timeout: 60000,
+      }
+    });
+    // Auth biométrique réussie
+    const found = gd('members',[]).find(m => m.login===bioData.login && m.role===bioData.role);
+    if(!found){ toast('❌ Membre introuvable'); return; }
+    cu = found;
+    hide('loginPage');
+    document.getElementById('appLayout').style.display = 'block';
+    initApp();
+    toast('👆 Connexion biométrique réussie !');
+  } catch(e) {
+    if(e.name==='NotAllowedError') toast('⚠️ Action annulée ou empreinte refusée.');
+    else toast('⚠️ Erreur biométrie : '+e.message);
+  }
+}
+
+function checkBioAvailable(role){
+  const bioData = gd(bioKey(role), null);
+  const wrap = document.getElementById('bioLoginWrap');
+  if(bioData && bioData.role===role && window.PublicKeyCredential){
+    wrap.style.display = 'block';
+  } else {
+    wrap.style.display = 'none';
+  }
+}
 
 init();
 </script>
