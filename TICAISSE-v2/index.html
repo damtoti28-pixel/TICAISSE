@@ -1,0 +1,1655 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TICAISSE — Gestion Association</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#00c896">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TICAISSE">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<style>
+:root{
+  --bg:#070d1a;--surface:#0f1829;--surface2:#162035;--border:#1e2d47;
+  --accent:#00c896;--accent2:#f5a623;--accent3:#3b82f6;--accent4:#8b5cf6;
+  --danger:#ef4444;--text:#e8edf5;--muted:#7a8fa8;--card:#101e33;
+  --gold:#ffd700;--green:#00c896;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* ═══ NAV ═══ */
+nav{
+  background:linear-gradient(90deg,#070d1a 0%,#0d1829 50%,#070d1a 100%);
+  border-bottom:1px solid var(--border);
+  padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;
+  height:68px;position:sticky;top:0;z-index:100;
+  box-shadow:0 2px 30px #00000060;
+}
+.logo-wrap{display:flex;align-items:center;gap:.75rem;}
+.logo-icon{
+  width:42px;height:42px;border-radius:12px;
+  background:linear-gradient(135deg,#00c896,#00a077);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;box-shadow:0 4px 16px #00c89640;
+}
+.logo-text{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;}
+.logo-text .tc{color:var(--accent);}
+.logo-text .aisse{color:var(--text);}
+.logo-sub{font-size:.65rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:-2px;}
+.nav-right{display:flex;align-items:center;gap:.6rem;}
+.badge{font-size:.68rem;font-weight:700;padding:.2rem .6rem;border-radius:99px;background:var(--accent);color:#000;letter-spacing:.3px;}
+.badge.treso{background:var(--accent2);}
+.badge.member{background:var(--accent3);}
+.btn-logout{background:none;border:1px solid var(--border);color:var(--muted);padding:.3rem .8rem;border-radius:8px;cursor:pointer;font-size:.75rem;transition:.2s;}
+.btn-logout:hover{border-color:var(--danger);color:var(--danger);}
+
+/* ═══ PAGES CENTRÉES ═══ */
+.cpage{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem;}
+.bg-role{background:radial-gradient(ellipse 90% 70% at 50% -10%,#0d2a1e,var(--bg) 65%);}
+.bg-login{background:radial-gradient(ellipse 90% 70% at 50% -10%,#0d1a2e,var(--bg) 65%);}
+.bg-setup{background:radial-gradient(ellipse 90% 70% at 50% -10%,#1a0d2e,var(--bg) 65%);}
+
+/* ═══ BOX ═══ */
+.box{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:2.2rem 1.8rem;width:100%;max-width:480px;box-shadow:0 30px 80px #00000090;}
+.box-title{font-family:'Syne',sans-serif;font-size:1.65rem;font-weight:800;text-align:center;margin-bottom:.3rem;}
+.box-sub{color:var(--muted);font-size:.82rem;text-align:center;margin-bottom:1.6rem;}
+
+/* ═══ HERO ROLE PAGE ═══ */
+.hero-logo{text-align:center;margin-bottom:1.8rem;}
+.hero-icon{width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,#00c896,#00a077);display:inline-flex;align-items:center;justify-content:center;font-size:2rem;box-shadow:0 8px 32px #00c89650;margin-bottom:.8rem;}
+.hero-title{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;}
+.hero-title .tc{color:var(--accent);}
+.hero-sub{font-size:.8rem;color:var(--muted);margin-top:.2rem;letter-spacing:.5px;}
+
+/* ═══ ROLE CARDS ═══ */
+.role-grid{display:grid;gap:.75rem;margin-bottom:1rem;}
+.role-card{border:2px solid var(--border);border-radius:16px;padding:1rem 1.2rem;cursor:pointer;transition:.25s;display:flex;align-items:center;gap:.9rem;background:var(--surface2);position:relative;overflow:hidden;}
+.role-card::before{content:'';position:absolute;inset:0;opacity:0;transition:.25s;}
+.role-card:hover{transform:translateY(-2px);box-shadow:0 8px 28px #00000050;}
+.role-card.pres:hover,.role-card.pres.sel{border-color:var(--accent2);background:#f5a62310;}
+.role-card.tres:hover,.role-card.tres.sel{border-color:var(--accent3);background:#3b82f610;}
+.role-card.memb:hover,.role-card.memb.sel{border-color:var(--accent);background:#00c89610;}
+.role-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+.role-icon.pres{background:linear-gradient(135deg,#f5a623,#d97706);}
+.role-icon.tres{background:linear-gradient(135deg,#3b82f6,#1d4ed8);}
+.role-icon.memb{background:linear-gradient(135deg,#00c896,#059669);}
+.role-info .rt{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;}
+.role-info .rs{font-size:.73rem;color:var(--muted);margin-top:.1rem;}
+.role-arrow{margin-left:auto;color:var(--muted);font-size:1rem;}
+
+/* ═══ FORM ═══ */
+.form-group{margin-bottom:1rem;}
+label{font-size:.73rem;font-weight:500;color:var(--muted);display:block;margin-bottom:.35rem;letter-spacing:.4px;text-transform:uppercase;}
+input,select,textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.65rem .9rem;color:var(--text);font-family:inherit;font-size:.88rem;outline:none;transition:.2s;}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px #00c89618;}
+select option{background:var(--surface);}
+.btn{width:100%;padding:.75rem;border-radius:11px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;transition:.2s;}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#00a077);color:#000;}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px #00c89640;}
+.btn-sm{width:auto;padding:.38rem .85rem;font-size:.76rem;border-radius:8px;font-family:inherit;border:none;cursor:pointer;font-weight:600;}
+.btn-outline{background:none;border:1px solid var(--border);color:var(--text);cursor:pointer;transition:.2s;}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);}
+.btn-danger{background:var(--danger);color:#000;}
+.btn-warning{background:var(--accent2);color:#000;}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#d97706);color:#000;}
+.err{background:#ef444418;border:1px solid #ef444440;color:#f87171;padding:.55rem .9rem;border-radius:8px;font-size:.78rem;margin-bottom:.9rem;}
+.info{background:#f5a62312;border:1px solid #f5a62330;border-radius:9px;padding:.7rem .9rem;font-size:.78rem;color:var(--accent2);margin-bottom:.9rem;}
+.suc{background:#00c89612;border:1px solid #00c89630;border-radius:9px;padding:.7rem .9rem;font-size:.78rem;color:var(--accent);}
+
+/* ═══ APP ═══ */
+#appLayout{display:none;}
+.app-wrap{max-width:1100px;margin:0 auto;padding:1.3rem 1rem;}
+.tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.3rem;}
+.tab{padding:.45rem 1.1rem;border-radius:99px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;font-size:.8rem;transition:.2s;}
+.tab:hover{border-color:var(--accent);color:var(--accent);}
+.tab.active{background:linear-gradient(135deg,var(--accent),#00a077);border-color:transparent;color:#000;font-weight:700;}
+.sec{display:none;}
+.sec.active{display:block;}
+
+/* ═══ CARD ═══ */
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.4rem;margin-bottom:1.1rem;position:relative;overflow:hidden;}
+.card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent3));opacity:.4;border-radius:18px 18px 0 0;}
+.card-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;}
+
+/* ═══ STATS ═══ */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:.85rem;margin-bottom:1.2rem;}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.1rem;position:relative;overflow:hidden;}
+.stat::before{content:'';position:absolute;top:-20px;right:-20px;width:70px;height:70px;border-radius:50%;opacity:.08;}
+.stat.sg::before{background:var(--accent);}
+.stat.sy::before{background:var(--accent2);}
+.stat.sb::before{background:var(--accent3);}
+.stat.sr::before{background:var(--danger);}
+.stat.sv::before{background:var(--accent4);}
+.slabel{font-size:.68rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);display:block;margin-bottom:.25rem;}
+.sval{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;display:block;}
+.sunit{font-size:.68rem;color:var(--muted);display:block;margin-top:.1rem;}
+.g{color:var(--accent)}.y{color:var(--accent2)}.b{color:var(--accent3)}.r{color:var(--danger)}.v{color:var(--accent4)}
+
+/* ═══ TABLE ═══ */
+.tw{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:.8rem;}
+th{text-align:left;padding:.55rem .8rem;color:var(--muted);font-size:.68rem;text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--border);}
+td{padding:.6rem .8rem;border-bottom:1px solid #162035;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#ffffff03;}
+.chip{display:inline-block;padding:.17rem .62rem;border-radius:99px;font-size:.68rem;font-weight:700;}
+.cg{background:#00c89618;color:var(--accent);border:1px solid #00c89628;}
+.cy{background:#f5a62318;color:var(--accent2);border:1px solid #f5a62328;}
+.cb{background:#3b82f618;color:#0ea5e9;border:1px solid #3b82f628;}
+.cr{background:#ef444418;color:#f87171;border:1px solid #ef444428;}
+.cyas{background:#f5c51818;color:#d4a000;border:1px solid #f5c51828;}
+.cv{background:#8b5cf618;color:#a78bfa;border:1px solid #8b5cf628;}
+.cgold{background:#ffd70018;color:var(--gold);border:1px solid #ffd70028;}
+
+/* ═══ COT TABS ═══ */
+.cot-tabs{display:flex;gap:.5rem;margin-bottom:1.2rem;}
+.cot-tab{flex:1;padding:.6rem;border-radius:10px;border:2px solid var(--border);background:var(--surface2);cursor:pointer;text-align:center;font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;transition:.2s;color:var(--muted);}
+.cot-tab.active-ord{border-color:var(--accent);background:#00c89612;color:var(--accent);}
+.cot-tab.active-ext{border-color:var(--gold);background:#ffd70012;color:var(--gold);}
+.cot-tab:hover{transform:translateY(-1px);}
+
+/* ═══ OPERATEUR ═══ */
+.oper-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.1rem;}
+.oper-card{border:2px solid var(--border);border-radius:13px;padding:.9rem;cursor:pointer;transition:.2s;display:flex;flex-direction:column;align-items:center;gap:.45rem;background:var(--surface2);}
+.oper-card:hover{transform:translateY(-2px);}
+.oper-card.sm{border-color:#38bdf8;background:#38bdf810;box-shadow:0 0 0 3px #38bdf818;}
+.oper-card.sy2{border-color:#f5c518;background:#f5c51810;box-shadow:0 0 0 3px #f5c51818;}
+.ologo{width:56px;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.2rem;font-family:'Syne',sans-serif;}
+.ologo.m{background:linear-gradient(135deg,#38bdf8,#0ea5e9) !important;color:#fff !important;}
+.ologo.y{background:linear-gradient(135deg,#f5c518,#d4a000) !important;color:#000 !important;}
+.oname{font-weight:700;font-size:.83rem;text-align:center;}
+.osub{font-size:.68rem;color:var(--muted);text-align:center;}
+
+/* ═══ CLAVIER ═══ */
+.num-disp{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;letter-spacing:5px;text-align:center;padding:.85rem;background:var(--surface2);border-radius:12px;border:2px solid var(--border);margin-bottom:.7rem;transition:.3s;min-height:56px;display:flex;align-items:center;justify-content:center;}
+.num-disp.dm{border-color:#38bdf8;color:#0ea5e9;}
+.num-disp.dy{border-color:#f5c518;color:#d4a000;}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;}
+.key{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.7rem .4rem;font-size:1rem;font-weight:700;cursor:pointer;transition:.15s;text-align:center;font-family:'Syne',sans-serif;user-select:none;}
+.key:hover{background:var(--surface);border-color:#ffffff28;transform:scale(1.04);}
+.key:active{transform:scale(.95);}
+.key.kd{color:var(--danger);font-size:1.2rem;}
+
+/* ═══ TRESO INFO ═══ */
+.tinfo{border-radius:12px;padding:.9rem 1.1rem;margin-bottom:1rem;display:flex;align-items:center;gap:.8rem;}
+.tinfo.m{background:#38bdf810;border:1px solid #38bdf830;}
+.tinfo.y{background:#f5c51810;border:1px solid #f5c51830;}
+.tlogo{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;font-family:'Syne',sans-serif;flex-shrink:0;}
+.tlogo.m{background:linear-gradient(135deg,#38bdf8,#0ea5e9) !important;color:#fff !important;}
+.tlogo.y{background:linear-gradient(135deg,#f5c518,#d4a000) !important;color:#000 !important;}
+.tlabel{font-size:.7rem;color:var(--muted);}
+.tnum{font-family:'Syne',sans-serif;font-weight:800;font-size:.95rem;}
+
+/* ═══ USSD SCREEN ═══ */
+.ussd-screen{background:var(--surface2);border:2px solid var(--border);border-radius:16px;padding:1.4rem;text-align:center;margin-bottom:1rem;}
+.ussd-code{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:800;color:var(--accent);background:var(--bg);padding:.5rem 1rem;border-radius:8px;display:inline-block;margin:.6rem 0;letter-spacing:1px;border:1px solid var(--border);word-break:break-all;}
+.ussd-steps{text-align:left;margin:.8rem 0;display:flex;flex-direction:column;gap:.45rem;}
+.ussd-step{display:flex;align-items:flex-start;gap:.55rem;font-size:.8rem;}
+.snum{width:21px;height:21px;border-radius:50%;background:var(--accent);color:#000;font-weight:700;font-size:.68rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.btn-souscription{width:100%;padding:.9rem;border-radius:12px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;background:linear-gradient(135deg,var(--accent2),#d97706);color:#000;transition:.2s;display:flex;align-items:center;justify-content:center;gap:.6rem;text-decoration:none;box-shadow:0 4px 20px #f5a62330;}
+.btn-souscription:hover{transform:translateY(-2px);box-shadow:0 8px 28px #f5a62340;}
+.timer-bar{height:5px;background:var(--border);border-radius:99px;margin:.6rem 0;overflow:hidden;}
+.timer-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px;width:0%;transition:width 15s linear;}
+.btn-confirm-locked{width:100%;padding:.8rem;border-radius:11px;border:2px dashed var(--border);cursor:not-allowed;font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;background:transparent;color:var(--muted);margin-top:.8rem;display:flex;align-items:center;justify-content:center;gap:.5rem;}
+.btn-confirm-active{width:100%;padding:.8rem;border-radius:11px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;background:linear-gradient(135deg,var(--accent),#00a077);color:#000;margin-top:.8rem;display:flex;align-items:center;justify-content:center;gap:.5rem;transition:.2s;}
+.btn-confirm-active:hover{transform:translateY(-1px);box-shadow:0 6px 20px #00c89640;}
+.pay-flow{display:none;}
+.pay-flow.show{display:block;}
+
+/* ═══ CASES COTISATIONS TRESO ═══ */
+.cot-grid{display:grid;gap:.5rem;}
+.cot-member-row{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:.85rem 1rem;}
+.cot-member-header{display:flex;align-items:center;gap:.7rem;margin-bottom:.7rem;flex-wrap:wrap;}
+.cot-months{display:flex;flex-wrap:wrap;gap:.4rem;}
+.month-box{position:relative;}
+.month-cb{display:none;}
+.month-label{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:36px;height:36px;border-radius:8px;
+  border:2px solid var(--border);background:var(--surface);
+  font-size:.68rem;font-weight:700;cursor:default;
+  transition:.2s;color:var(--muted);font-family:'Syne',sans-serif;
+}
+.month-label.paid{background:linear-gradient(135deg,var(--accent),#00a077);border-color:var(--accent);color:#000;cursor:default;}
+.month-label.paid::after{content:'✓';position:absolute;top:-4px;right:-4px;width:14px;height:14px;background:var(--accent2);border-radius:50%;font-size:.55rem;display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;}
+.month-label.can-pay{border-color:var(--accent2);color:var(--accent2);cursor:pointer;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 #f5a62340;}50%{box-shadow:0 0 0 5px #f5a62300;}}
+
+/* ═══ EXTRAS ═══ */
+.ext-badge{display:inline-flex;align-items:center;gap:.3rem;background:#ffd70018;border:1px solid #ffd70030;color:var(--gold);border-radius:8px;padding:.2rem .6rem;font-size:.7rem;font-weight:700;}
+
+/* ═══ NOTIF ═══ */
+.ndot{width:8px;height:8px;border-radius:50%;background:var(--danger);display:inline-block;margin-left:.3rem;}
+.notif-item{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:.85rem 1rem;display:flex;align-items:flex-start;justify-content:space-between;font-size:.8rem;flex-wrap:wrap;gap:.5rem;margin-bottom:.6rem;}
+
+/* ═══ MEMBRE ROW ═══ */
+.member-row{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:.85rem 1.1rem;display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;margin-bottom:.6rem;}
+.avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:.9rem;flex-shrink:0;}
+.minfo{flex:1;min-width:100px;}
+.minfo .mn{font-weight:600;font-size:.88rem;}
+.minfo .mr{font-size:.7rem;color:var(--muted);}
+.wa-btn{display:flex;align-items:center;gap:.35rem;background:#25D36618;border:1px solid #25D36638;color:#25D366;border-radius:8px;padding:.3rem .7rem;font-size:.73rem;font-weight:600;cursor:pointer;text-decoration:none;transition:.2s;}
+.wa-btn:hover{background:#25D36628;}
+
+/* ═══ MODAL ═══ */
+.modal-bg{position:fixed;inset:0;background:#000d;display:none;align-items:center;justify-content:center;z-index:200;padding:1rem;}
+.modal-bg.open{display:flex;}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:1.8rem;width:100%;max-width:460px;max-height:90vh;overflow-y:auto;box-shadow:0 40px 100px #000c;}
+.modal h3{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:.9rem;}
+.modal-actions{display:flex;gap:.6rem;justify-content:flex-end;margin-top:1rem;}
+
+/* ═══ DECORATIVE ICONS ═══ */
+.deco-bar{display:flex;gap:1rem;align-items:center;margin-bottom:1.2rem;flex-wrap:wrap;}
+.deco-item{display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:var(--muted);}
+.deco-item span{font-size:1.1rem;}
+
+/* ═══ IROW ═══ */
+.irow{display:flex;gap:.7rem;flex-wrap:wrap;}
+.irow .form-group{margin-bottom:0;flex:1;min-width:130px;}
+textarea{resize:vertical;}
+
+/* ═══ SEPARATOR ═══ */
+.sep{border:none;border-top:1px solid var(--border);margin:1rem 0;}
+
+/* ═══ FOOTER ═══ */
+footer{
+  text-align:center;padding:1.5rem 1rem;margin-top:1.5rem;
+  border-top:1px solid var(--border);
+  background:linear-gradient(0deg,#070d1a,transparent);
+}
+.footer-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;margin-bottom:.4rem;}
+.footer-logo .tc{color:var(--accent);}
+footer p{color:var(--muted);font-size:.78rem;}
+footer a{color:var(--accent);text-decoration:none;font-weight:600;}
+footer a:hover{color:var(--accent2);}
+
+/* ═══ TOAST ═══ */
+#toast{position:fixed;bottom:1.3rem;right:1.3rem;background:linear-gradient(135deg,var(--accent),#00a077);color:#000;padding:.65rem 1.2rem;border-radius:10px;font-weight:700;font-size:.8rem;display:none;z-index:999;box-shadow:0 8px 24px #00c89640;}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══ BILAN BOXES ═══ */
+.bilan-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.8rem;margin-top:.9rem;}
+.bilan-box{border-radius:14px;padding:1rem 1.2rem;display:flex;align-items:center;gap:.8rem;transition:.25s;}
+.bilan-box:hover{transform:translateY(-2px);}
+.bilan-box.ord{background:#00c89610;border:1px solid #00c89630;}
+.bilan-box.ext{background:#ffd70010;border:1px solid #ffd70030;}
+.bilan-box.dep{background:#ef444410;border:1px solid #ef444430;}
+.bilan-box.sol{background:#3b82f610;border:1px solid #3b82f630;}
+.bilan-box.pret{background:#8b5cf610;border:1px solid #8b5cf630;}
+.bilan-icon{font-size:1.8rem;}
+.bilan-label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;}
+.bilan-val{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;}
+
+/* ═══ RÔLE SECRÉTAIRE ═══ */
+.role-card.secr:hover,.role-card.secr.sel{border-color:var(--accent4);background:#8b5cf610;}
+.role-icon.secr{background:linear-gradient(135deg,#8b5cf6,#6d28d9);}
+
+/* ═══ ANIMATIONS D'ENTRÉE ═══ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.card,.stat,.bilan-box,.member-row,.cot-member-row,.pret-row{animation:fadeUp .35s ease both;}
+.card:hover{box-shadow:0 12px 34px #00000055;transform:translateY(-1px);transition:.25s;}
+.stat:hover{transform:translateY(-2px);transition:.2s;box-shadow:0 10px 26px #00000040;}
+
+/* ═══ PRÊTS ═══ */
+.pret-row{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:1rem 1.15rem;margin-bottom:.7rem;}
+.pret-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem;margin-bottom:.6rem;}
+.pret-nom{font-family:'Syne',sans-serif;font-weight:700;font-size:.92rem;}
+.pret-motif{font-size:.72rem;color:var(--muted);margin-top:.1rem;}
+.pret-grid-vals{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.6rem;margin:.7rem 0;}
+.pret-mini{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.55rem .7rem;}
+.pret-mini .pl{font-size:.64rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;}
+.pret-mini .pv{font-family:'Syne',sans-serif;font-weight:800;font-size:.92rem;}
+.progress-bar{height:7px;background:var(--bg);border-radius:99px;overflow:hidden;margin-top:.3rem;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent4),#a78bfa);border-radius:99px;}
+
+/* ═══ ADHÉSION ═══ */
+.adh-badge{display:inline-flex;align-items:center;gap:.3rem;background:#3b82f618;border:1px solid #3b82f630;color:#60a5fa;border-radius:8px;padding:.2rem .6rem;font-size:.7rem;font-weight:700;}
+
+/* ═══ IMPRESSION ═══ */
+#printArea{display:none;}
+@media print{
+  body *{visibility:hidden;}
+  #printArea, #printArea *{visibility:visible;}
+  #printArea{display:block !important;position:absolute;top:0;left:0;width:100%;padding:1.5rem;color:#000;background:#fff;}
+  #printArea .pbox{border:1px solid #ccc;border-radius:10px;padding:1rem;margin-bottom:.8rem;}
+  #printArea h2{font-family:'Syne',sans-serif;margin-bottom:.3rem;}
+  #printArea table{width:100%;border-collapse:collapse;margin-top:.5rem;}
+  #printArea th,#printArea td{border:1px solid #ccc;padding:.4rem .6rem;font-size:.8rem;text-align:left;}
+}
+.btn-print{display:inline-flex;align-items:center;gap:.35rem;background:#8b5cf618;border:1px solid #8b5cf638;color:#a78bfa;border-radius:8px;padding:.3rem .7rem;font-size:.73rem;font-weight:600;cursor:pointer;}
+.btn-print:hover{background:#8b5cf628;}
+</style>
+</head>
+<body>
+
+<!-- ════════════════ PAGE CHOIX RÔLE ════════════════ -->
+<div id="rolePage" class="cpage bg-role">
+  <div class="box" style="max-width:440px">
+    <div class="hero-logo">
+      <div class="hero-icon">💰</div>
+      <div class="hero-title"><span class="tc">TI</span>CAISSE</div>
+      <div class="hero-sub">💹 Gestion financière de votre association</div>
+    </div>
+    <div class="deco-bar" style="justify-content:center;margin-bottom:1.4rem">
+      <div class="deco-item"><span>💵</span> Cotisations</div>
+      <div class="deco-item"><span>📊</span> Bilan</div>
+      <div class="deco-item"><span>🏦</span> Caisse</div>
+      <div class="deco-item"><span>📱</span> Mobile Money</div>
+    </div>
+    <p style="text-align:center;font-size:.8rem;color:var(--muted);margin-bottom:1rem">Sélectionnez votre type de compte</p>
+    <div class="role-grid">
+      <div class="role-card pres" onclick="chooseRole('président')">
+        <div class="role-icon pres">👑</div>
+        <div class="role-info"><div class="rt">Président(e)</div><div class="rs">Administration complète</div></div>
+        <div class="role-arrow">›</div>
+      </div>
+      <div class="role-card tres" onclick="chooseRole('trésorier')">
+        <div class="role-icon tres">💼</div>
+        <div class="role-info"><div class="rt">Trésorier(ère)</div><div class="rs">Gestion des finances</div></div>
+        <div class="role-arrow">›</div>
+      </div>
+      <div class="role-card memb" onclick="chooseRole('membre')">
+        <div class="role-icon memb">👤</div>
+        <div class="role-info"><div class="rt">Membre</div><div class="rs">Paiement des cotisations</div></div>
+        <div class="role-arrow">›</div>
+      </div>
+      <div class="role-card secr" onclick="chooseRole('secrétaire')">
+        <div class="role-icon secr">🗂️</div>
+        <div class="role-info"><div class="rt">Secrétaire</div><div class="rs">Suivi des prêts &amp; dossiers</div></div>
+        <div class="role-arrow">›</div>
+      </div>
+    </div>
+    <p style="text-align:center;font-size:.7rem;color:var(--muted);margin-top:.5rem">🔒 Accès réservé aux membres enregistrés</p>
+  </div>
+</div>
+
+<!-- ════════════════ PAGE LOGIN ════════════════ -->
+<div id="loginPage" class="cpage bg-login" style="display:none">
+  <div class="box">
+    <div style="text-align:center;margin-bottom:1.3rem">
+      <div id="loginIcon" style="width:58px;height:58px;border-radius:16px;display:inline-flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:.6rem"></div>
+      <div class="box-title" id="loginTitle"></div>
+      <p class="box-sub" style="margin-bottom:0">Entrez vos identifiants</p>
+    </div>
+    <div id="loginErr" class="err" style="display:none"></div>
+    <div id="bioLoginWrap" style="display:none;margin-bottom:1rem">
+      <button onclick="loginBio()" style="width:100%;padding:.85rem;border-radius:12px;border:2px solid var(--accent);background:var(--surface2);color:var(--accent);font-family:'Syne',sans-serif;font-weight:700;font-size:.92rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.6rem;transition:.2s">
+        <span style="font-size:1.4rem">👆</span> Empreinte / Face ID
+      </button>
+      <div style="text-align:center;margin:.6rem 0;color:var(--muted);font-size:.73rem">— ou entrez vos identifiants —</div>
+    </div>
+    <div class="form-group"><label>Identifiant</label><input type="text" id="loginUser" placeholder="votre identifiant"/></div>
+    <div class="form-group"><label>Mot de passe</label><input type="password" id="loginPass" placeholder="••••••••"/></div>
+    <button class="btn btn-primary" onclick="doLogin()">Se connecter →</button>
+    <button style="margin-top:.6rem;width:100%;padding:.55rem;border-radius:10px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;font-size:.8rem" onclick="backToRole()">← Changer de rôle</button>
+  </div>
+</div>
+
+<!-- ════════════════ PAGE SETUP ════════════════ -->
+<div id="setupPage" class="cpage bg-setup" style="display:none">
+  <div class="box" style="max-width:510px">
+    <div class="box-title">⚙️ Premier accès</div>
+    <p class="box-sub">Créer le compte <strong id="setupLabel" style="color:var(--accent)"></strong></p>
+    <div id="setupErr" class="err" style="display:none"></div>
+    <div class="form-group"><label>Nom complet</label><input type="text" id="su_nom" placeholder="Prénom et Nom"/></div>
+    <div class="form-group"><label>Identifiant de connexion</label><input type="text" id="su_login" placeholder="ex: president"/></div>
+    <div class="form-group"><label>Mot de passe</label><input type="password" id="su_pwd" placeholder="Choisissez un mot de passe sécurisé"/></div>
+    <div class="form-group"><label>N° WhatsApp (avec indicatif)</label><input type="text" id="su_wa" placeholder="228XXXXXXXX"/></div>
+    <div id="su_payFields" style="display:none">
+      <hr class="sep">
+      <div class="info">📱 Configurez les numéros mobiles money du(de la) trésorier(ère)</div>
+      <div class="form-group"><label>N° Moov Money (8 chiffres)</label><input type="text" id="su_moov" maxlength="8" placeholder="XXXXXXXX"/></div>
+      <div class="form-group"><label>N° Mixx by Yas (8 chiffres)</label><input type="text" id="su_yas" maxlength="8" placeholder="XXXXXXXX"/></div>
+      <div class="form-group"><label>Cotisation ordinaire mensuelle (FCFA)</label><input type="number" id="su_mont" placeholder="ex: 2000"/></div>
+    </div>
+    <button class="btn btn-primary" onclick="finishSetup()">✅ Créer le compte</button>
+    <button style="margin-top:.6rem;width:100%;padding:.55rem;border-radius:10px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;font-size:.8rem" onclick="backToRole()">← Retour</button>
+  </div>
+</div>
+
+<!-- ════════════════ APP ════════════════ -->
+<div id="appLayout">
+  <nav>
+    <div class="logo-wrap">
+      <div class="logo-icon">💰</div>
+      <div>
+        <div class="logo-text"><span class="tc">TI</span><span class="aisse">CAISSE</span></div>
+        <div class="logo-sub">Gestion Association</div>
+      </div>
+    </div>
+    <div class="nav-right">
+      <span id="navName" style="font-size:.8rem;color:var(--muted)"></span>
+      <span id="navBadge" class="badge"></span>
+      <button class="btn-logout" onclick="logout()">Déconnexion</button>
+    </div>
+  </nav>
+
+  <div class="app-wrap">
+    <div class="tabs" id="tabsBar"></div>
+
+    <!-- ── TABLEAU DE BORD ── -->
+    <div class="sec active" id="sec-dashboard">
+      <div class="deco-bar">
+        <div class="deco-item"><span>💹</span> Tableau financier</div>
+        <div class="deco-item"><span>🏛️</span> Caisse de l'association</div>
+      </div>
+      <div class="stats" id="statsGrid"></div>
+      <div class="bilan-grid" id="bilanGrid"></div>
+      <div class="card" style="margin-top:1.1rem">
+        <div class="card-title">📋 Activités récentes</div>
+        <div id="actFeed" style="font-size:.8rem;color:var(--muted)"></div>
+      </div>
+    </div>
+
+    <!-- ── COTISATIONS MEMBRE ── -->
+    <div class="sec" id="sec-cotisations">
+      <!-- Onglets Ordinaire / Extraordinaire -->
+      <div class="cot-tabs">
+        <div class="cot-tab active-ord" id="tabOrd" onclick="switchCotTab('ord')">💵 Cotisation Ordinaire</div>
+        <div class="cot-tab" id="tabExt" onclick="switchCotTab('ext')">✨ Cotisation Extraordinaire</div>
+      </div>
+
+      <!-- ─ ORDINAIRE ─ -->
+      <div id="panelOrd">
+        <div class="card">
+          <div class="card-title">💵 Payer ma cotisation ordinaire</div>
+          <p style="font-size:.8rem;color:var(--muted);margin-bottom:1.1rem">Cotisation mensuelle fixe. Choisissez votre opérateur, entrez votre numéro puis cliquez <strong style="color:var(--accent2)">Souscription</strong>.</p>
+          <label style="display:block;margin-bottom:.5rem">1️⃣ Opérateur</label>
+          <div class="oper-grid">
+            <div class="oper-card" id="cMoovO" onclick="selOper('moov','ord')">
+              <div class="ologo m">M</div><div class="oname">Moov Money</div><div class="osub">Flooz</div>
+            </div>
+            <div class="oper-card" id="cYasO" onclick="selOper('yas','ord')">
+              <div class="ologo y">Y</div><div class="oname">Mixx by Yas</div><div class="osub">Anciennement Tmoney</div>
+            </div>
+          </div>
+          <div id="tresoBoxO" style="display:none"></div>
+          <div id="payStep2O" style="display:none">
+            <label style="display:block;margin-bottom:.5rem">2️⃣ Votre numéro (8 chiffres)</label>
+            <div class="num-disp" id="numDispO">_ _ _ _  _ _ _ _</div>
+            <div class="keypad" id="keypadO"></div>
+            <div class="irow" style="margin-top:1rem">
+              <div class="form-group">
+                <label>3️⃣ Mois concerné</label>
+                <select id="cotMoisO">
+                  <option>Janvier</option><option>Février</option><option>Mars</option><option>Avril</option><option>Mai</option><option>Juin</option><option>Juillet</option><option>Août</option><option>Septembre</option><option>Octobre</option><option>Novembre</option><option>Décembre</option>
+                </select>
+              </div>
+              <div class="form-group"><label>Montant (FCFA)</label><input type="number" id="cotMontO" placeholder="ex: 2000"/></div>
+            </div>
+            <div class="pay-flow" id="payFlowO">
+              <hr class="sep">
+              <div class="ussd-screen">
+                <span style="font-size:2rem;display:block;margin-bottom:.5rem">📲</span>
+                <p style="font-size:.78rem;color:var(--muted);margin-bottom:.4rem">Composez ce code sur votre téléphone :</p>
+                <div class="ussd-code" id="ussdCodeO"></div>
+                <div class="ussd-steps">
+                  <div class="ussd-step"><div class="snum">1</div><span>Mémorisez ou copiez le code USSD</span></div>
+                  <div class="ussd-step"><div class="snum">2</div><span>Ouvrez le composeur et entrez le code</span></div>
+                  <div class="ussd-step"><div class="snum">3</div><span>Tapez votre <strong>code secret</strong> pour confirmer le paiement</span></div>
+                  <div class="ussd-step"><div class="snum">4</div><span>Attendez le SMS de confirmation puis revenez ici</span></div>
+                </div>
+                <a id="souscBtnO" href="#" class="btn-souscription" onclick="lancerSouscription(event,'ord')">📞 Souscription</a>
+              </div>
+              <div id="timerSecO" style="display:none">
+                <p style="font-size:.75rem;color:var(--muted);text-align:center;margin-bottom:.3rem">⏳ En attente de votre paiement...</p>
+                <div class="timer-bar"><div class="timer-fill" id="timerFillO"></div></div>
+              </div>
+              <div id="confirmWrapO">
+                <button class="btn-confirm-locked" disabled>🔒 Effectuez d'abord la Souscription pour confirmer</button>
+              </div>
+            </div>
+            <button class="btn btn-primary" style="margin-top:1rem" id="prepBtnO" onclick="preparerPaiement('ord')">Préparer le paiement →</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">📅 Historique cotisations ordinaires</div>
+          <div class="tw"><table><thead><tr><th>Mois</th><th>Montant</th><th>Opérateur</th><th>Mon N°</th><th>Date</th><th>Statut</th></tr></thead><tbody id="myOrdTable"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- ─ EXTRAORDINAIRE ─ -->
+      <div id="panelExt" style="display:none">
+        <div class="card">
+          <div class="card-title">✨ Cotisation extraordinaire <span class="ext-badge">⭐ Spéciale</span></div>
+          <p style="font-size:.8rem;color:var(--muted);margin-bottom:1.1rem">Pour les cotisations spéciales hors du cadre mensuel ordinaire. Le motif est obligatoire.</p>
+          <label style="display:block;margin-bottom:.5rem">1️⃣ Opérateur</label>
+          <div class="oper-grid">
+            <div class="oper-card" id="cMoovE" onclick="selOper('moov','ext')">
+              <div class="ologo m">M</div><div class="oname">Moov Money</div><div class="osub">Flooz</div>
+            </div>
+            <div class="oper-card" id="cYasE" onclick="selOper('yas','ext')">
+              <div class="ologo y">Y</div><div class="oname">Mixx by Yas</div><div class="osub">Anciennement Tmoney</div>
+            </div>
+          </div>
+          <div id="tresoBoxE" style="display:none"></div>
+          <div id="payStep2E" style="display:none">
+            <label style="display:block;margin-bottom:.5rem">2️⃣ Votre numéro (8 chiffres)</label>
+            <div class="num-disp" id="numDispE">_ _ _ _  _ _ _ _</div>
+            <div class="keypad" id="keypadE"></div>
+            <div class="irow" style="margin-top:1rem">
+              <div class="form-group"><label>3️⃣ Montant (FCFA)</label><input type="number" id="cotMontE" placeholder="Montant libre"/></div>
+              <div class="form-group"><label>4️⃣ Motif <span style="color:var(--danger)">*</span></label><input type="text" id="cotMotifE" placeholder="ex: Fête de fin d'année, Deuil..."/></div>
+            </div>
+            <div class="pay-flow" id="payFlowE">
+              <hr class="sep">
+              <div class="ussd-screen">
+                <span style="font-size:2rem;display:block;margin-bottom:.5rem">📲</span>
+                <p style="font-size:.78rem;color:var(--muted);margin-bottom:.4rem">Composez ce code sur votre téléphone :</p>
+                <div class="ussd-code" id="ussdCodeE"></div>
+                <div class="ussd-steps">
+                  <div class="ussd-step"><div class="snum">1</div><span>Mémorisez ou copiez le code USSD</span></div>
+                  <div class="ussd-step"><div class="snum">2</div><span>Ouvrez le composeur et entrez le code</span></div>
+                  <div class="ussd-step"><div class="snum">3</div><span>Tapez votre <strong>code secret</strong> pour confirmer le paiement</span></div>
+                  <div class="ussd-step"><div class="snum">4</div><span>Attendez le SMS de confirmation puis revenez ici</span></div>
+                </div>
+                <a id="souscBtnE" href="#" class="btn-souscription" onclick="lancerSouscription(event,'ext')">📞 Souscription</a>
+              </div>
+              <div id="timerSecE" style="display:none">
+                <p style="font-size:.75rem;color:var(--muted);text-align:center;margin-bottom:.3rem">⏳ En attente de votre paiement...</p>
+                <div class="timer-bar"><div class="timer-fill" id="timerFillE"></div></div>
+              </div>
+              <div id="confirmWrapE">
+                <button class="btn-confirm-locked" disabled>🔒 Effectuez d'abord la Souscription pour confirmer</button>
+              </div>
+            </div>
+            <button class="btn btn-primary" style="margin-top:1rem;background:linear-gradient(135deg,var(--gold),#d97706);color:#000" id="prepBtnE" onclick="preparerPaiement('ext')">Préparer le paiement →</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">📅 Historique cotisations extraordinaires</div>
+          <div class="tw"><table><thead><tr><th>Motif</th><th>Montant</th><th>Opérateur</th><th>Mon N°</th><th>Date</th><th>Statut</th></tr></thead><tbody id="myExtTable"></tbody></table></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TRÉSORERIE ── -->
+    <div class="sec" id="sec-tresorerie">
+      <!-- Cases par membre -->
+      <div class="card">
+        <div class="card-title">✅ Suivi des cotisations ordinaires par membre</div>
+        <p style="font-size:.78rem;color:var(--muted);margin-bottom:.9rem">Les cases se cochent <strong>automatiquement</strong> après paiement confirmé. Le trésorier peut décocher en cas d'erreur. Cliquez sur 🖨️ pour imprimer le bilan d'un membre.</p>
+        <div class="cot-grid" id="cotGridTreso"></div>
+      </div>
+
+      <!-- Carnet (cotisations hors-ligne) -->
+      <div class="card">
+        <div class="card-title">📔 Cotisations enregistrées au carnet</div>
+        <p style="font-size:.78rem;color:var(--muted);margin-bottom:.9rem">Pour les personnes qui cotisent en espèces / sur carnet papier, sans passer par le site.</p>
+        <div class="irow">
+          <div class="form-group"><label>Nom de la personne</label><input type="text" id="cnNom" placeholder="Prénom Nom"/></div>
+          <div class="form-group"><label>Mois</label><select id="cnMois"></select></div>
+          <div class="form-group"><label>Montant (FCFA)</label><input type="number" id="cnMont" placeholder="ex: 2000"/></div>
+          <div class="form-group"><label>Date</label><input type="date" id="cnDate"/></div>
+        </div>
+        <button class="btn-sm btn-primary" onclick="addCarnet()">+ Enregistrer</button>
+        <div class="tw" style="margin-top:.9rem">
+          <table><thead><tr><th>Nom</th><th>Mois</th><th>Montant</th><th>Date</th><th></th></tr></thead><tbody id="carnetTable"></tbody></table>
+        </div>
+      </div>
+
+      <!-- Adhésions -->
+      <div class="card">
+        <div class="card-title">🪪 Adhésion au groupe</div>
+        <p style="font-size:.78rem;color:var(--muted);margin-bottom:.9rem">Enregistrer le paiement d'adhésion de chaque membre.</p>
+        <div class="irow">
+          <div class="form-group"><label>Membre</label><select id="adhMem"></select></div>
+          <div class="form-group"><label>Montant adhésion (FCFA)</label><input type="number" id="adhMont" placeholder="ex: 1000"/></div>
+          <div class="form-group"><label>Date</label><input type="date" id="adhDate"/></div>
+        </div>
+        <button class="btn-sm btn-primary" onclick="addAdhesion()">+ Enregistrer l'adhésion</button>
+        <div class="tw" style="margin-top:.9rem">
+          <table><thead><tr><th>Membre</th><th>Montant</th><th>Date</th><th></th></tr></thead><tbody id="adhTable"></tbody></table>
+        </div>
+      </div>
+      <!-- Extraordinaires -->
+      <div class="card">
+        <div class="card-title">✨ Cotisations extraordinaires reçues</div>
+        <div class="tw"><table><thead><tr><th>Membre</th><th>Motif</th><th>Montant</th><th>Opérateur</th><th>N° exp.</th><th>Date</th><th>Statut</th><th>Action</th></tr></thead><tbody id="extTresoTable"></tbody></table></div>
+      </div>
+      <!-- Dépenses -->
+      <div class="card">
+        <div class="card-title">💸 Dépenses</div>
+        <div class="irow" style="margin-bottom:.9rem">
+          <div class="form-group"><label>Description</label><input type="text" id="dDesc" placeholder="ex: Achat chaises"/></div>
+          <div class="form-group"><label>Montant (FCFA)</label><input type="number" id="dMont" placeholder="5000"/></div>
+          <div class="form-group"><label>Date</label><input type="date" id="dDate"/></div>
+        </div>
+        <button class="btn-sm btn-primary" onclick="addDep()">+ Enregistrer</button>
+        <div class="tw" style="margin-top:.9rem">
+          <table><thead><tr><th>Description</th><th>Montant</th><th>Date</th><th>Par</th><th></th></tr></thead><tbody id="depTable"></tbody></table>
+        </div>
+      </div>
+      <!-- Bilan -->
+      <div class="card">
+        <div class="card-title">📊 Bilan financier</div>
+        <div id="bilanTreso"></div>
+        <button class="btn-sm btn-gold" style="margin-top:.9rem" onclick="bilanAlert()">📋 Voir bilan complet</button>
+      </div>
+    </div>
+
+    <!-- ── PRÊTS ── -->
+    <div class="sec" id="sec-prets">
+      <div id="pretsAdmin" style="display:none">
+        <div class="card">
+          <div class="card-title">➕ Nouveau prêt sur la caisse</div>
+          <div class="info">💡 Taux d'intérêt appliqué : <strong>5% par mois</strong> sur le capital restant dû. Le motif est facultatif.</div>
+          <div class="irow">
+            <div class="form-group"><label>Membre emprunteur</label><select id="prMem"></select></div>
+            <div class="form-group"><label>Montant du prêt (FCFA)</label><input type="number" id="prMont" placeholder="ex: 20000"/></div>
+            <div class="form-group"><label>Date du prêt</label><input type="date" id="prDate"/></div>
+            <div class="form-group"><label>Motif (facultatif)</label><input type="text" id="prMotif" placeholder="ex: Frais de scolarité"/></div>
+          </div>
+          <button class="btn-sm btn-primary" onclick="addPret()">✅ Enregistrer le prêt</button>
+        </div>
+        <div class="card">
+          <div class="card-title">💼 Prêts en cours &amp; remboursements</div>
+          <div id="pretsListAdmin"></div>
+        </div>
+      </div>
+      <div id="pretsMembre" style="display:none">
+        <div class="card">
+          <div class="card-title">💼 Mes prêts auprès de la caisse</div>
+          <div id="pretsListMembre"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── MEMBRES (président) ── -->
+    <div class="sec" id="sec-membres">
+      <div class="card">
+        <div class="card-title">🔑 Modifier mes identifiants</div>
+        <div class="info">En tant que président(e), vous pouvez changer vos identifiants à tout moment.</div>
+        <div class="irow">
+          <div class="form-group"><label>Nouvel identifiant</label><input type="text" id="nLogin" placeholder="nouveau login"/></div>
+          <div class="form-group"><label>Nouveau mot de passe</label><input type="password" id="nPwd" placeholder="nouveau mot de passe"/></div>
+          <div class="form-group"><label>Confirmer</label><input type="password" id="nPwd2" placeholder="confirmez"/></div>
+        </div>
+        <button class="btn-sm btn-warning" style="margin-top:.9rem" onclick="changeIdents()">🔐 Mettre à jour</button>
+      </div>
+      <div class="card">
+        <div class="card-title">➕ Ajouter un membre</div>
+        <div class="irow">
+          <div class="form-group"><label>Nom complet</label><input type="text" id="mNom" placeholder="Prénom Nom"/></div>
+          <div class="form-group"><label>Identifiant</label><input type="text" id="mLogin" placeholder="ex: prenom.nom"/></div>
+          <div class="form-group"><label>Mot de passe</label><input type="password" id="mPwd" placeholder="••••••"/></div>
+          <div class="form-group"><label>Rôle</label><select id="mRole"><option value="membre">Membre</option><option value="trésorier">Trésorier</option><option value="secrétaire">Secrétaire</option></select></div>
+          <div class="form-group"><label>N° WhatsApp</label><input type="text" id="mWA" placeholder="228XXXXXXXX"/></div>
+          <div class="form-group"><label>Couleur</label>
+            <select id="mCol"><option value="#00c896">Vert</option><option value="#3b82f6">Bleu</option><option value="#f5a623">Or</option><option value="#ef4444">Rouge</option><option value="#8b5cf6">Violet</option><option value="#ec4899">Rose</option></select>
+          </div>
+        </div>
+        <button class="btn-sm btn-primary" style="margin-top:.9rem" onclick="addMember()">✅ Ajouter</button>
+      </div>
+      <div class="card">
+        <div class="card-title">👥 Tous les membres</div>
+        <div class="tw"><table><thead><tr><th>Nom</th><th>Identifiant</th><th>Rôle</th><th>WhatsApp</th><th>Action</th></tr></thead><tbody id="membersTable"></tbody></table></div>
+      </div>
+      <div class="card">
+        <div class="card-title">⚙️ Paramètres paiement</div>
+        <div class="irow">
+          <div class="form-group"><label>N° Moov Money trésorier</label><input type="text" id="sMoov" maxlength="8" placeholder="XXXXXXXX"/></div>
+          <div class="form-group"><label>N° Mixx by Yas trésorier</label><input type="text" id="sYas" maxlength="8" placeholder="XXXXXXXX"/></div>
+          <div class="form-group"><label>Cotisation mensuelle (FCFA)</label><input type="number" id="sMont" placeholder="ex: 2000"/></div>
+        </div>
+        <button class="btn-sm btn-primary" style="margin-top:.9rem" onclick="saveSet()">💾 Enregistrer</button>
+      </div>
+    </div>
+
+    <!-- ── RÉPERTOIRE ── -->
+    <div class="sec" id="sec-repertoire">
+      <div class="card">
+        <div class="card-title">📒 Répertoire des membres</div>
+        <p style="font-size:.78rem;color:var(--muted);margin-bottom:.9rem">Cliquez sur le numéro pour contacter sur WhatsApp.</p>
+        <div id="repertGrid"></div>
+      </div>
+    </div>
+
+  </div><!-- app-wrap -->
+
+  <footer>
+    <div class="footer-logo"><span class="tc">TI</span>CAISSE</div>
+    <p>© 2026 Gestion Association &nbsp;|&nbsp;
+      <a href="https://wa.me/22871393665" target="_blank">📲 Nous contacter sur 71393665 en cas d'assistance</a>
+    </p>
+  </footer>
+</div>
+
+<!-- MODAL DECOCHER (trésorier) -->
+<div class="modal-bg" id="modalUncheck">
+  <div class="modal">
+    <h3>🔓 Décocher un mois</h3>
+    <p id="mUncheckDesc" style="font-size:.8rem;color:var(--muted);margin-bottom:.8rem"></p>
+    <div class="info">⚠️ Cette action est réservée au trésorier. Le membre devra repayer ce mois.</div>
+    <div class="modal-actions">
+      <button class="btn-sm btn-outline" onclick="closeModals()">Annuler</button>
+      <button class="btn-sm btn-danger" onclick="doUncheck()">Décocher</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL VALIDATION EXT -->
+<div class="modal-bg" id="modalValExt">
+  <div class="modal">
+    <h3>✅ Valider cotisation extraordinaire</h3>
+    <p id="mExtDesc" style="font-size:.8rem;color:var(--muted);margin-bottom:.7rem"></p>
+    <div id="mExtOper" style="margin-bottom:.9rem"></div>
+    <div class="form-group"><label>Note</label><textarea id="mExtNote" rows="2" placeholder="ex: Reçu vérifié..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-sm btn-outline" onclick="closeModals()">Annuler</button>
+      <button class="btn-sm btn-primary" onclick="validerExt()">Confirmer ✅</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- MODAL PROPOSITION BIOMÉTRIE -->
+<div class="modal-bg" id="modalBio">
+  <div class="modal" style="text-align:center">
+    <div style="font-size:2.5rem;margin-bottom:.8rem">👆</div>
+    <h3 style="text-align:center;margin-bottom:.5rem">Activer la connexion biométrique ?</h3>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:1.2rem">Les prochaines fois, connectez-vous en un seul toucher avec votre empreinte digitale ou Face ID.</p>
+    <div style="display:flex;gap:.7rem;justify-content:center">
+      <button class="btn-sm btn-outline" onclick="refuserBio()" style="padding:.6rem 1.2rem">Non merci</button>
+      <button class="btn-sm btn-primary" onclick="activerBio()" style="padding:.6rem 1.5rem">👆 Activer</button>
+    </div>
+  </div>
+</div>
+
+<div id="printArea"></div>
+
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════════
+function gd(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch{return d;}}
+function sd(k,v){localStorage.setItem(k,JSON.stringify(v));}
+function vv(id){const e=document.getElementById(id);return e?(e.value||'').trim():'';}
+function sv(id,val){const e=document.getElementById(id);if(e)e.value=val;}
+
+let cu=null,setupRole=null;
+let selOperO=null,numO='',souscO=false;
+let selOperE=null,numE='',souscE=false;
+let uncheckData=null,pvExtId=null;
+
+const MOIS=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+
+// ═══════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════
+function init(){
+  // ── RESET UNIQUE : vide la base une seule fois au premier chargement de cette version ──
+  const VERSION='TICAISSE_v3';
+  if(localStorage.getItem('app_version')!==VERSION){
+    localStorage.clear();
+    localStorage.setItem('app_version',VERSION);
+  }
+  // Initialiser les clés vides si absentes
+  if(!gd('cotisations',null)) sd('cotisations',[]);
+  if(!gd('extras',null)) sd('extras',[]);
+  if(!gd('depenses',null)) sd('depenses',[]);
+  if(!gd('settings',null)) sd('settings',{moov:'',yas:'',montant:0});
+  if(!gd('members',null)) sd('members',[]);
+  if(!gd('prets',null)) sd('prets',[]);
+  if(!gd('adhesions',null)) sd('adhesions',[]);
+  if(!gd('carnet',null)) sd('carnet',[]);
+  // PWA : enregistrement du service worker (fonctionnement hors-ligne)
+  if('serviceWorker' in navigator){
+    window.addEventListener('load',()=>{
+      navigator.serviceWorker.register('sw.js').catch(()=>{});
+    });
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  CHOIX RÔLE
+// ═══════════════════════════════════════════════
+function chooseRole(role){
+  const members=gd('members',[]);
+  const exists=members.find(m=>m.role===role);
+  hide('rolePage');
+  if(!exists){
+    setupRole=role;
+    document.getElementById('setupLabel').textContent=role.charAt(0).toUpperCase()+role.slice(1);
+    document.getElementById('su_payFields').style.display=role==='trésorier'?'block':'none';
+    document.getElementById('setupErr').style.display='none';
+    show('setupPage');
+  } else {
+    const icons={président:'👑',trésorier:'💼',membre:'👤',secrétaire:'🗂️'};
+    const colors={président:'linear-gradient(135deg,#f5a623,#d97706)',trésorier:'linear-gradient(135deg,#3b82f6,#1d4ed8)',membre:'linear-gradient(135deg,#00c896,#059669)',secrétaire:'linear-gradient(135deg,#8b5cf6,#6d28d9)'};
+    const titles={président:'Espace Président(e)',trésorier:'Espace Trésorier(ère)',membre:'Espace Membre',secrétaire:'Espace Secrétaire'};
+    document.getElementById('loginIcon').style.background=colors[role];
+    document.getElementById('loginIcon').textContent=icons[role];
+    document.getElementById('loginTitle').textContent=titles[role];
+    document.getElementById('loginErr').style.display='none';
+    sv('loginUser',''); sv('loginPass','');
+    document.getElementById('loginUser').dataset.role=role;
+    show('loginPage');
+    checkBioAvailable(role);
+  }
+}
+function backToRole(){hide('loginPage');hide('setupPage');show('rolePage');}
+
+// ═══════════════════════════════════════════════
+//  SETUP
+// ═══════════════════════════════════════════════
+function finishSetup(){
+  const err=document.getElementById('setupErr'); err.style.display='none';
+  const nom=vv('su_nom'),login=vv('su_login'),pwd=vv('su_pwd'),wa=vv('su_wa');
+  if(!nom||!login||!pwd||!wa){err.textContent='⚠️ Tous les champs sont obligatoires.';err.style.display='block';return;}
+  const members=gd('members',[]);
+  if(members.find(m=>m.login===login)){err.textContent='⚠️ Cet identifiant est déjà pris.';err.style.display='block';return;}
+  const color={président:'#f5a623',trésorier:'#3b82f6',membre:'#00c896',secrétaire:'#8b5cf6'}[setupRole]||'#00c896';
+  members.push({id:Date.now(),nom,login,pwd,role:setupRole,wa,color});
+  sd('members',members);
+  if(setupRole==='trésorier'){
+    const mont=vv('su_mont');
+    if(!mont){err.textContent='⚠️ Indiquez le montant mensuel.';err.style.display='block';return;}
+    sd('settings',{moov:vv('su_moov'),yas:vv('su_yas'),montant:Number(mont)});
+  }
+  toast('✅ Compte créé ! Connectez-vous.');
+  hide('setupPage'); chooseRole(setupRole);
+}
+
+// ═══════════════════════════════════════════════
+//  AUTH
+// ═══════════════════════════════════════════════
+function doLogin(){
+  const u=vv('loginUser'),p=vv('loginPass');
+  const role=document.getElementById('loginUser').dataset.role;
+  const found=gd('members',[]).find(m=>m.login===u&&m.pwd===p&&m.role===role);
+  if(!found){
+    document.getElementById('loginErr').textContent='❌ Identifiant ou mot de passe incorrect.';
+    document.getElementById('loginErr').style.display='block';
+    return;
+  }
+  cu=found; hide('loginPage');
+  document.getElementById('appLayout').style.display='block';
+  initApp();
+  // Proposer la biométrie si pas encore activée
+  const bioData=gd(bioKey(cu.role),null);
+  if(!bioData && window.PublicKeyCredential){
+    setTimeout(()=>document.getElementById('modalBio').classList.add('open'),800);
+  }
+}
+function logout(){
+  cu=null; selOperO=null; numO=''; souscO=false;
+  selOperE=null; numE=''; souscE=false;
+  document.getElementById('appLayout').style.display='none';
+  show('rolePage');
+}
+
+// ═══════════════════════════════════════════════
+//  APP
+// ═══════════════════════════════════════════════
+function initApp(){
+  document.getElementById('navName').textContent=cu.nom;
+  const b=document.getElementById('navBadge');
+  b.textContent=cu.role.toUpperCase();
+  b.className='badge'+(cu.role==='trésorier'?' treso':cu.role==='membre'?' member':cu.role==='secrétaire'?' v':'');
+  buildTabs(); showSec('dashboard');
+}
+function buildTabs(){
+  const bar=document.getElementById('tabsBar'); bar.innerHTML='';
+  const role=cu.role;
+  [
+    {id:'dashboard',label:'🏠 Tableau de bord',r:['président','trésorier','membre','secrétaire']},
+    {id:'cotisations',label:'💵 Mes cotisations',r:['membre','président','trésorier']},
+    {id:'tresorerie',label:'🏦 Trésorerie',r:['trésorier','président']},
+    {id:'prets',label:'💼 Prêts',r:['président','trésorier','secrétaire','membre']},
+    {id:'membres',label:'👥 Gestion membres',r:['président']},
+    {id:'repertoire',label:'📒 Répertoire',r:['président','trésorier','membre','secrétaire']},
+  ].forEach(t=>{
+    if(!t.r.includes(role)) return;
+    const btn=document.createElement('button');
+    btn.className='tab'; btn.textContent=t.label;
+    btn.onclick=()=>showSec(t.id,btn); bar.appendChild(btn);
+  });
+}
+function showSec(id,tabEl){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  if(tabEl) tabEl.classList.add('active');
+  else{const f=document.querySelector('.tab');if(f)f.classList.add('active');}
+  if(id==='dashboard') renderDash();
+  else if(id==='cotisations'){renderMyCots(); switchCotTab('ord');}
+  else if(id==='tresorerie') renderTreso();
+  else if(id==='prets') renderPrets();
+  else if(id==='membres') renderMembers();
+  else if(id==='repertoire') renderRepert();
+}
+
+// ═══════════════════════════════════════════════
+//  DASHBOARD
+// ═══════════════════════════════════════════════
+function renderDash(){
+  const cots=gd('cotisations',[]);
+  const extras=gd('extras',[]).filter(e=>e.status==='validé');
+  const deps=gd('depenses',[]);
+  const mbs=gd('members',[]);
+  const tOrd=cots.reduce((a,c)=>a+c.montant,0);
+  const tExt=extras.reduce((a,e)=>a+e.montant,0);
+  const tDep=deps.reduce((a,d)=>a+d.montant,0);
+  const solde=tOrd+tExt-tDep;
+  document.getElementById('statsGrid').innerHTML=`
+    <div class="stat sg"><span class="slabel">💵 Cotisations ordinaires</span><span class="sval g">${ff(tOrd)}</span><span class="sunit">FCFA</span></div>
+    <div class="stat sy"><span class="slabel">✨ Cotisations extra.</span><span class="sval y">${ff(tExt)}</span><span class="sunit">FCFA</span></div>
+    <div class="stat sr"><span class="slabel">💸 Dépenses</span><span class="sval r">${ff(tDep)}</span><span class="sunit">FCFA</span></div>
+    <div class="stat sb"><span class="slabel">🏦 Solde caisse</span><span class="sval b">${ff(solde)}</span><span class="sunit">FCFA</span></div>
+    <div class="stat sv"><span class="slabel">👥 Membres</span><span class="sval v">${mbs.length}</span><span class="sunit">inscrits</span></div>
+  `;
+  document.getElementById('bilanGrid').innerHTML=`
+    <div class="bilan-box ord"><div class="bilan-icon">💵</div><div><div class="bilan-label">Cotis. ordinaires</div><div class="bilan-val" style="color:var(--accent)">${ff(tOrd)} FCFA</div></div></div>
+    <div class="bilan-box ext"><div class="bilan-icon">✨</div><div><div class="bilan-label">Cotis. extraordinaires</div><div class="bilan-val" style="color:var(--gold)">${ff(tExt)} FCFA</div></div></div>
+    <div class="bilan-box dep"><div class="bilan-icon">💸</div><div><div class="bilan-label">Dépenses</div><div class="bilan-val" style="color:var(--danger)">${ff(tDep)} FCFA</div></div></div>
+    <div class="bilan-box sol"><div class="bilan-icon">🏦</div><div><div class="bilan-label">Solde disponible</div><div class="bilan-val" style="color:var(--accent3)">${ff(solde)} FCFA</div></div></div>
+  `;
+  const all=[...cots.map(c=>({...c,_type:'ord'})),...extras.map(e=>({...e,_type:'ext'})),...deps.map(d=>({...d,_type:'dep'}))].sort((a,b)=>b.id-a.id).slice(0,8);
+  document.getElementById('actFeed').innerHTML=all.length
+    ? all.map(a=>{
+        if(a._type==='ord') return `<div style="padding:.42rem 0;border-bottom:1px solid var(--border)">💵 <strong>${a.membre}</strong> — ${a.mois} ${ff(a.montant)} FCFA <span class="chip cb">${a.oper}</span></div>`;
+        if(a._type==='ext') return `<div style="padding:.42rem 0;border-bottom:1px solid var(--border)">✨ <strong>${a.membre}</strong> — ${a.motif} ${ff(a.montant)} FCFA <span class="chip cy">${a.oper}</span></div>`;
+        return `<div style="padding:.42rem 0;border-bottom:1px solid var(--border)">💸 ${a.desc} — ${ff(a.montant)} FCFA <span style="color:var(--muted);font-size:.72rem">${a.date}</span></div>`;
+      }).join('')
+    : '<span>Aucune activité.</span>';
+}
+
+// ═══════════════════════════════════════════════
+//  TABS COTISATION
+// ═══════════════════════════════════════════════
+function switchCotTab(t){
+  document.getElementById('tabOrd').className='cot-tab'+(t==='ord'?' active-ord':'');
+  document.getElementById('tabExt').className='cot-tab'+(t==='ext'?' active-ext':'');
+  document.getElementById('panelOrd').style.display=t==='ord'?'block':'none';
+  document.getElementById('panelExt').style.display=t==='ext'?'block':'none';
+}
+
+// ═══════════════════════════════════════════════
+//  OPERATEUR + CLAVIER
+// ═══════════════════════════════════════════════
+function selOper(op,panel){
+  const s=gd('settings',{});
+  const numTreso=op==='moov'?s.moov:s.yas;
+  const suffix=panel==='ord'?'O':'E';
+  if(panel==='ord'){selOperO=op;numO='';souscO=false;}
+  else{selOperE=op;numE='';souscE=false;}
+  document.getElementById('cMoov'+suffix).className='oper-card'+(op==='moov'?' sm':'');
+  document.getElementById('cYas'+suffix).className='oper-card'+(op==='yas'?' sy2':'');
+  const box=document.getElementById('tresoBox'+suffix);
+  box.innerHTML=op==='moov'
+    ?`<div class="tinfo m"><div class="tlogo m">M</div><div><div class="tlabel">N° Moov Money du trésorier (destinataire)</div><div class="tnum">${fn(numTreso)||'Non configuré'}</div></div></div>`
+    :`<div class="tinfo y"><div class="tlogo y">Y</div><div><div class="tlabel">N° Mixx by Yas du trésorier (destinataire)</div><div class="tnum">${fn(numTreso)||'Non configuré'}</div></div></div>`;
+  box.style.display='block';
+  document.getElementById('payStep2'+suffix).style.display='block';
+  document.getElementById('numDisp'+suffix).className='num-disp '+(op==='moov'?'dm':'dy');
+  updateDisp(panel);
+  buildKeypad(panel);
+  const mn=new Date().getMonth();
+  if(panel==='ord') document.getElementById('cotMoisO').value=MOIS[mn];
+  document.getElementById('payFlow'+suffix).classList.remove('show');
+  document.getElementById('prepBtn'+suffix).style.display='block';
+  setConfirmBtn(panel,false);
+}
+
+function buildKeypad(panel){
+  const suffix=panel==='ord'?'O':'E';
+  const kp=document.getElementById('keypad'+suffix); kp.innerHTML='';
+  ['1','2','3','4','5','6','7','8','9','⌫','0',''].forEach(k=>{
+    const d=document.createElement('div');
+    if(!k){d.className='key';d.style.opacity='0';d.style.pointerEvents='none';}
+    else{
+      d.className='key'+(k==='⌫'?' kd':'');
+      d.textContent=k;
+      d.onclick=()=>{
+        if(panel==='ord'){if(k==='⌫')numO=numO.slice(0,-1);else if(numO.length<8)numO+=k;}
+        else{if(k==='⌫')numE=numE.slice(0,-1);else if(numE.length<8)numE+=k;}
+        updateDisp(panel);
+      };
+    }
+    kp.appendChild(d);
+  });
+}
+function updateDisp(panel){
+  const num=panel==='ord'?numO:numE;
+  const suffix=panel==='ord'?'O':'E';
+  let s='';
+  for(let i=0;i<8;i++){s+=num[i]||'_';if(i===3)s+='  ';}
+  document.getElementById('numDisp'+suffix).textContent=s;
+}
+
+// ═══════════════════════════════════════════════
+//  FLOW PAIEMENT
+// ═══════════════════════════════════════════════
+function preparerPaiement(panel){
+  const suffix=panel==='ord'?'O':'E';
+  const op=panel==='ord'?selOperO:selOperE;
+  const num=panel==='ord'?numO:numE;
+  const mont=vv('cotMont'+suffix);
+  if(!op){toast('⚠️ Choisissez un opérateur');return;}
+  if(num.length!==8){toast('⚠️ Entrez votre numéro à 8 chiffres');return;}
+  if(!mont){toast('⚠️ Indiquez le montant');return;}
+  if(panel==='ext'&&!vv('cotMotifE')){toast('⚠️ Le motif est obligatoire pour une cotisation extraordinaire');return;}
+  const s=gd('settings',{});
+  const numTreso=op==='moov'?s.moov:s.yas;
+  if(!numTreso){toast('⚠️ Numéro du trésorier non configuré');return;}
+  let ussd='';
+  if(op==='moov') ussd=`*155*1*1*${numTreso}*${numTreso}*${mont}#`;
+  else ussd=`*145*1*${mont}*${numTreso}#`;
+  document.getElementById('ussdCode'+suffix).textContent=ussd;
+  const telLink=`tel:${ussd.replace(/#/,'%23')}`;
+  document.getElementById('souscBtn'+suffix).href=telLink;
+  if(panel==='ord') souscO=false; else souscE=false;
+  setConfirmBtn(panel,false);
+  document.getElementById('timerSec'+suffix).style.display='none';
+  document.getElementById('timerFill'+suffix).style.width='0%';
+  document.getElementById('payFlow'+suffix).classList.add('show');
+  document.getElementById('prepBtn'+suffix).style.display='none';
+  setTimeout(()=>document.getElementById('payFlow'+suffix).scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+}
+
+function lancerSouscription(e,panel){
+  const suffix=panel==='ord'?'O':'E';
+  if(panel==='ord') souscO=false; else souscE=false;
+  setConfirmBtn(panel,false);
+  const timerSec=document.getElementById('timerSec'+suffix);
+  const fill=document.getElementById('timerFill'+suffix);
+  timerSec.style.display='block';
+  fill.style.transition='none'; fill.style.width='0%';
+  setTimeout(()=>{fill.style.transition='width 15s linear';fill.style.width='100%';},200);
+  setTimeout(()=>{
+    if(panel==='ord') souscO=true; else souscE=true;
+    setConfirmBtn(panel,true);
+    toast('✅ Vous pouvez maintenant confirmer votre paiement !');
+  },15000);
+}
+
+function setConfirmBtn(panel,active){
+  const suffix=panel==='ord'?'O':'E';
+  const wrap=document.getElementById('confirmWrap'+suffix);
+  if(active){
+    wrap.innerHTML=`<button class="btn-confirm-active" onclick="confirmerPaiement('${panel}')">✅ J'ai effectué le paiement</button>`;
+  } else {
+    wrap.innerHTML=`<button class="btn-confirm-locked" disabled>🔒 Effectuez d'abord la Souscription pour confirmer</button>`;
+  }
+}
+
+function confirmerPaiement(panel){
+  const suffix=panel==='ord'?'O':'E';
+  const op=panel==='ord'?selOperO:selOperE;
+  const num=panel==='ord'?numO:numE;
+  const souscFait=panel==='ord'?souscO:souscE;
+  if(!souscFait){toast('⚠️ Effectuez d\'abord la Souscription');return;}
+  const s=gd('settings',{});
+  const numTreso=op==='moov'?s.moov:s.yas;
+  const mont=Number(vv('cotMont'+suffix));
+  const operLabel=op==='moov'?'Moov Money':'Mixx by Yas';
+
+  if(panel==='ord'){
+    const mois=document.getElementById('cotMoisO').value;
+    // Vérifier si ce mois est déjà payé
+    const cots=gd('cotisations',[]);
+    if(cots.find(c=>c.memId===cu.id&&c.mois===mois)){
+      toast('⚠️ Vous avez déjà payé le mois de '+mois);return;
+    }
+    cots.push({id:Date.now(),memId:cu.id,membre:cu.nom,mois,montant:mont,oper:operLabel,numExp:num,numTreso,date:td(),status:'payé'});
+    sd('cotisations',cots);
+    toast('✅ Cotisation ordinaire de '+mois+' enregistrée !');
+    souscO=false; numO=''; updateDisp('ord');
+  } else {
+    const motif=vv('cotMotifE');
+    const extras=gd('extras',[]);
+    extras.push({id:Date.now(),memId:cu.id,membre:cu.nom,motif,montant:mont,oper:operLabel,numExp:num,numTreso,date:td(),status:'en attente'});
+    sd('extras',extras);
+    toast('✅ Cotisation extraordinaire envoyée au trésorier !');
+    souscE=false; numE=''; updateDisp('ext');
+    sv('cotMotifE','');
+  }
+  sv('cotMont'+suffix,'');
+  document.getElementById('payFlow'+suffix).classList.remove('show');
+  document.getElementById('prepBtn'+suffix).style.display='block';
+  document.getElementById('timerSec'+suffix).style.display='none';
+  document.getElementById('timerFill'+suffix).style.width='0%';
+  setConfirmBtn(panel,false);
+  renderMyCots();
+}
+
+function renderMyCots(){
+  const cots=gd('cotisations',[]).filter(c=>c.memId===cu.id);
+  document.getElementById('myOrdTable').innerHTML=cots.length
+    ? cots.map(c=>`<tr><td>${c.mois}</td><td>${ff(c.montant)} FCFA</td><td><span class="chip cb">${c.oper}</span></td><td style="font-family:'Syne',sans-serif;letter-spacing:1px;font-size:.76rem">${fn(c.numExp)}</td><td>${c.date}</td><td><span class="chip cg">✅ Payé</span></td></tr>`).join('')
+    : '<tr><td colspan="6" style="color:var(--muted);text-align:center;padding:1rem">Aucune cotisation ordinaire</td></tr>';
+  const extras=gd('extras',[]).filter(e=>e.memId===cu.id);
+  document.getElementById('myExtTable').innerHTML=extras.length
+    ? extras.map(e=>`<tr><td>${e.motif}</td><td>${ff(e.montant)} FCFA</td><td><span class="chip ${e.oper==='Moov Money'?'cb':'cyas'}">${e.oper}</span></td><td style="font-family:'Syne',sans-serif;letter-spacing:1px;font-size:.76rem">${fn(e.numExp)}</td><td>${e.date}</td><td><span class="chip ${e.status==='validé'?'cg':'cy'}">${e.status}</span></td></tr>`).join('')
+    : '<tr><td colspan="6" style="color:var(--muted);text-align:center;padding:1rem">Aucune cotisation extraordinaire</td></tr>';
+}
+
+// ═══════════════════════════════════════════════
+//  TRÉSORERIE
+// ═══════════════════════════════════════════════
+function renderTreso(){
+  renderCotGrid();
+  renderExtTreso();
+  renderDeps();
+  renderBilanTreso();
+  renderCarnet();
+  renderAdhesion();
+}
+
+function renderCotGrid(){
+  const members=gd('members',[]).filter(m=>m.role==='membre');
+  const cots=gd('cotisations',[]);
+  const grid=document.getElementById('cotGridTreso');
+  if(!members.length){grid.innerHTML='<p style="color:var(--muted);font-size:.8rem">Aucun membre enregistré.</p>';return;}
+  grid.innerHTML=members.map(m=>{
+    const moisPaies=cots.filter(c=>c.memId===m.id).map(c=>c.mois);
+    const months=MOIS.map(mois=>{
+      const paid=moisPaies.includes(mois);
+      return `<div class="month-box">
+        <div class="month-label ${paid?'paid':''}" 
+          title="${paid?mois+' — Payé':mois+' — Non payé'}"
+          onclick="${paid&&cu.role==='trésorier'?`askUncheck(${m.id},'${mois}')`:''}"
+          style="${paid&&cu.role==='trésorier'?'cursor:pointer;':''}"
+        >${mois.slice(0,3)}</div>
+      </div>`;
+    }).join('');
+    const total=cots.filter(c=>c.memId===m.id).reduce((a,c)=>a+c.montant,0);
+    return `<div class="cot-member-row">
+      <div class="cot-member-header">
+        <div class="avatar" style="background:${m.color}20;color:${m.color};border:1px solid ${m.color}38;width:36px;height:36px;font-size:.8rem">${ini(m.nom)}</div>
+        <div style="flex:1"><strong style="font-size:.88rem">${m.nom}</strong><br><span style="font-size:.7rem;color:var(--muted)">${moisPaies.length} mois payés — Total : <strong style="color:var(--accent)">${ff(total)} FCFA</strong></span></div>
+        <button class="btn-print" onclick="printBilanMembre(${m.id})">🖨️ Imprimer</button>
+      </div>
+      <div class="cot-months">${months}</div>
+    </div>`;
+  }).join('');
+}
+
+function askUncheck(memId,mois){
+  uncheckData={memId,mois};
+  const m=gd('members',[]).find(x=>x.id===memId);
+  document.getElementById('mUncheckDesc').textContent=`Décocher le mois de ${mois} pour ${m?m.nom:'ce membre'} ?`;
+  document.getElementById('modalUncheck').classList.add('open');
+}
+function doUncheck(){
+  if(!uncheckData) return;
+  const cots=gd('cotisations',[]);
+  const idx=cots.findIndex(c=>c.memId===uncheckData.memId&&c.mois===uncheckData.mois);
+  if(idx>-1) cots.splice(idx,1);
+  sd('cotisations',cots);
+  closeModals(); toast('🔓 Mois décollé.'); renderCotGrid();
+}
+
+function renderExtTreso(){
+  const extras=gd('extras',[]);
+  document.getElementById('extTresoTable').innerHTML=extras.length
+    ? extras.map(e=>`<tr>
+        <td>${e.membre}</td>
+        <td>${e.motif}</td>
+        <td>${ff(e.montant)} FCFA</td>
+        <td><span class="chip ${e.oper==='Moov Money'?'cb':'cyas'}">${e.oper}</span></td>
+        <td style="font-family:'Syne',sans-serif;letter-spacing:1px;font-size:.75rem">${fn(e.numExp)}</td>
+        <td>${e.date}</td>
+        <td><span class="chip ${e.status==='validé'?'cg':'cy'}">${e.status}</span></td>
+        <td>${e.status==='en attente'
+          ?`<div style="display:flex;gap:.3rem"><button class="btn-sm btn-primary" onclick="openValExt(${e.id})">✅</button><button class="btn-sm btn-danger" onclick="refuserExt(${e.id})">❌</button></div>`
+          :'<span style="color:var(--muted);font-size:.72rem">—</span>'}</td>
+      </tr>`).join('')
+    : '<tr><td colspan="8" style="color:var(--muted);text-align:center;padding:1rem">Aucune cotisation extraordinaire</td></tr>';
+}
+
+function openValExt(id){
+  pvExtId=id;
+  const e=gd('extras',[]).find(x=>x.id===id);
+  document.getElementById('mExtDesc').textContent=`${e.membre} — Motif: ${e.motif} — ${ff(e.montant)} FCFA`;
+  document.getElementById('mExtOper').innerHTML=`<div class="tinfo ${e.oper==='Moov Money'?'m':'y'}"><div class="tlogo ${e.oper==='Moov Money'?'m':'y'}">${e.oper==='Moov Money'?'M':'Y'}</div><div><div class="tlabel">${e.oper}</div><div class="tnum">Expéditeur : ${fn(e.numExp)}</div></div></div>`;
+  document.getElementById('mExtNote').value='';
+  document.getElementById('modalValExt').classList.add('open');
+}
+function validerExt(){
+  const extras=gd('extras',[]);
+  const i=extras.findIndex(e=>e.id===pvExtId);
+  if(i>-1){extras[i].status='validé';extras[i].note=vv('mExtNote');}
+  sd('extras',extras); closeModals(); toast('✅ Cotisation extraordinaire validée !'); renderTreso();
+}
+function refuserExt(id){
+  if(!confirm('Refuser cette cotisation extraordinaire ?')) return;
+  const extras=gd('extras',[]);
+  const i=extras.findIndex(e=>e.id===id);
+  if(i>-1) extras[i].status='refusé';
+  sd('extras',extras); toast('❌ Refusée.'); renderExtTreso();
+}
+
+function renderDeps(){
+  const deps=gd('depenses',[]);
+  document.getElementById('depTable').innerHTML=deps.length
+    ? deps.map(d=>`<tr><td>${d.desc}</td><td>${ff(d.montant)} FCFA</td><td>${d.date}</td><td style="color:var(--muted);font-size:.75rem">${d.par}</td><td><button class="btn-sm btn-danger" onclick="delDep(${d.id})">🗑</button></td></tr>`).join('')
+    : '<tr><td colspan="5" style="color:var(--muted);text-align:center;padding:1rem">Aucune dépense</td></tr>';
+}
+function addDep(){
+  const desc=vv('dDesc'),mont=vv('dMont'),date=vv('dDate')||td();
+  if(!desc||!mont){toast('⚠️ Description et montant requis');return;}
+  const deps=gd('depenses',[]);
+  deps.push({id:Date.now(),desc,montant:Number(mont),date,par:cu.nom});
+  sd('depenses',deps); sv('dDesc',''); sv('dMont','');
+  toast('💸 Dépense enregistrée !'); renderDeps(); renderBilanTreso();
+}
+function delDep(id){
+  if(!confirm('Supprimer ?')) return;
+  sd('depenses',gd('depenses',[]).filter(d=>d.id!==id));
+  toast('🗑 Supprimée.'); renderDeps(); renderBilanTreso();
+}
+
+function renderBilanTreso(){
+  const cots=gd('cotisations',[]);
+  const extras=gd('extras',[]).filter(e=>e.status==='validé');
+  const deps=gd('depenses',[]);
+  const tOrd=cots.reduce((a,c)=>a+c.montant,0);
+  const tExt=extras.reduce((a,e)=>a+e.montant,0);
+  const tDep=deps.reduce((a,d)=>a+d.montant,0);
+  document.getElementById('bilanTreso').innerHTML=`
+    <div class="bilan-grid">
+      <div class="bilan-box ord"><div class="bilan-icon">💵</div><div><div class="bilan-label">Cotisations ordinaires</div><div class="bilan-val" style="color:var(--accent)">${ff(tOrd)} FCFA</div></div></div>
+      <div class="bilan-box ext"><div class="bilan-icon">✨</div><div><div class="bilan-label">Cotisations extra.</div><div class="bilan-val" style="color:var(--gold)">${ff(tExt)} FCFA</div></div></div>
+      <div class="bilan-box dep"><div class="bilan-icon">💸</div><div><div class="bilan-label">Dépenses</div><div class="bilan-val" style="color:var(--danger)">${ff(tDep)} FCFA</div></div></div>
+      <div class="bilan-box sol"><div class="bilan-icon">🏦</div><div><div class="bilan-label">Solde caisse</div><div class="bilan-val" style="color:var(--accent3)">${ff(tOrd+tExt-tDep)} FCFA</div></div></div>
+    </div>`;
+}
+
+function bilanAlert(){
+  const cots=gd('cotisations',[]);
+  const extras=gd('extras',[]).filter(e=>e.status==='validé');
+  const deps=gd('depenses',[]);
+  const tOrd=cots.reduce((a,c)=>a+c.montant,0);
+  const tExt=extras.reduce((a,e)=>a+e.montant,0);
+  const tDep=deps.reduce((a,d)=>a+d.montant,0);
+  const moov=cots.filter(c=>c.oper==='Moov Money').reduce((a,c)=>a+c.montant,0);
+  const yas=cots.filter(c=>c.oper==='Mixx by Yas').reduce((a,c)=>a+c.montant,0);
+  alert(`📊 BILAN COMPLET — TICAISSE\n\n💵 COTISATIONS ORDINAIRES\n   Total : ${ff(tOrd)} FCFA\n   📱 Moov Money  : ${ff(moov)} FCFA\n   📱 Mixx by Yas : ${ff(yas)} FCFA\n   Nombre de paiements : ${cots.length}\n\n✨ COTISATIONS EXTRAORDINAIRES\n   Total : ${ff(tExt)} FCFA\n   Nombre : ${extras.length}\n\n💸 DÉPENSES\n   Total : ${ff(tDep)} FCFA\n   Nombre : ${deps.length}\n\n🏦 SOLDE CAISSE : ${ff(tOrd+tExt-tDep)} FCFA`);
+}
+
+// ═══════════════════════════════════════════════
+//  MEMBRES
+// ═══════════════════════════════════════════════
+function changeIdents(){
+  const nL=vv('nLogin'),nP=vv('nPwd'),nP2=vv('nPwd2');
+  if(!nL&&!nP){toast('⚠️ Remplissez au moins un champ');return;}
+  if(nP&&nP!==nP2){toast('⚠️ Les mots de passe ne correspondent pas');return;}
+  const mbs=gd('members',[]);
+  if(nL&&mbs.find(m=>m.login===nL&&m.id!==cu.id)){toast('⚠️ Identifiant déjà utilisé');return;}
+  const i=mbs.findIndex(m=>m.id===cu.id);
+  if(i>-1){if(nL)mbs[i].login=nL;if(nP)mbs[i].pwd=nP;cu=mbs[i];}
+  sd('members',mbs); sv('nLogin',''); sv('nPwd',''); sv('nPwd2','');
+  toast('🔐 Identifiants mis à jour !');
+}
+function renderMembers(){
+  const s=gd('settings',{});
+  sv('sMoov',s.moov||''); sv('sYas',s.yas||''); sv('sMont',s.montant||'');
+  const mbs=gd('members',[]);
+  document.getElementById('membersTable').innerHTML=mbs.map(m=>`<tr>
+    <td><div style="display:flex;align-items:center;gap:.5rem">
+      <div style="width:28px;height:28px;border-radius:50%;background:${m.color}20;color:${m.color};border:1px solid ${m.color}38;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:.68rem">${ini(m.nom)}</div>
+      ${m.nom}</div></td>
+    <td style="color:var(--muted)">${m.login}</td>
+    <td><span class="chip ${m.role==='président'?'cy':m.role==='trésorier'?'cb':'cg'}">${m.role}</span></td>
+    <td><a href="https://wa.me/${m.wa}" target="_blank" class="wa-btn">📱 ${m.wa}</a></td>
+    <td>${m.role==='président'?'<span style="color:var(--muted);font-size:.72rem">—</span>':`<button class="btn-sm btn-danger" onclick="delMember(${m.id})">Retirer</button>`}</td>
+  </tr>`).join('');
+}
+function addMember(){
+  const nom=vv('mNom'),login=vv('mLogin'),pwd=vv('mPwd'),role=vv('mRole')||'membre',wa=vv('mWA'),color=vv('mCol')||'#00c896';
+  if(!nom||!login||!pwd||!wa){toast('⚠️ Remplissez tous les champs');return;}
+  const mbs=gd('members',[]);
+  if(mbs.find(m=>m.login===login)){toast('⚠️ Identifiant déjà utilisé');return;}
+  mbs.push({id:Date.now(),nom,login,pwd,role,wa,color});
+  sd('members',mbs);
+  ['mNom','mLogin','mPwd','mWA'].forEach(id=>sv(id,''));
+  toast('✅ Membre ajouté !'); renderMembers();
+}
+function delMember(id){
+  const mbs=gd('members',[]),m=mbs.find(x=>x.id===id);
+  if(!m||m.role==='président'){toast('⚠️ Le président ne peut pas être retiré');return;}
+  if(!confirm(`Retirer ${m.nom} ?`)) return;
+  sd('members',mbs.filter(x=>x.id!==id));
+  toast('🗑 Retiré.'); renderMembers();
+}
+function saveSet(){
+  sd('settings',{moov:vv('sMoov'),yas:vv('sYas'),montant:Number(vv('sMont'))});
+  toast('💾 Paramètres enregistrés !');
+}
+
+// ═══════════════════════════════════════════════
+//  RÉPERTOIRE
+// ═══════════════════════════════════════════════
+function renderRepert(){
+  document.getElementById('repertGrid').innerHTML=gd('members',[]).map(m=>`
+    <div class="member-row">
+      <div class="avatar" style="background:${m.color}20;color:${m.color};border:1px solid ${m.color}38">${ini(m.nom)}</div>
+      <div class="minfo"><div class="mn">${m.nom}</div><div class="mr">${m.role.charAt(0).toUpperCase()+m.role.slice(1)}</div></div>
+      <a href="https://wa.me/${m.wa}" target="_blank" class="wa-btn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.117 1.528 5.847L0 24l6.335-1.508A11.956 11.956 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.84 0-3.565-.497-5.051-1.364l-.363-.215-3.761.894.948-3.662-.236-.375A9.956 9.956 0 012 12C2 6.486 6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/></svg>
+        ${m.wa}
+      </a>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════
+//  MODALS & UTILS
+// ═══════════════════════════════════════════════
+function closeModals(){
+  document.getElementById('modalUncheck').classList.remove('open');
+  document.getElementById('modalValExt').classList.remove('open');
+}
+function show(id){const e=document.getElementById(id);if(e)e.style.display='flex';}
+function hide(id){const e=document.getElementById(id);if(e)e.style.display='none';}
+function ff(n){return Number(n).toLocaleString('fr-FR');}
+function td(){return new Date().toLocaleDateString('fr-FR');}
+function ini(n){return n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();}
+function fn(n){if(!n||n.length!==8)return n||'—';return n.slice(0,2)+' '+n.slice(2,4)+' '+n.slice(4,6)+' '+n.slice(6,8);}
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.style.display='block';t.style.animation='none';
+  requestAnimationFrame(()=>{t.style.animation='pop .3s ease';});
+  clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',3500);
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&document.getElementById('loginPage').style.display==='flex') doLogin();
+});
+
+
+// ═══════════════════════════════════════════════
+//  BIOMÉTRIE — WebAuthn / Passkey
+// ═══════════════════════════════════════════════
+
+function bioKey(role){ return 'bio_cred_'+role; }
+
+async function activerBio(){
+  closeModals();
+  if(!window.PublicKeyCredential){ toast('⚠️ Biométrie non supportée sur cet appareil'); return; }
+  try {
+    const challenge = new Uint8Array(32);
+    crypto.getRandomValues(challenge);
+    const userId = new TextEncoder().encode(cu.login);
+    const cred = await navigator.credentials.create({
+      publicKey: {
+        challenge,
+        rp: { name: 'TICAISSE' },
+        user: { id: userId, name: cu.login, displayName: cu.nom },
+        pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+        authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required' },
+        timeout: 60000,
+      }
+    });
+    // Sauvegarder l'identifiant de la credential
+    const credId = btoa(String.fromCharCode(...new Uint8Array(cred.rawId)));
+    const bioData = { credId, login: cu.login, role: cu.role, nom: cu.nom };
+    sd(bioKey(cu.role), bioData);
+    toast('✅ Biométrie activée ! Connexion rapide disponible.');
+  } catch(e) {
+    if(e.name==='NotAllowedError') toast('⚠️ Action annulée.');
+    else toast('⚠️ Erreur : '+e.message);
+  }
+}
+
+function refuserBio(){
+  closeModals();
+  toast('Connexion par identifiants uniquement.');
+}
+
+async function loginBio(){
+  const role = document.getElementById('loginUser').dataset.role;
+  const bioData = gd(bioKey(role), null);
+  if(!bioData){ toast('⚠️ Aucune biométrie enregistrée pour ce rôle'); return; }
+  if(!window.PublicKeyCredential){ toast('⚠️ Biométrie non supportée'); return; }
+  try {
+    const challenge = new Uint8Array(32);
+    crypto.getRandomValues(challenge);
+    const credIdBytes = Uint8Array.from(atob(bioData.credId), c => c.charCodeAt(0));
+    await navigator.credentials.get({
+      publicKey: {
+        challenge,
+        allowCredentials: [{ type: 'public-key', id: credIdBytes }],
+        userVerification: 'required',
+        timeout: 60000,
+      }
+    });
+    // Auth biométrique réussie
+    const found = gd('members',[]).find(m => m.login===bioData.login && m.role===bioData.role);
+    if(!found){ toast('❌ Membre introuvable'); return; }
+    cu = found;
+    hide('loginPage');
+    document.getElementById('appLayout').style.display = 'block';
+    initApp();
+    toast('👆 Connexion biométrique réussie !');
+  } catch(e) {
+    if(e.name==='NotAllowedError') toast('⚠️ Action annulée ou empreinte refusée.');
+    else toast('⚠️ Erreur biométrie : '+e.message);
+  }
+}
+
+function checkBioAvailable(role){
+  const bioData = gd(bioKey(role), null);
+  const wrap = document.getElementById('bioLoginWrap');
+  if(bioData && bioData.role===role && window.PublicKeyCredential){
+    wrap.style.display = 'block';
+  } else {
+    wrap.style.display = 'none';
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  CARNET (cotisations papier, membres hors-site)
+// ═══════════════════════════════════════════════
+function renderCarnet(){
+  const sel=document.getElementById('cnMois');
+  if(sel && !sel.dataset.filled){
+    sel.innerHTML=MOIS.map(m=>`<option>${m}</option>`).join('');
+    sel.value=MOIS[new Date().getMonth()];
+    sel.dataset.filled='1';
+  }
+  const carnet=gd('carnet',[]);
+  document.getElementById('carnetTable').innerHTML=carnet.length
+    ? carnet.map(c=>`<tr><td>${c.nom}</td><td>${c.mois}</td><td>${ff(c.montant)} FCFA</td><td>${c.date}</td><td><button class="btn-sm btn-danger" onclick="delCarnet(${c.id})">🗑</button></td></tr>`).join('')
+    : '<tr><td colspan="5" style="color:var(--muted);text-align:center;padding:1rem">Aucune cotisation carnet enregistrée</td></tr>';
+}
+function addCarnet(){
+  const nom=vv('cnNom'),mois=vv('cnMois'),mont=vv('cnMont'),date=vv('cnDate')||td();
+  if(!nom||!mont){toast('⚠️ Nom et montant requis');return;}
+  const carnet=gd('carnet',[]);
+  carnet.push({id:Date.now(),nom,mois,montant:Number(mont),date,par:cu.nom});
+  sd('carnet',carnet);
+  sv('cnNom',''); sv('cnMont','');
+  toast('📔 Cotisation carnet enregistrée !'); renderCarnet(); renderBilanTreso();
+}
+function delCarnet(id){
+  if(!confirm('Supprimer cette entrée ?')) return;
+  sd('carnet',gd('carnet',[]).filter(c=>c.id!==id));
+  toast('🗑 Supprimée.'); renderCarnet(); renderBilanTreso();
+}
+
+// ═══════════════════════════════════════════════
+//  ADHÉSION AU GROUPE
+// ═══════════════════════════════════════════════
+function renderAdhesion(){
+  const sel=document.getElementById('adhMem');
+  if(sel){
+    const mbs=gd('members',[]);
+    sel.innerHTML=mbs.map(m=>`<option value="${m.id}">${m.nom}</option>`).join('');
+  }
+  const s=gd('settings',{});
+  if(!vv('adhMont') && s.adhesionPrix) sv('adhMont',s.adhesionPrix);
+  const adh=gd('adhesions',[]);
+  document.getElementById('adhTable').innerHTML=adh.length
+    ? adh.map(a=>`<tr><td>${a.membre}</td><td>${ff(a.montant)} FCFA</td><td>${a.date}</td><td><button class="btn-sm btn-danger" onclick="delAdhesion(${a.id})">🗑</button></td></tr>`).join('')
+    : '<tr><td colspan="4" style="color:var(--muted);text-align:center;padding:1rem">Aucune adhésion enregistrée</td></tr>';
+}
+function addAdhesion(){
+  const memId=Number(vv('adhMem')),mont=vv('adhMont'),date=vv('adhDate')||td();
+  if(!memId||!mont){toast('⚠️ Choisissez un membre et un montant');return;}
+  const m=gd('members',[]).find(x=>x.id===memId);
+  if(!m){toast('⚠️ Membre introuvable');return;}
+  const adh=gd('adhesions',[]);
+  adh.push({id:Date.now(),memId,membre:m.nom,montant:Number(mont),date});
+  sd('adhesions',adh);
+  const s=gd('settings',{}); s.adhesionPrix=Number(mont); sd('settings',s);
+  toast('🪪 Adhésion enregistrée !'); renderAdhesion();
+}
+function delAdhesion(id){
+  if(!confirm('Supprimer ?')) return;
+  sd('adhesions',gd('adhesions',[]).filter(a=>a.id!==id));
+  toast('🗑 Supprimée.'); renderAdhesion();
+}
+
+// ═══════════════════════════════════════════════
+//  PRÊTS — intérêt 5% par mois, accès restreint
+// ═══════════════════════════════════════════════
+const TAUX_INTERET_MENSUEL=0.05;
+function moisEcoules(dateStr){
+  const d=parseFrDate(dateStr); if(!d) return 0;
+  const now=new Date();
+  let m=(now.getFullYear()-d.getFullYear())*12+(now.getMonth()-d.getMonth());
+  if(now.getDate()<d.getDate()) m--;
+  return Math.max(0,m);
+}
+function parseFrDate(s){
+  if(!s) return null;
+  const p=s.split('/'); if(p.length!==3) return new Date(s);
+  return new Date(Number(p[2]),Number(p[1])-1,Number(p[0]));
+}
+function calcPret(pr){
+  const rembourse=(pr.remboursements||[]).reduce((a,r)=>a+r.montant,0);
+  const mEcoules=moisEcoules(pr.date);
+  const interet=Math.round(pr.montant*TAUX_INTERET_MENSUEL*mEcoules);
+  const totalDu=pr.montant+interet;
+  const solde=Math.max(0,totalDu-rembourse);
+  return {rembourse,mEcoules,interet,totalDu,solde};
+}
+function peutVoirPrets(){
+  return ['président','trésorier','secrétaire'].includes(cu.role);
+}
+function renderPrets(){
+  const admin=peutVoirPrets();
+  document.getElementById('pretsAdmin').style.display=admin?'block':'none';
+  document.getElementById('pretsMembre').style.display=admin?'none':'block';
+  if(admin){
+    const sel=document.getElementById('prMem');
+    if(sel) sel.innerHTML=gd('members',[]).filter(m=>m.role==='membre').map(m=>`<option value="${m.id}">${m.nom}</option>`).join('');
+    const prets=gd('prets',[]);
+    document.getElementById('pretsListAdmin').innerHTML=prets.length
+      ? prets.map(pr=>pretCardHTML(pr,true)).join('')
+      : '<p style="color:var(--muted);font-size:.8rem">Aucun prêt enregistré.</p>';
+  } else {
+    const mine=gd('prets',[]).filter(pr=>pr.memId===cu.id);
+    document.getElementById('pretsListMembre').innerHTML=mine.length
+      ? mine.map(pr=>pretCardHTML(pr,false)).join('')
+      : '<p style="color:var(--muted);font-size:.8rem">Vous n\'avez aucun prêt en cours.</p>';
+  }
+}
+function pretCardHTML(pr,isAdmin){
+  const c=calcPret(pr);
+  const pct=c.totalDu>0?Math.min(100,Math.round((c.rembourse/c.totalDu)*100)):100;
+  return `<div class="pret-row">
+    <div class="pret-head">
+      <div>
+        <div class="pret-nom">${pr.membre}</div>
+        ${pr.motif?`<div class="pret-motif">Motif : ${pr.motif}</div>`:''}
+      </div>
+      <span class="chip ${pr.status==='soldé'?'cg':'cv'}">${pr.status==='soldé'?'✅ Soldé':'⏳ En cours'}</span>
+    </div>
+    <div class="pret-grid-vals">
+      <div class="pret-mini"><div class="pl">Capital</div><div class="pv">${ff(pr.montant)} F</div></div>
+      <div class="pret-mini"><div class="pl">Mois écoulés</div><div class="pv">${c.mEcoules}</div></div>
+      <div class="pret-mini"><div class="pl">Intérêt (5%/mois)</div><div class="pv" style="color:var(--accent2)">${ff(c.interet)} F</div></div>
+      <div class="pret-mini"><div class="pl">Remboursé</div><div class="pv" style="color:var(--accent)">${ff(c.rembourse)} F</div></div>
+      <div class="pret-mini"><div class="pl">Solde dû</div><div class="pv" style="color:${c.solde>0?'var(--danger)':'var(--accent)'}">${ff(c.solde)} F</div></div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <div style="font-size:.7rem;color:var(--muted);margin-top:.3rem">Prêt du ${pr.date} — Total dû (capital + intérêt) : ${ff(c.totalDu)} FCFA</div>
+    ${isAdmin && pr.status!=='soldé' ? `
+    <div class="irow" style="margin-top:.8rem">
+      <div class="form-group"><label>Remboursement (FCFA)</label><input type="number" id="rb_${pr.id}" placeholder="Montant versé"/></div>
+    </div>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+      <button class="btn-sm btn-primary" onclick="rembourserPret(${pr.id})">💰 Enregistrer remboursement</button>
+      <button class="btn-sm btn-gold" onclick="soldePret(${pr.id})">✅ Marquer soldé</button>
+    </div>` : ''}
+  </div>`;
+}
+function addPret(){
+  if(!peutVoirPrets()){toast('⚠️ Accès réservé au président, trésorier ou secrétaire');return;}
+  const memId=Number(vv('prMem')),mont=vv('prMont'),date=vv('prDate')||td(),motif=vv('prMotif');
+  if(!memId||!mont){toast('⚠️ Choisissez un membre et un montant');return;}
+  const m=gd('members',[]).find(x=>x.id===memId);
+  if(!m){toast('⚠️ Membre introuvable');return;}
+  const prets=gd('prets',[]);
+  prets.push({id:Date.now(),memId,membre:m.nom,montant:Number(mont),date,motif,remboursements:[],status:'en cours',par:cu.nom});
+  sd('prets',prets);
+  sv('prMont',''); sv('prMotif','');
+  toast('✅ Prêt enregistré !'); renderPrets();
+}
+function rembourserPret(id){
+  if(!peutVoirPrets()){toast('⚠️ Action non autorisée');return;}
+  const mont=Number(vv('rb_'+id));
+  if(!mont){toast('⚠️ Indiquez un montant de remboursement');return;}
+  const prets=gd('prets',[]);
+  const i=prets.findIndex(p=>p.id===id);
+  if(i>-1){
+    prets[i].remboursements=prets[i].remboursements||[];
+    prets[i].remboursements.push({date:td(),montant:mont});
+    const c=calcPret(prets[i]);
+    if(c.solde<=0) prets[i].status='soldé';
+    sd('prets',prets);
+  }
+  toast('💰 Remboursement enregistré !'); renderPrets();
+}
+function soldePret(id){
+  if(!peutVoirPrets()){toast('⚠️ Action non autorisée');return;}
+  if(!confirm('Marquer ce prêt comme entièrement soldé ?')) return;
+  const prets=gd('prets',[]);
+  const i=prets.findIndex(p=>p.id===id);
+  if(i>-1) prets[i].status='soldé';
+  sd('prets',prets); toast('✅ Prêt soldé.'); renderPrets();
+}
+
+// ═══════════════════════════════════════════════
+//  IMPRESSION DU BILAN D'UN MEMBRE
+// ═══════════════════════════════════════════════
+function printBilanMembre(memId){
+  const m=gd('members',[]).find(x=>x.id===memId);
+  if(!m){toast('⚠️ Membre introuvable');return;}
+  const cots=gd('cotisations',[]).filter(c=>c.memId===memId);
+  const extras=gd('extras',[]).filter(e=>e.memId===memId&&e.status==='validé');
+  const prets=gd('prets',[]).filter(p=>p.memId===memId);
+  const adh=gd('adhesions',[]).filter(a=>a.memId===memId);
+  const totalOrd=cots.reduce((a,c)=>a+c.montant,0);
+  const totalExt=extras.reduce((a,e)=>a+e.montant,0);
+  const totalAdh=adh.reduce((a,x)=>a+x.montant,0);
+  const rows=cots.map(c=>`<tr><td>${c.mois}</td><td>${ff(c.montant)} FCFA</td><td>${c.date}</td></tr>`).join('')
+    || '<tr><td colspan="3">Aucune</td></tr>';
+  const rowsPret=prets.length ? prets.map(p=>{const c=calcPret(p);return `<tr><td>${ff(p.montant)} FCFA</td><td>${p.date}</td><td>${ff(c.interet)} FCFA</td><td>${ff(c.solde)} FCFA</td><td>${p.status}</td></tr>`;}).join('') : '';
+  document.getElementById('printArea').innerHTML=`
+    <h2>TICAISSE — Bilan de ${m.nom}</h2>
+    <p>Rôle : ${m.role} — Édité le ${td()}</p>
+    <div class="pbox">
+      <strong>Cotisations ordinaires</strong> — Total : ${ff(totalOrd)} FCFA
+      <table><thead><tr><th>Mois</th><th>Montant</th><th>Date</th></tr></thead><tbody>${rows}</tbody></table>
+    </div>
+    <div class="pbox"><strong>Cotisations extraordinaires validées</strong> — Total : ${ff(totalExt)} FCFA</div>
+    <div class="pbox"><strong>Adhésion</strong> — Total payé : ${ff(totalAdh)} FCFA</div>
+    ${prets.length?`<div class="pbox"><strong>Prêts</strong><table><thead><tr><th>Capital</th><th>Date</th><th>Intérêt cumulé</th><th>Solde dû</th><th>Statut</th></tr></thead><tbody>${rowsPret}</tbody></table></div>`:''}
+  `;
+  setTimeout(()=>window.print(),150);
+}
+
+
+init();
+</script>
+</body>
+</html>
