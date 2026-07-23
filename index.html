@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TICAISSE — Gestion Association</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#00c896">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TICAISSE">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
 <style>
 :root{
   --bg:#070d1a;--surface:#0f1829;--surface2:#162035;--border:#1e2d47;
@@ -267,14 +273,55 @@ footer a:hover{color:var(--accent2);}
 
 /* ═══ BILAN BOXES ═══ */
 .bilan-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.8rem;margin-top:.9rem;}
-.bilan-box{border-radius:14px;padding:1rem 1.2rem;display:flex;align-items:center;gap:.8rem;}
+.bilan-box{border-radius:14px;padding:1rem 1.2rem;display:flex;align-items:center;gap:.8rem;transition:.25s;}
+.bilan-box:hover{transform:translateY(-2px);}
 .bilan-box.ord{background:#00c89610;border:1px solid #00c89630;}
 .bilan-box.ext{background:#ffd70010;border:1px solid #ffd70030;}
 .bilan-box.dep{background:#ef444410;border:1px solid #ef444430;}
 .bilan-box.sol{background:#3b82f610;border:1px solid #3b82f630;}
+.bilan-box.pret{background:#8b5cf610;border:1px solid #8b5cf630;}
 .bilan-icon{font-size:1.8rem;}
 .bilan-label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;}
 .bilan-val{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;}
+
+/* ═══ RÔLE SECRÉTAIRE ═══ */
+.role-card.secr:hover,.role-card.secr.sel{border-color:var(--accent4);background:#8b5cf610;}
+.role-icon.secr{background:linear-gradient(135deg,#8b5cf6,#6d28d9);}
+
+/* ═══ ANIMATIONS D'ENTRÉE ═══ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.card,.stat,.bilan-box,.member-row,.cot-member-row,.pret-row{animation:fadeUp .35s ease both;}
+.card:hover{box-shadow:0 12px 34px #00000055;transform:translateY(-1px);transition:.25s;}
+.stat:hover{transform:translateY(-2px);transition:.2s;box-shadow:0 10px 26px #00000040;}
+
+/* ═══ PRÊTS ═══ */
+.pret-row{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:1rem 1.15rem;margin-bottom:.7rem;}
+.pret-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem;margin-bottom:.6rem;}
+.pret-nom{font-family:'Syne',sans-serif;font-weight:700;font-size:.92rem;}
+.pret-motif{font-size:.72rem;color:var(--muted);margin-top:.1rem;}
+.pret-grid-vals{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.6rem;margin:.7rem 0;}
+.pret-mini{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.55rem .7rem;}
+.pret-mini .pl{font-size:.64rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;}
+.pret-mini .pv{font-family:'Syne',sans-serif;font-weight:800;font-size:.92rem;}
+.progress-bar{height:7px;background:var(--bg);border-radius:99px;overflow:hidden;margin-top:.3rem;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent4),#a78bfa);border-radius:99px;}
+
+/* ═══ ADHÉSION ═══ */
+.adh-badge{display:inline-flex;align-items:center;gap:.3rem;background:#3b82f618;border:1px solid #3b82f630;color:#60a5fa;border-radius:8px;padding:.2rem .6rem;font-size:.7rem;font-weight:700;}
+
+/* ═══ IMPRESSION ═══ */
+#printArea{display:none;}
+@media print{
+  body *{visibility:hidden;}
+  #printArea, #printArea *{visibility:visible;}
+  #printArea{display:block !important;position:absolute;top:0;left:0;width:100%;padding:1.5rem;color:#000;background:#fff;}
+  #printArea .pbox{border:1px solid #ccc;border-radius:10px;padding:1rem;margin-bottom:.8rem;}
+  #printArea h2{font-family:'Syne',sans-serif;margin-bottom:.3rem;}
+  #printArea table{width:100%;border-collapse:collapse;margin-top:.5rem;}
+  #printArea th,#printArea td{border:1px solid #ccc;padding:.4rem .6rem;font-size:.8rem;text-align:left;}
+}
+.btn-print{display:inline-flex;align-items:center;gap:.35rem;background:#8b5cf618;border:1px solid #8b5cf638;color:#a78bfa;border-radius:8px;padding:.3rem .7rem;font-size:.73rem;font-weight:600;cursor:pointer;}
+.btn-print:hover{background:#8b5cf628;}
 </style>
 </head>
 <body>
@@ -308,6 +355,11 @@ footer a:hover{color:var(--accent2);}
       <div class="role-card memb" onclick="chooseRole('membre')">
         <div class="role-icon memb">👤</div>
         <div class="role-info"><div class="rt">Membre</div><div class="rs">Paiement des cotisations</div></div>
+        <div class="role-arrow">›</div>
+      </div>
+      <div class="role-card secr" onclick="chooseRole('secrétaire')">
+        <div class="role-icon secr">🗂️</div>
+        <div class="role-info"><div class="rt">Secrétaire</div><div class="rs">Suivi des prêts &amp; dossiers</div></div>
         <div class="role-arrow">›</div>
       </div>
     </div>
@@ -520,8 +572,39 @@ footer a:hover{color:var(--accent2);}
       <!-- Cases par membre -->
       <div class="card">
         <div class="card-title">✅ Suivi des cotisations ordinaires par membre</div>
-        <p style="font-size:.78rem;color:var(--muted);margin-bottom:.9rem">Les cases se cochent <strong>automatiquement</strong> après paiement confirmé. Le trésorier peut décocher en cas d'erreur.</p>
+        <p style="font-size:.78rem;color:var(--muted);margin-bottom:.9rem">Les cases se cochent <strong>automatiquement</strong> après paiement confirmé. Le trésorier peut décocher en cas d'erreur. Cliquez sur 🖨️ pour imprimer le bilan d'un membre.</p>
         <div class="cot-grid" id="cotGridTreso"></div>
+      </div>
+
+      <!-- Carnet (cotisations hors-ligne) -->
+      <div class="card">
+        <div class="card-title">📔 Cotisations enregistrées au carnet</div>
+        <p style="font-size:.78rem;color:var(--muted);margin-bottom:.9rem">Pour les personnes qui cotisent en espèces / sur carnet papier, sans passer par le site.</p>
+        <div class="irow">
+          <div class="form-group"><label>Nom de la personne</label><input type="text" id="cnNom" placeholder="Prénom Nom"/></div>
+          <div class="form-group"><label>Mois</label><select id="cnMois"></select></div>
+          <div class="form-group"><label>Montant (FCFA)</label><input type="number" id="cnMont" placeholder="ex: 2000"/></div>
+          <div class="form-group"><label>Date</label><input type="date" id="cnDate"/></div>
+        </div>
+        <button class="btn-sm btn-primary" onclick="addCarnet()">+ Enregistrer</button>
+        <div class="tw" style="margin-top:.9rem">
+          <table><thead><tr><th>Nom</th><th>Mois</th><th>Montant</th><th>Date</th><th></th></tr></thead><tbody id="carnetTable"></tbody></table>
+        </div>
+      </div>
+
+      <!-- Adhésions -->
+      <div class="card">
+        <div class="card-title">🪪 Adhésion au groupe</div>
+        <p style="font-size:.78rem;color:var(--muted);margin-bottom:.9rem">Enregistrer le paiement d'adhésion de chaque membre.</p>
+        <div class="irow">
+          <div class="form-group"><label>Membre</label><select id="adhMem"></select></div>
+          <div class="form-group"><label>Montant adhésion (FCFA)</label><input type="number" id="adhMont" placeholder="ex: 1000"/></div>
+          <div class="form-group"><label>Date</label><input type="date" id="adhDate"/></div>
+        </div>
+        <button class="btn-sm btn-primary" onclick="addAdhesion()">+ Enregistrer l'adhésion</button>
+        <div class="tw" style="margin-top:.9rem">
+          <table><thead><tr><th>Membre</th><th>Montant</th><th>Date</th><th></th></tr></thead><tbody id="adhTable"></tbody></table>
+        </div>
       </div>
       <!-- Extraordinaires -->
       <div class="card">
@@ -549,6 +632,33 @@ footer a:hover{color:var(--accent2);}
       </div>
     </div>
 
+    <!-- ── PRÊTS ── -->
+    <div class="sec" id="sec-prets">
+      <div id="pretsAdmin" style="display:none">
+        <div class="card">
+          <div class="card-title">➕ Nouveau prêt sur la caisse</div>
+          <div class="info">💡 Taux d'intérêt appliqué : <strong>5% par mois</strong> sur le capital restant dû. Le motif est facultatif.</div>
+          <div class="irow">
+            <div class="form-group"><label>Membre emprunteur</label><select id="prMem"></select></div>
+            <div class="form-group"><label>Montant du prêt (FCFA)</label><input type="number" id="prMont" placeholder="ex: 20000"/></div>
+            <div class="form-group"><label>Date du prêt</label><input type="date" id="prDate"/></div>
+            <div class="form-group"><label>Motif (facultatif)</label><input type="text" id="prMotif" placeholder="ex: Frais de scolarité"/></div>
+          </div>
+          <button class="btn-sm btn-primary" onclick="addPret()">✅ Enregistrer le prêt</button>
+        </div>
+        <div class="card">
+          <div class="card-title">💼 Prêts en cours &amp; remboursements</div>
+          <div id="pretsListAdmin"></div>
+        </div>
+      </div>
+      <div id="pretsMembre" style="display:none">
+        <div class="card">
+          <div class="card-title">💼 Mes prêts auprès de la caisse</div>
+          <div id="pretsListMembre"></div>
+        </div>
+      </div>
+    </div>
+
     <!-- ── MEMBRES (président) ── -->
     <div class="sec" id="sec-membres">
       <div class="card">
@@ -567,7 +677,7 @@ footer a:hover{color:var(--accent2);}
           <div class="form-group"><label>Nom complet</label><input type="text" id="mNom" placeholder="Prénom Nom"/></div>
           <div class="form-group"><label>Identifiant</label><input type="text" id="mLogin" placeholder="ex: prenom.nom"/></div>
           <div class="form-group"><label>Mot de passe</label><input type="password" id="mPwd" placeholder="••••••"/></div>
-          <div class="form-group"><label>Rôle</label><select id="mRole"><option value="membre">Membre</option><option value="trésorier">Trésorier</option></select></div>
+          <div class="form-group"><label>Rôle</label><select id="mRole"><option value="membre">Membre</option><option value="trésorier">Trésorier</option><option value="secrétaire">Secrétaire</option></select></div>
           <div class="form-group"><label>N° WhatsApp</label><input type="text" id="mWA" placeholder="228XXXXXXXX"/></div>
           <div class="form-group"><label>Couleur</label>
             <select id="mCol"><option value="#00c896">Vert</option><option value="#3b82f6">Bleu</option><option value="#f5a623">Or</option><option value="#ef4444">Rouge</option><option value="#8b5cf6">Violet</option><option value="#ec4899">Rose</option></select>
@@ -650,6 +760,8 @@ footer a:hover{color:var(--accent2);}
   </div>
 </div>
 
+<div id="printArea"></div>
+
 <div id="toast"></div>
 
 <script>
@@ -684,6 +796,15 @@ function init(){
   if(!gd('depenses',null)) sd('depenses',[]);
   if(!gd('settings',null)) sd('settings',{moov:'',yas:'',montant:0});
   if(!gd('members',null)) sd('members',[]);
+  if(!gd('prets',null)) sd('prets',[]);
+  if(!gd('adhesions',null)) sd('adhesions',[]);
+  if(!gd('carnet',null)) sd('carnet',[]);
+  // PWA : enregistrement du service worker (fonctionnement hors-ligne)
+  if('serviceWorker' in navigator){
+    window.addEventListener('load',()=>{
+      navigator.serviceWorker.register('sw.js').catch(()=>{});
+    });
+  }
 }
 
 // ═══════════════════════════════════════════════
@@ -700,9 +821,9 @@ function chooseRole(role){
     document.getElementById('setupErr').style.display='none';
     show('setupPage');
   } else {
-    const icons={président:'👑',trésorier:'💼',membre:'👤'};
-    const colors={président:'linear-gradient(135deg,#f5a623,#d97706)',trésorier:'linear-gradient(135deg,#3b82f6,#1d4ed8)',membre:'linear-gradient(135deg,#00c896,#059669)'};
-    const titles={président:'Espace Président(e)',trésorier:'Espace Trésorier(ère)',membre:'Espace Membre'};
+    const icons={président:'👑',trésorier:'💼',membre:'👤',secrétaire:'🗂️'};
+    const colors={président:'linear-gradient(135deg,#f5a623,#d97706)',trésorier:'linear-gradient(135deg,#3b82f6,#1d4ed8)',membre:'linear-gradient(135deg,#00c896,#059669)',secrétaire:'linear-gradient(135deg,#8b5cf6,#6d28d9)'};
+    const titles={président:'Espace Président(e)',trésorier:'Espace Trésorier(ère)',membre:'Espace Membre',secrétaire:'Espace Secrétaire'};
     document.getElementById('loginIcon').style.background=colors[role];
     document.getElementById('loginIcon').textContent=icons[role];
     document.getElementById('loginTitle').textContent=titles[role];
@@ -724,7 +845,7 @@ function finishSetup(){
   if(!nom||!login||!pwd||!wa){err.textContent='⚠️ Tous les champs sont obligatoires.';err.style.display='block';return;}
   const members=gd('members',[]);
   if(members.find(m=>m.login===login)){err.textContent='⚠️ Cet identifiant est déjà pris.';err.style.display='block';return;}
-  const color={président:'#f5a623',trésorier:'#3b82f6',membre:'#00c896'}[setupRole]||'#00c896';
+  const color={président:'#f5a623',trésorier:'#3b82f6',membre:'#00c896',secrétaire:'#8b5cf6'}[setupRole]||'#00c896';
   members.push({id:Date.now(),nom,login,pwd,role:setupRole,wa,color});
   sd('members',members);
   if(setupRole==='trésorier'){
@@ -771,18 +892,19 @@ function initApp(){
   document.getElementById('navName').textContent=cu.nom;
   const b=document.getElementById('navBadge');
   b.textContent=cu.role.toUpperCase();
-  b.className='badge'+(cu.role==='trésorier'?' treso':cu.role==='membre'?' member':'');
+  b.className='badge'+(cu.role==='trésorier'?' treso':cu.role==='membre'?' member':cu.role==='secrétaire'?' v':'');
   buildTabs(); showSec('dashboard');
 }
 function buildTabs(){
   const bar=document.getElementById('tabsBar'); bar.innerHTML='';
   const role=cu.role;
   [
-    {id:'dashboard',label:'🏠 Tableau de bord',r:['président','trésorier','membre']},
+    {id:'dashboard',label:'🏠 Tableau de bord',r:['président','trésorier','membre','secrétaire']},
     {id:'cotisations',label:'💵 Mes cotisations',r:['membre','président','trésorier']},
     {id:'tresorerie',label:'🏦 Trésorerie',r:['trésorier','président']},
+    {id:'prets',label:'💼 Prêts',r:['président','trésorier','secrétaire','membre']},
     {id:'membres',label:'👥 Gestion membres',r:['président']},
-    {id:'repertoire',label:'📒 Répertoire',r:['président','trésorier','membre']},
+    {id:'repertoire',label:'📒 Répertoire',r:['président','trésorier','membre','secrétaire']},
   ].forEach(t=>{
     if(!t.r.includes(role)) return;
     const btn=document.createElement('button');
@@ -799,6 +921,7 @@ function showSec(id,tabEl){
   if(id==='dashboard') renderDash();
   else if(id==='cotisations'){renderMyCots(); switchCotTab('ord');}
   else if(id==='tresorerie') renderTreso();
+  else if(id==='prets') renderPrets();
   else if(id==='membres') renderMembers();
   else if(id==='repertoire') renderRepert();
 }
@@ -1016,6 +1139,8 @@ function renderTreso(){
   renderExtTreso();
   renderDeps();
   renderBilanTreso();
+  renderCarnet();
+  renderAdhesion();
 }
 
 function renderCotGrid(){
@@ -1040,6 +1165,7 @@ function renderCotGrid(){
       <div class="cot-member-header">
         <div class="avatar" style="background:${m.color}20;color:${m.color};border:1px solid ${m.color}38;width:36px;height:36px;font-size:.8rem">${ini(m.nom)}</div>
         <div style="flex:1"><strong style="font-size:.88rem">${m.nom}</strong><br><span style="font-size:.7rem;color:var(--muted)">${moisPaies.length} mois payés — Total : <strong style="color:var(--accent)">${ff(total)} FCFA</strong></span></div>
+        <button class="btn-print" onclick="printBilanMembre(${m.id})">🖨️ Imprimer</button>
       </div>
       <div class="cot-months">${months}</div>
     </div>`;
@@ -1317,6 +1443,211 @@ function checkBioAvailable(role){
     wrap.style.display = 'none';
   }
 }
+
+// ═══════════════════════════════════════════════
+//  CARNET (cotisations papier, membres hors-site)
+// ═══════════════════════════════════════════════
+function renderCarnet(){
+  const sel=document.getElementById('cnMois');
+  if(sel && !sel.dataset.filled){
+    sel.innerHTML=MOIS.map(m=>`<option>${m}</option>`).join('');
+    sel.value=MOIS[new Date().getMonth()];
+    sel.dataset.filled='1';
+  }
+  const carnet=gd('carnet',[]);
+  document.getElementById('carnetTable').innerHTML=carnet.length
+    ? carnet.map(c=>`<tr><td>${c.nom}</td><td>${c.mois}</td><td>${ff(c.montant)} FCFA</td><td>${c.date}</td><td><button class="btn-sm btn-danger" onclick="delCarnet(${c.id})">🗑</button></td></tr>`).join('')
+    : '<tr><td colspan="5" style="color:var(--muted);text-align:center;padding:1rem">Aucune cotisation carnet enregistrée</td></tr>';
+}
+function addCarnet(){
+  const nom=vv('cnNom'),mois=vv('cnMois'),mont=vv('cnMont'),date=vv('cnDate')||td();
+  if(!nom||!mont){toast('⚠️ Nom et montant requis');return;}
+  const carnet=gd('carnet',[]);
+  carnet.push({id:Date.now(),nom,mois,montant:Number(mont),date,par:cu.nom});
+  sd('carnet',carnet);
+  sv('cnNom',''); sv('cnMont','');
+  toast('📔 Cotisation carnet enregistrée !'); renderCarnet(); renderBilanTreso();
+}
+function delCarnet(id){
+  if(!confirm('Supprimer cette entrée ?')) return;
+  sd('carnet',gd('carnet',[]).filter(c=>c.id!==id));
+  toast('🗑 Supprimée.'); renderCarnet(); renderBilanTreso();
+}
+
+// ═══════════════════════════════════════════════
+//  ADHÉSION AU GROUPE
+// ═══════════════════════════════════════════════
+function renderAdhesion(){
+  const sel=document.getElementById('adhMem');
+  if(sel){
+    const mbs=gd('members',[]);
+    sel.innerHTML=mbs.map(m=>`<option value="${m.id}">${m.nom}</option>`).join('');
+  }
+  const s=gd('settings',{});
+  if(!vv('adhMont') && s.adhesionPrix) sv('adhMont',s.adhesionPrix);
+  const adh=gd('adhesions',[]);
+  document.getElementById('adhTable').innerHTML=adh.length
+    ? adh.map(a=>`<tr><td>${a.membre}</td><td>${ff(a.montant)} FCFA</td><td>${a.date}</td><td><button class="btn-sm btn-danger" onclick="delAdhesion(${a.id})">🗑</button></td></tr>`).join('')
+    : '<tr><td colspan="4" style="color:var(--muted);text-align:center;padding:1rem">Aucune adhésion enregistrée</td></tr>';
+}
+function addAdhesion(){
+  const memId=Number(vv('adhMem')),mont=vv('adhMont'),date=vv('adhDate')||td();
+  if(!memId||!mont){toast('⚠️ Choisissez un membre et un montant');return;}
+  const m=gd('members',[]).find(x=>x.id===memId);
+  if(!m){toast('⚠️ Membre introuvable');return;}
+  const adh=gd('adhesions',[]);
+  adh.push({id:Date.now(),memId,membre:m.nom,montant:Number(mont),date});
+  sd('adhesions',adh);
+  const s=gd('settings',{}); s.adhesionPrix=Number(mont); sd('settings',s);
+  toast('🪪 Adhésion enregistrée !'); renderAdhesion();
+}
+function delAdhesion(id){
+  if(!confirm('Supprimer ?')) return;
+  sd('adhesions',gd('adhesions',[]).filter(a=>a.id!==id));
+  toast('🗑 Supprimée.'); renderAdhesion();
+}
+
+// ═══════════════════════════════════════════════
+//  PRÊTS — intérêt 5% par mois, accès restreint
+// ═══════════════════════════════════════════════
+const TAUX_INTERET_MENSUEL=0.05;
+function moisEcoules(dateStr){
+  const d=parseFrDate(dateStr); if(!d) return 0;
+  const now=new Date();
+  let m=(now.getFullYear()-d.getFullYear())*12+(now.getMonth()-d.getMonth());
+  if(now.getDate()<d.getDate()) m--;
+  return Math.max(0,m);
+}
+function parseFrDate(s){
+  if(!s) return null;
+  const p=s.split('/'); if(p.length!==3) return new Date(s);
+  return new Date(Number(p[2]),Number(p[1])-1,Number(p[0]));
+}
+function calcPret(pr){
+  const rembourse=(pr.remboursements||[]).reduce((a,r)=>a+r.montant,0);
+  const mEcoules=moisEcoules(pr.date);
+  const interet=Math.round(pr.montant*TAUX_INTERET_MENSUEL*mEcoules);
+  const totalDu=pr.montant+interet;
+  const solde=Math.max(0,totalDu-rembourse);
+  return {rembourse,mEcoules,interet,totalDu,solde};
+}
+function peutVoirPrets(){
+  return ['président','trésorier','secrétaire'].includes(cu.role);
+}
+function renderPrets(){
+  const admin=peutVoirPrets();
+  document.getElementById('pretsAdmin').style.display=admin?'block':'none';
+  document.getElementById('pretsMembre').style.display=admin?'none':'block';
+  if(admin){
+    const sel=document.getElementById('prMem');
+    if(sel) sel.innerHTML=gd('members',[]).filter(m=>m.role==='membre').map(m=>`<option value="${m.id}">${m.nom}</option>`).join('');
+    const prets=gd('prets',[]);
+    document.getElementById('pretsListAdmin').innerHTML=prets.length
+      ? prets.map(pr=>pretCardHTML(pr,true)).join('')
+      : '<p style="color:var(--muted);font-size:.8rem">Aucun prêt enregistré.</p>';
+  } else {
+    const mine=gd('prets',[]).filter(pr=>pr.memId===cu.id);
+    document.getElementById('pretsListMembre').innerHTML=mine.length
+      ? mine.map(pr=>pretCardHTML(pr,false)).join('')
+      : '<p style="color:var(--muted);font-size:.8rem">Vous n\'avez aucun prêt en cours.</p>';
+  }
+}
+function pretCardHTML(pr,isAdmin){
+  const c=calcPret(pr);
+  const pct=c.totalDu>0?Math.min(100,Math.round((c.rembourse/c.totalDu)*100)):100;
+  return `<div class="pret-row">
+    <div class="pret-head">
+      <div>
+        <div class="pret-nom">${pr.membre}</div>
+        ${pr.motif?`<div class="pret-motif">Motif : ${pr.motif}</div>`:''}
+      </div>
+      <span class="chip ${pr.status==='soldé'?'cg':'cv'}">${pr.status==='soldé'?'✅ Soldé':'⏳ En cours'}</span>
+    </div>
+    <div class="pret-grid-vals">
+      <div class="pret-mini"><div class="pl">Capital</div><div class="pv">${ff(pr.montant)} F</div></div>
+      <div class="pret-mini"><div class="pl">Mois écoulés</div><div class="pv">${c.mEcoules}</div></div>
+      <div class="pret-mini"><div class="pl">Intérêt (5%/mois)</div><div class="pv" style="color:var(--accent2)">${ff(c.interet)} F</div></div>
+      <div class="pret-mini"><div class="pl">Remboursé</div><div class="pv" style="color:var(--accent)">${ff(c.rembourse)} F</div></div>
+      <div class="pret-mini"><div class="pl">Solde dû</div><div class="pv" style="color:${c.solde>0?'var(--danger)':'var(--accent)'}">${ff(c.solde)} F</div></div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <div style="font-size:.7rem;color:var(--muted);margin-top:.3rem">Prêt du ${pr.date} — Total dû (capital + intérêt) : ${ff(c.totalDu)} FCFA</div>
+    ${isAdmin && pr.status!=='soldé' ? `
+    <div class="irow" style="margin-top:.8rem">
+      <div class="form-group"><label>Remboursement (FCFA)</label><input type="number" id="rb_${pr.id}" placeholder="Montant versé"/></div>
+    </div>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+      <button class="btn-sm btn-primary" onclick="rembourserPret(${pr.id})">💰 Enregistrer remboursement</button>
+      <button class="btn-sm btn-gold" onclick="soldePret(${pr.id})">✅ Marquer soldé</button>
+    </div>` : ''}
+  </div>`;
+}
+function addPret(){
+  if(!peutVoirPrets()){toast('⚠️ Accès réservé au président, trésorier ou secrétaire');return;}
+  const memId=Number(vv('prMem')),mont=vv('prMont'),date=vv('prDate')||td(),motif=vv('prMotif');
+  if(!memId||!mont){toast('⚠️ Choisissez un membre et un montant');return;}
+  const m=gd('members',[]).find(x=>x.id===memId);
+  if(!m){toast('⚠️ Membre introuvable');return;}
+  const prets=gd('prets',[]);
+  prets.push({id:Date.now(),memId,membre:m.nom,montant:Number(mont),date,motif,remboursements:[],status:'en cours',par:cu.nom});
+  sd('prets',prets);
+  sv('prMont',''); sv('prMotif','');
+  toast('✅ Prêt enregistré !'); renderPrets();
+}
+function rembourserPret(id){
+  if(!peutVoirPrets()){toast('⚠️ Action non autorisée');return;}
+  const mont=Number(vv('rb_'+id));
+  if(!mont){toast('⚠️ Indiquez un montant de remboursement');return;}
+  const prets=gd('prets',[]);
+  const i=prets.findIndex(p=>p.id===id);
+  if(i>-1){
+    prets[i].remboursements=prets[i].remboursements||[];
+    prets[i].remboursements.push({date:td(),montant:mont});
+    const c=calcPret(prets[i]);
+    if(c.solde<=0) prets[i].status='soldé';
+    sd('prets',prets);
+  }
+  toast('💰 Remboursement enregistré !'); renderPrets();
+}
+function soldePret(id){
+  if(!peutVoirPrets()){toast('⚠️ Action non autorisée');return;}
+  if(!confirm('Marquer ce prêt comme entièrement soldé ?')) return;
+  const prets=gd('prets',[]);
+  const i=prets.findIndex(p=>p.id===id);
+  if(i>-1) prets[i].status='soldé';
+  sd('prets',prets); toast('✅ Prêt soldé.'); renderPrets();
+}
+
+// ═══════════════════════════════════════════════
+//  IMPRESSION DU BILAN D'UN MEMBRE
+// ═══════════════════════════════════════════════
+function printBilanMembre(memId){
+  const m=gd('members',[]).find(x=>x.id===memId);
+  if(!m){toast('⚠️ Membre introuvable');return;}
+  const cots=gd('cotisations',[]).filter(c=>c.memId===memId);
+  const extras=gd('extras',[]).filter(e=>e.memId===memId&&e.status==='validé');
+  const prets=gd('prets',[]).filter(p=>p.memId===memId);
+  const adh=gd('adhesions',[]).filter(a=>a.memId===memId);
+  const totalOrd=cots.reduce((a,c)=>a+c.montant,0);
+  const totalExt=extras.reduce((a,e)=>a+e.montant,0);
+  const totalAdh=adh.reduce((a,x)=>a+x.montant,0);
+  const rows=cots.map(c=>`<tr><td>${c.mois}</td><td>${ff(c.montant)} FCFA</td><td>${c.date}</td></tr>`).join('')
+    || '<tr><td colspan="3">Aucune</td></tr>';
+  const rowsPret=prets.length ? prets.map(p=>{const c=calcPret(p);return `<tr><td>${ff(p.montant)} FCFA</td><td>${p.date}</td><td>${ff(c.interet)} FCFA</td><td>${ff(c.solde)} FCFA</td><td>${p.status}</td></tr>`;}).join('') : '';
+  document.getElementById('printArea').innerHTML=`
+    <h2>TICAISSE — Bilan de ${m.nom}</h2>
+    <p>Rôle : ${m.role} — Édité le ${td()}</p>
+    <div class="pbox">
+      <strong>Cotisations ordinaires</strong> — Total : ${ff(totalOrd)} FCFA
+      <table><thead><tr><th>Mois</th><th>Montant</th><th>Date</th></tr></thead><tbody>${rows}</tbody></table>
+    </div>
+    <div class="pbox"><strong>Cotisations extraordinaires validées</strong> — Total : ${ff(totalExt)} FCFA</div>
+    <div class="pbox"><strong>Adhésion</strong> — Total payé : ${ff(totalAdh)} FCFA</div>
+    ${prets.length?`<div class="pbox"><strong>Prêts</strong><table><thead><tr><th>Capital</th><th>Date</th><th>Intérêt cumulé</th><th>Solde dû</th><th>Statut</th></tr></thead><tbody>${rowsPret}</tbody></table></div>`:''}
+  `;
+  setTimeout(()=>window.print(),150);
+}
+
 
 init();
 </script>
