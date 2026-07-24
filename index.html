@@ -6,7 +6,7 @@
 <title>TICAISSE — Gestion Association</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#00c896">
+<meta name="theme-color" content="#0f9d8a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="TICAISSE">
@@ -14,9 +14,9 @@
 <style>
 :root{
   --bg:#070d1a;--surface:#0f1829;--surface2:#162035;--border:#1e2d47;
-  --accent:#00c896;--accent2:#f5a623;--accent3:#3b82f6;--accent4:#8b5cf6;
-  --danger:#ef4444;--text:#e8edf5;--muted:#7a8fa8;--card:#101e33;
-  --gold:#ffd700;--green:#00c896;
+  --accent:#0f9d8a;--accent2:#b8894a;--accent3:#4a7690;--accent4:#56708a;
+  --danger:#c9504f;--text:#e8edf5;--muted:#7a8fa8;--card:#101e33;
+  --gold:#b8894a;--green:#0f9d8a;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
@@ -32,9 +32,9 @@ nav{
 .logo-wrap{display:flex;align-items:center;gap:.75rem;}
 .logo-icon{
   width:42px;height:42px;border-radius:12px;
-  background:linear-gradient(135deg,#00c896,#00a077);
+  background:linear-gradient(135deg,#0f9d8a,#0c7d6f);
   display:flex;align-items:center;justify-content:center;
-  font-size:1.3rem;box-shadow:0 4px 16px #00c89640;
+  font-size:1.3rem;box-shadow:0 4px 16px #0f9d8a40;
 }
 .logo-text{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;}
 .logo-text .tc{color:var(--accent);}
@@ -60,7 +60,7 @@ nav{
 
 /* ═══ HERO ROLE PAGE ═══ */
 .hero-logo{text-align:center;margin-bottom:1.8rem;}
-.hero-icon{width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,#00c896,#00a077);display:inline-flex;align-items:center;justify-content:center;font-size:2rem;box-shadow:0 8px 32px #00c89650;margin-bottom:.8rem;}
+.hero-icon{width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,#0f9d8a,#0c7d6f);display:inline-flex;align-items:center;justify-content:center;font-size:2rem;box-shadow:0 8px 32px #0f9d8a50;margin-bottom:.8rem;}
 .hero-title{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;}
 .hero-title .tc{color:var(--accent);}
 .hero-sub{font-size:.8rem;color:var(--muted);margin-top:.2rem;letter-spacing:.5px;}
@@ -68,15 +68,14 @@ nav{
 /* ═══ ROLE CARDS ═══ */
 .role-grid{display:grid;gap:.75rem;margin-bottom:1rem;}
 .role-card{border:2px solid var(--border);border-radius:16px;padding:1rem 1.2rem;cursor:pointer;transition:.25s;display:flex;align-items:center;gap:.9rem;background:var(--surface2);position:relative;overflow:hidden;}
-.role-card::before{content:'';position:absolute;inset:0;opacity:0;transition:.25s;}
 .role-card:hover{transform:translateY(-2px);box-shadow:0 8px 28px #00000050;}
-.role-card.pres:hover,.role-card.pres.sel{border-color:var(--accent2);background:#f5a62310;}
-.role-card.tres:hover,.role-card.tres.sel{border-color:var(--accent3);background:#3b82f610;}
-.role-card.memb:hover,.role-card.memb.sel{border-color:var(--accent);background:#00c89610;}
+.role-card.pres:hover,.role-card.pres.sel{border-color:var(--accent2);background:#b8894a10;}
+.role-card.tres:hover,.role-card.tres.sel{border-color:var(--accent3);background:#4a769010;}
+.role-card.memb:hover,.role-card.memb.sel{border-color:var(--accent);background:#0f9d8a10;}
 .role-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
-.role-icon.pres{background:linear-gradient(135deg,#f5a623,#d97706);}
-.role-icon.tres{background:linear-gradient(135deg,#3b82f6,#1d4ed8);}
-.role-icon.memb{background:linear-gradient(135deg,#00c896,#059669);}
+.role-icon.pres{background:linear-gradient(135deg,#b8894a,#8a6234);}
+.role-icon.tres{background:linear-gradient(135deg,#4a7690,#355a70);}
+.role-icon.memb{background:linear-gradient(135deg,#0f9d8a,#0c7d6f);}
 .role-info .rt{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;}
 .role-info .rs{font-size:.73rem;color:var(--muted);margin-top:.1rem;}
 .role-arrow{margin-left:auto;color:var(--muted);font-size:1rem;}
@@ -85,20 +84,20 @@ nav{
 .form-group{margin-bottom:1rem;}
 label{font-size:.73rem;font-weight:500;color:var(--muted);display:block;margin-bottom:.35rem;letter-spacing:.4px;text-transform:uppercase;}
 input,select,textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.65rem .9rem;color:var(--text);font-family:inherit;font-size:.88rem;outline:none;transition:.2s;}
-input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px #00c89618;}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px #0f9d8a18;}
 select option{background:var(--surface);}
 .btn{width:100%;padding:.75rem;border-radius:11px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;transition:.2s;}
-.btn-primary{background:linear-gradient(135deg,var(--accent),#00a077);color:#000;}
-.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px #00c89640;}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#0c7d6f);color:#000;}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px #0f9d8a40;}
 .btn-sm{width:auto;padding:.38rem .85rem;font-size:.76rem;border-radius:8px;font-family:inherit;border:none;cursor:pointer;font-weight:600;}
 .btn-outline{background:none;border:1px solid var(--border);color:var(--text);cursor:pointer;transition:.2s;}
 .btn-outline:hover{border-color:var(--accent);color:var(--accent);}
 .btn-danger{background:var(--danger);color:#000;}
 .btn-warning{background:var(--accent2);color:#000;}
-.btn-gold{background:linear-gradient(135deg,var(--gold),#d97706);color:#000;}
-.err{background:#ef444418;border:1px solid #ef444440;color:#f87171;padding:.55rem .9rem;border-radius:8px;font-size:.78rem;margin-bottom:.9rem;}
-.info{background:#f5a62312;border:1px solid #f5a62330;border-radius:9px;padding:.7rem .9rem;font-size:.78rem;color:var(--accent2);margin-bottom:.9rem;}
-.suc{background:#00c89612;border:1px solid #00c89630;border-radius:9px;padding:.7rem .9rem;font-size:.78rem;color:var(--accent);}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#8a6234);color:#000;}
+.err{background:#c9504f18;border:1px solid #c9504f40;color:#d98a8a;padding:.55rem .9rem;border-radius:8px;font-size:.78rem;margin-bottom:.9rem;}
+.info{background:#b8894a12;border:1px solid #b8894a30;border-radius:9px;padding:.7rem .9rem;font-size:.78rem;color:var(--accent2);margin-bottom:.9rem;}
+.suc{background:#0f9d8a12;border:1px solid #0f9d8a30;border-radius:9px;padding:.7rem .9rem;font-size:.78rem;color:var(--accent);}
 
 /* ═══ APP ═══ */
 #appLayout{display:none;}
@@ -106,7 +105,7 @@ select option{background:var(--surface);}
 .tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.3rem;}
 .tab{padding:.45rem 1.1rem;border-radius:99px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;font-size:.8rem;transition:.2s;}
 .tab:hover{border-color:var(--accent);color:var(--accent);}
-.tab.active{background:linear-gradient(135deg,var(--accent),#00a077);border-color:transparent;color:#000;font-weight:700;}
+.tab.active{background:linear-gradient(135deg,var(--accent),#0c7d6f);border-color:transparent;color:#000;font-weight:700;}
 .sec{display:none;}
 .sec.active{display:block;}
 
@@ -137,19 +136,18 @@ td{padding:.6rem .8rem;border-bottom:1px solid #162035;}
 tr:last-child td{border-bottom:none;}
 tr:hover td{background:#ffffff03;}
 .chip{display:inline-block;padding:.17rem .62rem;border-radius:99px;font-size:.68rem;font-weight:700;}
-.cg{background:#00c89618;color:var(--accent);border:1px solid #00c89628;}
-.cy{background:#f5a62318;color:var(--accent2);border:1px solid #f5a62328;}
-.cb{background:#3b82f618;color:#0ea5e9;border:1px solid #3b82f628;}
-.cr{background:#ef444418;color:#f87171;border:1px solid #ef444428;}
+.cg{background:#0f9d8a18;color:var(--accent);border:1px solid #0f9d8a28;}
+.cy{background:#b8894a18;color:var(--accent2);border:1px solid #b8894a28;}
+.cb{background:#4a769018;color:#0ea5e9;border:1px solid #4a769028;}
+.cr{background:#c9504f18;color:#d98a8a;border:1px solid #c9504f28;}
 .cyas{background:#f5c51818;color:#d4a000;border:1px solid #f5c51828;}
-.cv{background:#8b5cf618;color:#a78bfa;border:1px solid #8b5cf628;}
-.cgold{background:#ffd70018;color:var(--gold);border:1px solid #ffd70028;}
+.cv{background:#56708a18;color:#7c93a8;border:1px solid #56708a28;}
 
 /* ═══ COT TABS ═══ */
 .cot-tabs{display:flex;gap:.5rem;margin-bottom:1.2rem;}
 .cot-tab{flex:1;padding:.6rem;border-radius:10px;border:2px solid var(--border);background:var(--surface2);cursor:pointer;text-align:center;font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;transition:.2s;color:var(--muted);}
-.cot-tab.active-ord{border-color:var(--accent);background:#00c89612;color:var(--accent);}
-.cot-tab.active-ext{border-color:var(--gold);background:#ffd70012;color:var(--gold);}
+.cot-tab.active-ord{border-color:var(--accent);background:#0f9d8a12;color:var(--accent);}
+.cot-tab.active-ext{border-color:var(--gold);background:#b8894a12;color:var(--gold);}
 .cot-tab:hover{transform:translateY(-1px);}
 
 /* ═══ OPERATEUR ═══ */
@@ -190,13 +188,13 @@ tr:hover td{background:#ffffff03;}
 .ussd-steps{text-align:left;margin:.8rem 0;display:flex;flex-direction:column;gap:.45rem;}
 .ussd-step{display:flex;align-items:flex-start;gap:.55rem;font-size:.8rem;}
 .snum{width:21px;height:21px;border-radius:50%;background:var(--accent);color:#000;font-weight:700;font-size:.68rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
-.btn-souscription{width:100%;padding:.9rem;border-radius:12px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;background:linear-gradient(135deg,var(--accent2),#d97706);color:#000;transition:.2s;display:flex;align-items:center;justify-content:center;gap:.6rem;text-decoration:none;box-shadow:0 4px 20px #f5a62330;}
-.btn-souscription:hover{transform:translateY(-2px);box-shadow:0 8px 28px #f5a62340;}
+.btn-souscription{width:100%;padding:.9rem;border-radius:12px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;background:linear-gradient(135deg,var(--accent2),#8a6234);color:#000;transition:.2s;display:flex;align-items:center;justify-content:center;gap:.6rem;text-decoration:none;box-shadow:0 4px 20px #b8894a30;}
+.btn-souscription:hover{transform:translateY(-2px);box-shadow:0 8px 28px #b8894a40;}
 .timer-bar{height:5px;background:var(--border);border-radius:99px;margin:.6rem 0;overflow:hidden;}
 .timer-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px;width:0%;transition:width 15s linear;}
 .btn-confirm-locked{width:100%;padding:.8rem;border-radius:11px;border:2px dashed var(--border);cursor:not-allowed;font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;background:transparent;color:var(--muted);margin-top:.8rem;display:flex;align-items:center;justify-content:center;gap:.5rem;}
-.btn-confirm-active{width:100%;padding:.8rem;border-radius:11px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;background:linear-gradient(135deg,var(--accent),#00a077);color:#000;margin-top:.8rem;display:flex;align-items:center;justify-content:center;gap:.5rem;transition:.2s;}
-.btn-confirm-active:hover{transform:translateY(-1px);box-shadow:0 6px 20px #00c89640;}
+.btn-confirm-active{width:100%;padding:.8rem;border-radius:11px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;background:linear-gradient(135deg,var(--accent),#0c7d6f);color:#000;margin-top:.8rem;display:flex;align-items:center;justify-content:center;gap:.5rem;transition:.2s;}
+.btn-confirm-active:hover{transform:translateY(-1px);box-shadow:0 6px 20px #0f9d8a40;}
 .pay-flow{display:none;}
 .pay-flow.show{display:block;}
 
@@ -214,17 +212,13 @@ tr:hover td{background:#ffffff03;}
   font-size:.68rem;font-weight:700;cursor:default;
   transition:.2s;color:var(--muted);font-family:'Syne',sans-serif;
 }
-.month-label.paid{background:linear-gradient(135deg,var(--accent),#00a077);border-color:var(--accent);color:#000;cursor:default;}
+.month-label.paid{background:linear-gradient(135deg,var(--accent),#0c7d6f);border-color:var(--accent);color:#000;cursor:default;}
 .month-label.paid::after{content:'✓';position:absolute;top:-4px;right:-4px;width:14px;height:14px;background:var(--accent2);border-radius:50%;font-size:.55rem;display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;}
-.month-label.can-pay{border-color:var(--accent2);color:var(--accent2);cursor:pointer;animation:pulse 2s infinite;}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 #f5a62340;}50%{box-shadow:0 0 0 5px #f5a62300;}}
 
 /* ═══ EXTRAS ═══ */
-.ext-badge{display:inline-flex;align-items:center;gap:.3rem;background:#ffd70018;border:1px solid #ffd70030;color:var(--gold);border-radius:8px;padding:.2rem .6rem;font-size:.7rem;font-weight:700;}
+.ext-badge{display:inline-flex;align-items:center;gap:.3rem;background:#b8894a18;border:1px solid #b8894a30;color:var(--gold);border-radius:8px;padding:.2rem .6rem;font-size:.7rem;font-weight:700;}
 
 /* ═══ NOTIF ═══ */
-.ndot{width:8px;height:8px;border-radius:50%;background:var(--danger);display:inline-block;margin-left:.3rem;}
-.notif-item{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:.85rem 1rem;display:flex;align-items:flex-start;justify-content:space-between;font-size:.8rem;flex-wrap:wrap;gap:.5rem;margin-bottom:.6rem;}
 
 /* ═══ MEMBRE ROW ═══ */
 .member-row{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:.85rem 1.1rem;display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;margin-bottom:.6rem;}
@@ -268,25 +262,25 @@ footer a{color:var(--accent);text-decoration:none;font-weight:600;}
 footer a:hover{color:var(--accent2);}
 
 /* ═══ TOAST ═══ */
-#toast{position:fixed;bottom:1.3rem;right:1.3rem;background:linear-gradient(135deg,var(--accent),#00a077);color:#000;padding:.65rem 1.2rem;border-radius:10px;font-weight:700;font-size:.8rem;display:none;z-index:999;box-shadow:0 8px 24px #00c89640;}
+#toast{position:fixed;bottom:1.3rem;right:1.3rem;background:linear-gradient(135deg,var(--accent),#0c7d6f);color:#000;padding:.65rem 1.2rem;border-radius:10px;font-weight:700;font-size:.8rem;display:none;z-index:999;box-shadow:0 8px 24px #0f9d8a40;}
 @keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
 /* ═══ BILAN BOXES ═══ */
 .bilan-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.8rem;margin-top:.9rem;}
 .bilan-box{border-radius:14px;padding:1rem 1.2rem;display:flex;align-items:center;gap:.8rem;transition:.25s;}
 .bilan-box:hover{transform:translateY(-2px);}
-.bilan-box.ord{background:#00c89610;border:1px solid #00c89630;}
-.bilan-box.ext{background:#ffd70010;border:1px solid #ffd70030;}
-.bilan-box.dep{background:#ef444410;border:1px solid #ef444430;}
-.bilan-box.sol{background:#3b82f610;border:1px solid #3b82f630;}
-.bilan-box.pret{background:#8b5cf610;border:1px solid #8b5cf630;}
+.bilan-box.ord{background:#0f9d8a10;border:1px solid #0f9d8a30;}
+.bilan-box.ext{background:#b8894a10;border:1px solid #b8894a30;}
+.bilan-box.dep{background:#c9504f10;border:1px solid #c9504f30;}
+.bilan-box.sol{background:#4a769010;border:1px solid #4a769030;}
+.bilan-box.pret{background:#56708a10;border:1px solid #56708a30;}
 .bilan-icon{font-size:1.8rem;}
 .bilan-label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;}
 .bilan-val{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;}
 
 /* ═══ RÔLE SECRÉTAIRE ═══ */
-.role-card.secr:hover,.role-card.secr.sel{border-color:var(--accent4);background:#8b5cf610;}
-.role-icon.secr{background:linear-gradient(135deg,#8b5cf6,#6d28d9);}
+.role-card.secr:hover,.role-card.secr.sel{border-color:var(--accent4);background:#56708a10;}
+.role-icon.secr{background:linear-gradient(135deg,#56708a,#3d4f61);}
 
 /* ═══ ANIMATIONS D'ENTRÉE ═══ */
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
@@ -304,10 +298,10 @@ footer a:hover{color:var(--accent2);}
 .pret-mini .pl{font-size:.64rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;}
 .pret-mini .pv{font-family:'Syne',sans-serif;font-weight:800;font-size:.92rem;}
 .progress-bar{height:7px;background:var(--bg);border-radius:99px;overflow:hidden;margin-top:.3rem;}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent4),#a78bfa);border-radius:99px;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent4),#7c93a8);border-radius:99px;}
 
 /* ═══ ADHÉSION ═══ */
-.adh-badge{display:inline-flex;align-items:center;gap:.3rem;background:#3b82f618;border:1px solid #3b82f630;color:#60a5fa;border-radius:8px;padding:.2rem .6rem;font-size:.7rem;font-weight:700;}
+.adh-badge{display:inline-flex;align-items:center;gap:.3rem;background:#4a769018;border:1px solid #4a769030;color:#4a7690;border-radius:8px;padding:.2rem .6rem;font-size:.7rem;font-weight:700;}
 
 /* ═══ IMPRESSION ═══ */
 #printArea{display:none;}
@@ -320,8 +314,8 @@ footer a:hover{color:var(--accent2);}
   #printArea table{width:100%;border-collapse:collapse;margin-top:.5rem;}
   #printArea th,#printArea td{border:1px solid #ccc;padding:.4rem .6rem;font-size:.8rem;text-align:left;}
 }
-.btn-print{display:inline-flex;align-items:center;gap:.35rem;background:#8b5cf618;border:1px solid #8b5cf638;color:#a78bfa;border-radius:8px;padding:.3rem .7rem;font-size:.73rem;font-weight:600;cursor:pointer;}
-.btn-print:hover{background:#8b5cf628;}
+.btn-print{display:inline-flex;align-items:center;gap:.35rem;background:#56708a18;border:1px solid #56708a38;color:#7c93a8;border-radius:8px;padding:.3rem .7rem;font-size:.73rem;font-weight:600;cursor:pointer;}
+.btn-print:hover{background:#56708a28;}
 </style>
 </head>
 <body>
@@ -363,6 +357,7 @@ footer a:hover{color:var(--accent2);}
         <div class="role-arrow">›</div>
       </div>
     </div>
+    <button id="btnInstallAppRole" onclick="installApp()" style="display:none;width:100%;margin-top:1rem;background:var(--accent);border:none;color:#000;padding:.6rem;border-radius:10px;cursor:pointer;font-size:.82rem;font-weight:700">📲 Installer l'application sur cet appareil</button>
     <p style="text-align:center;font-size:.7rem;color:var(--muted);margin-top:.5rem">🔒 Accès réservé aux membres enregistrés</p>
   </div>
 </div>
@@ -422,6 +417,7 @@ footer a:hover{color:var(--accent2);}
       </div>
     </div>
     <div class="nav-right">
+      <button id="btnInstallApp" onclick="installApp()" style="display:none;background:var(--accent);border:none;color:#000;padding:.35rem .8rem;border-radius:8px;cursor:pointer;font-size:.75rem;font-weight:700">📲 Installer l'app</button>
       <span id="navName" style="font-size:.8rem;color:var(--muted)"></span>
       <span id="navBadge" class="badge"></span>
       <button class="btn-logout" onclick="logout()">Déconnexion</button>
@@ -557,7 +553,7 @@ footer a:hover{color:var(--accent2);}
                 <button class="btn-confirm-locked" disabled>🔒 Effectuez d'abord la Souscription pour confirmer</button>
               </div>
             </div>
-            <button class="btn btn-primary" style="margin-top:1rem;background:linear-gradient(135deg,var(--gold),#d97706);color:#000" id="prepBtnE" onclick="preparerPaiement('ext')">Préparer le paiement →</button>
+            <button class="btn btn-primary" style="margin-top:1rem;background:linear-gradient(135deg,var(--gold),#8a6234);color:#000" id="prepBtnE" onclick="preparerPaiement('ext')">Préparer le paiement →</button>
           </div>
         </div>
         <div class="card">
@@ -680,7 +676,7 @@ footer a:hover{color:var(--accent2);}
           <div class="form-group"><label>Rôle</label><select id="mRole"><option value="membre">Membre</option><option value="trésorier">Trésorier</option><option value="secrétaire">Secrétaire</option></select></div>
           <div class="form-group"><label>N° WhatsApp</label><input type="text" id="mWA" placeholder="228XXXXXXXX"/></div>
           <div class="form-group"><label>Couleur</label>
-            <select id="mCol"><option value="#00c896">Vert</option><option value="#3b82f6">Bleu</option><option value="#f5a623">Or</option><option value="#ef4444">Rouge</option><option value="#8b5cf6">Violet</option><option value="#ec4899">Rose</option></select>
+            <select id="mCol"><option value="#0f9d8a">Vert</option><option value="#4a7690">Bleu</option><option value="#b8894a">Or</option><option value="#c9504f">Rouge</option><option value="#56708a">Violet</option><option value="#8a5a72">Rose</option></select>
           </div>
         </div>
         <button class="btn-sm btn-primary" style="margin-top:.9rem" onclick="addMember()">✅ Ajouter</button>
@@ -749,13 +745,15 @@ footer a:hover{color:var(--accent2);}
 
 <!-- MODAL PROPOSITION BIOMÉTRIE -->
 <div class="modal-bg" id="modalBio">
-  <div class="modal" style="text-align:center">
+  <div class="modal" style="text-align:center;position:relative">
+    <button onclick="refuserBio()" style="position:absolute;top:.7rem;right:.9rem;background:none;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer">✕</button>
     <div style="font-size:2.5rem;margin-bottom:.8rem">👆</div>
     <h3 style="text-align:center;margin-bottom:.5rem">Activer la connexion biométrique ?</h3>
-    <p style="font-size:.82rem;color:var(--muted);margin-bottom:1.2rem">Les prochaines fois, connectez-vous en un seul toucher avec votre empreinte digitale ou Face ID.</p>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:.6rem">Les prochaines fois, connectez-vous en un seul toucher avec votre empreinte digitale ou Face ID.</p>
+    <p id="bioStatus" style="font-size:.76rem;color:var(--accent);min-height:1.1rem;margin-bottom:.6rem"></p>
     <div style="display:flex;gap:.7rem;justify-content:center">
-      <button class="btn-sm btn-outline" onclick="refuserBio()" style="padding:.6rem 1.2rem">Non merci</button>
-      <button class="btn-sm btn-primary" onclick="activerBio()" style="padding:.6rem 1.5rem">👆 Activer</button>
+      <button class="btn-sm btn-outline" id="bioBtnRefuser" onclick="refuserBio()" style="padding:.6rem 1.2rem">Non merci</button>
+      <button class="btn-sm btn-primary" id="bioBtnActiver" onclick="activerBio()" style="padding:.6rem 1.5rem">👆 Activer</button>
     </div>
   </div>
 </div>
@@ -808,6 +806,36 @@ function init(){
 }
 
 // ═══════════════════════════════════════════════
+//  INSTALLATION PWA (bouton réel, plus fiable que la bannière auto du navigateur)
+// ═══════════════════════════════════════════════
+let deferredInstallPrompt=null;
+window.addEventListener('beforeinstallprompt',(e)=>{
+  e.preventDefault();
+  deferredInstallPrompt=e;
+  ['btnInstallApp','btnInstallAppRole'].forEach(id=>{
+    const b=document.getElementById(id); if(b) b.style.display='inline-block';
+  });
+});
+async function installApp(){
+  if(!deferredInstallPrompt){
+    toast("ℹ️ Utilisez le menu de votre navigateur : Ajouter à l'écran d'accueil");
+    return;
+  }
+  deferredInstallPrompt.prompt();
+  await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt=null;
+  ['btnInstallApp','btnInstallAppRole'].forEach(id=>{
+    const b=document.getElementById(id); if(b) b.style.display='none';
+  });
+}
+window.addEventListener('appinstalled',()=>{
+  toast('✅ Application installée !');
+  ['btnInstallApp','btnInstallAppRole'].forEach(id=>{
+    const b=document.getElementById(id); if(b) b.style.display='none';
+  });
+});
+
+// ═══════════════════════════════════════════════
 //  CHOIX RÔLE
 // ═══════════════════════════════════════════════
 function chooseRole(role){
@@ -822,7 +850,7 @@ function chooseRole(role){
     show('setupPage');
   } else {
     const icons={président:'👑',trésorier:'💼',membre:'👤',secrétaire:'🗂️'};
-    const colors={président:'linear-gradient(135deg,#f5a623,#d97706)',trésorier:'linear-gradient(135deg,#3b82f6,#1d4ed8)',membre:'linear-gradient(135deg,#00c896,#059669)',secrétaire:'linear-gradient(135deg,#8b5cf6,#6d28d9)'};
+    const colors={président:'linear-gradient(135deg,#b8894a,#8a6234)',trésorier:'linear-gradient(135deg,#4a7690,#355a70)',membre:'linear-gradient(135deg,#0f9d8a,#0c7d6f)',secrétaire:'linear-gradient(135deg,#56708a,#3d4f61)'};
     const titles={président:'Espace Président(e)',trésorier:'Espace Trésorier(ère)',membre:'Espace Membre',secrétaire:'Espace Secrétaire'};
     document.getElementById('loginIcon').style.background=colors[role];
     document.getElementById('loginIcon').textContent=icons[role];
@@ -831,7 +859,7 @@ function chooseRole(role){
     sv('loginUser',''); sv('loginPass','');
     document.getElementById('loginUser').dataset.role=role;
     show('loginPage');
-    checkBioAvailable(role);
+    checkBioAvailable();
   }
 }
 function backToRole(){hide('loginPage');hide('setupPage');show('rolePage');}
@@ -845,7 +873,7 @@ function finishSetup(){
   if(!nom||!login||!pwd||!wa){err.textContent='⚠️ Tous les champs sont obligatoires.';err.style.display='block';return;}
   const members=gd('members',[]);
   if(members.find(m=>m.login===login)){err.textContent='⚠️ Cet identifiant est déjà pris.';err.style.display='block';return;}
-  const color={président:'#f5a623',trésorier:'#3b82f6',membre:'#00c896',secrétaire:'#8b5cf6'}[setupRole]||'#00c896';
+  const color={président:'#b8894a',trésorier:'#4a7690',membre:'#0f9d8a',secrétaire:'#56708a'}[setupRole]||'#0f9d8a';
   members.push({id:Date.now(),nom,login,pwd,role:setupRole,wa,color});
   sd('members',members);
   if(setupRole==='trésorier'){
@@ -862,8 +890,10 @@ function finishSetup(){
 // ═══════════════════════════════════════════════
 function doLogin(){
   const u=vv('loginUser'),p=vv('loginPass');
-  const role=document.getElementById('loginUser').dataset.role;
-  const found=gd('members',[]).find(m=>m.login===u&&m.pwd===p&&m.role===role);
+  // On retrouve le compte par identifiant + mot de passe uniquement : peu importe
+  // la case cliquée sur la page précédente, ça permet de se connecter avec
+  // n'importe quel compte tant qu'on a ses propres identifiants.
+  const found=gd('members',[]).find(m=>m.login===u&&m.pwd===p);
   if(!found){
     document.getElementById('loginErr').textContent='❌ Identifiant ou mot de passe incorrect.';
     document.getElementById('loginErr').style.display='block';
@@ -872,8 +902,8 @@ function doLogin(){
   cu=found; hide('loginPage');
   document.getElementById('appLayout').style.display='block';
   initApp();
-  // Proposer la biométrie si pas encore activée
-  const bioData=gd(bioKey(cu.role),null);
+  // Proposer la biométrie si pas encore activée pour CE compte précis
+  const bioData=gd(bioDeviceKey(),null);
   if(!bioData && window.PublicKeyCredential){
     setTimeout(()=>document.getElementById('modalBio').classList.add('open'),800);
   }
@@ -1304,7 +1334,7 @@ function renderMembers(){
   </tr>`).join('');
 }
 function addMember(){
-  const nom=vv('mNom'),login=vv('mLogin'),pwd=vv('mPwd'),role=vv('mRole')||'membre',wa=vv('mWA'),color=vv('mCol')||'#00c896';
+  const nom=vv('mNom'),login=vv('mLogin'),pwd=vv('mPwd'),role=vv('mRole')||'membre',wa=vv('mWA'),color=vv('mCol')||'#0f9d8a';
   if(!nom||!login||!pwd||!wa){toast('⚠️ Remplissez tous les champs');return;}
   const mbs=gd('members',[]);
   if(mbs.find(m=>m.login===login)){toast('⚠️ Identifiant déjà utilisé');return;}
@@ -1368,11 +1398,14 @@ document.addEventListener('keydown',e=>{
 //  BIOMÉTRIE — WebAuthn / Passkey
 // ═══════════════════════════════════════════════
 
-function bioKey(role){ return 'bio_cred_'+role; }
+// Une seule empreinte/Face ID enregistrée par appareil (pas par rôle), liée
+// au compte (login) qui l'a activée — évite les blocages si on se reconnecte
+// avec un autre rôle ou un autre compte sur le même téléphone.
+function bioDeviceKey(){ return 'bio_cred_device'; }
 
 async function activerBio(){
-  closeModals();
-  if(!window.PublicKeyCredential){ toast('⚠️ Biométrie non supportée sur cet appareil'); return; }
+  setBioBusy(true,'Suivez les instructions de votre téléphone…');
+  if(!window.PublicKeyCredential){ toast('⚠️ Biométrie non supportée sur cet appareil'); setBioBusy(false); closeModals(); return; }
   try {
     const challenge = new Uint8Array(32);
     crypto.getRandomValues(challenge);
@@ -1384,18 +1417,24 @@ async function activerBio(){
         user: { id: userId, name: cu.login, displayName: cu.nom },
         pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
         authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required' },
-        timeout: 60000,
+        timeout: 25000,
       }
     });
-    // Sauvegarder l'identifiant de la credential
     const credId = btoa(String.fromCharCode(...new Uint8Array(cred.rawId)));
-    const bioData = { credId, login: cu.login, role: cu.role, nom: cu.nom };
-    sd(bioKey(cu.role), bioData);
+    const bioData = { credId, login: cu.login, nom: cu.nom };
+    sd(bioDeviceKey(), bioData);
     toast('✅ Biométrie activée ! Connexion rapide disponible.');
+    closeModals(); setBioBusy(false);
   } catch(e) {
-    if(e.name==='NotAllowedError') toast('⚠️ Action annulée.');
+    setBioBusy(false);
+    if(e.name==='NotAllowedError') toast('⚠️ Action annulée ou refusée.');
     else toast('⚠️ Erreur : '+e.message);
   }
+}
+function setBioBusy(busy,msg){
+  const s=document.getElementById('bioStatus'); if(s) s.textContent=busy?(msg||''):'';
+  const a=document.getElementById('bioBtnActiver'), r=document.getElementById('bioBtnRefuser');
+  if(a) a.disabled=busy; if(r) r.disabled=busy;
 }
 
 function refuserBio(){
@@ -1404,9 +1443,8 @@ function refuserBio(){
 }
 
 async function loginBio(){
-  const role = document.getElementById('loginUser').dataset.role;
-  const bioData = gd(bioKey(role), null);
-  if(!bioData){ toast('⚠️ Aucune biométrie enregistrée pour ce rôle'); return; }
+  const bioData = gd(bioDeviceKey(), null);
+  if(!bioData){ toast('⚠️ Aucune biométrie enregistrée sur cet appareil'); return; }
   if(!window.PublicKeyCredential){ toast('⚠️ Biométrie non supportée'); return; }
   try {
     const challenge = new Uint8Array(32);
@@ -1417,12 +1455,11 @@ async function loginBio(){
         challenge,
         allowCredentials: [{ type: 'public-key', id: credIdBytes }],
         userVerification: 'required',
-        timeout: 60000,
+        timeout: 25000,
       }
     });
-    // Auth biométrique réussie
-    const found = gd('members',[]).find(m => m.login===bioData.login && m.role===bioData.role);
-    if(!found){ toast('❌ Membre introuvable'); return; }
+    const found = gd('members',[]).find(m => m.login===bioData.login);
+    if(!found){ toast('❌ Compte introuvable (a-t-il été supprimé ?)'); return; }
     cu = found;
     hide('loginPage');
     document.getElementById('appLayout').style.display = 'block';
@@ -1434,14 +1471,10 @@ async function loginBio(){
   }
 }
 
-function checkBioAvailable(role){
-  const bioData = gd(bioKey(role), null);
+function checkBioAvailable(){
+  const bioData = gd(bioDeviceKey(), null);
   const wrap = document.getElementById('bioLoginWrap');
-  if(bioData && bioData.role===role && window.PublicKeyCredential){
-    wrap.style.display = 'block';
-  } else {
-    wrap.style.display = 'none';
-  }
+  wrap.style.display = (bioData && window.PublicKeyCredential) ? 'block' : 'none';
 }
 
 // ═══════════════════════════════════════════════
