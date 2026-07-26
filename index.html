@@ -320,89 +320,63 @@ footer a:hover{color:var(--accent2);}
 </head>
 <body>
 
-<!-- ════════════════ PAGE CHOIX RÔLE ════════════════ -->
-<div id="rolePage" class="cpage bg-role">
-  <div class="box" style="max-width:440px">
+<!-- ════════════════ PAGE CONNEXION (par code d'accès) ════════════════ -->
+<div id="loginPage" class="cpage bg-login">
+  <div class="box">
     <div class="hero-logo">
       <div class="hero-icon">💰</div>
       <div class="hero-title"><span class="tc">TI</span>CAISSE</div>
       <div class="hero-sub">💹 Gestion financière de votre association</div>
-    </div>
-    <div class="deco-bar" style="justify-content:center;margin-bottom:1.4rem">
-      <div class="deco-item"><span>💵</span> Cotisations</div>
-      <div class="deco-item"><span>📊</span> Bilan</div>
-      <div class="deco-item"><span>🏦</span> Caisse</div>
-      <div class="deco-item"><span>📱</span> Mobile Money</div>
-    </div>
-    <p style="text-align:center;font-size:.8rem;color:var(--muted);margin-bottom:1rem">Sélectionnez votre type de compte</p>
-    <div class="role-grid">
-      <div class="role-card pres" onclick="chooseRole('président')">
-        <div class="role-icon pres">👑</div>
-        <div class="role-info"><div class="rt">Président(e)</div><div class="rs">Administration complète</div></div>
-        <div class="role-arrow">›</div>
-      </div>
-      <div class="role-card tres" onclick="chooseRole('trésorier')">
-        <div class="role-icon tres">💼</div>
-        <div class="role-info"><div class="rt">Trésorier(ère)</div><div class="rs">Gestion des finances</div></div>
-        <div class="role-arrow">›</div>
-      </div>
-      <div class="role-card memb" onclick="chooseRole('membre')">
-        <div class="role-icon memb">👤</div>
-        <div class="role-info"><div class="rt">Membre</div><div class="rs">Paiement des cotisations</div></div>
-        <div class="role-arrow">›</div>
-      </div>
-      <div class="role-card secr" onclick="chooseRole('secrétaire')">
-        <div class="role-icon secr">🗂️</div>
-        <div class="role-info"><div class="rt">Secrétaire</div><div class="rs">Suivi des prêts &amp; dossiers</div></div>
-        <div class="role-arrow">›</div>
-      </div>
-    </div>
-    <button id="btnInstallAppRole" onclick="installApp()" style="display:none;width:100%;margin-top:1rem;background:var(--accent);border:none;color:#000;padding:.6rem;border-radius:10px;cursor:pointer;font-size:.82rem;font-weight:700">📲 Installer l'application sur cet appareil</button>
-    <p style="text-align:center;font-size:.7rem;color:var(--muted);margin-top:.5rem">🔒 Accès réservé aux membres enregistrés</p>
-  </div>
-</div>
-
-<!-- ════════════════ PAGE LOGIN ════════════════ -->
-<div id="loginPage" class="cpage bg-login" style="display:none">
-  <div class="box">
-    <div style="text-align:center;margin-bottom:1.3rem">
-      <div id="loginIcon" style="width:58px;height:58px;border-radius:16px;display:inline-flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:.6rem"></div>
-      <div class="box-title" id="loginTitle"></div>
-      <p class="box-sub" style="margin-bottom:0">Entrez vos identifiants</p>
     </div>
     <div id="loginErr" class="err" style="display:none"></div>
     <div id="bioLoginWrap" style="display:none;margin-bottom:1rem">
       <button onclick="loginBio()" style="width:100%;padding:.85rem;border-radius:12px;border:2px solid var(--accent);background:var(--surface2);color:var(--accent);font-family:'Syne',sans-serif;font-weight:700;font-size:.92rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.6rem;transition:.2s">
         <span style="font-size:1.4rem">👆</span> Empreinte / Face ID
       </button>
-      <div style="text-align:center;margin:.6rem 0;color:var(--muted);font-size:.73rem">— ou entrez vos identifiants —</div>
+      <div style="text-align:center;margin:.6rem 0;color:var(--muted);font-size:.73rem">— ou entrez votre code —</div>
     </div>
-    <div class="form-group"><label>Identifiant</label><input type="text" id="loginUser" placeholder="votre identifiant"/></div>
-    <div class="form-group"><label>Mot de passe</label><input type="password" id="loginPass" placeholder="••••••••"/></div>
+    <div class="form-group">
+      <label>Votre code d'accès</label>
+      <input type="text" id="loginCode" placeholder="ex: 001-JD" style="text-align:center;letter-spacing:2px;font-family:'Syne',sans-serif;font-weight:700;text-transform:uppercase"/>
+    </div>
     <button class="btn btn-primary" onclick="doLogin()">Se connecter →</button>
-    <button style="margin-top:.6rem;width:100%;padding:.55rem;border-radius:10px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;font-size:.8rem" onclick="backToRole()">← Changer de rôle</button>
+    <p style="text-align:center;font-size:.72rem;color:var(--muted);margin-top:1rem">🔒 Pas encore de code ? Demandez au président(e) ou à un membre du comité de vous enregistrer dans <strong>Gestion membres</strong>.</p>
+    <button id="btnInstallAppRole" onclick="installApp()" style="display:none;width:100%;margin-top:1rem;background:var(--accent);border:none;color:#000;padding:.6rem;border-radius:10px;cursor:pointer;font-size:.82rem;font-weight:700">📲 Installer l'application sur cet appareil</button>
   </div>
 </div>
 
-<!-- ════════════════ PAGE SETUP ════════════════ -->
+<!-- ════════════════ PAGE SETUP (première configuration de l'association) ════════════════ -->
 <div id="setupPage" class="cpage bg-setup" style="display:none">
   <div class="box" style="max-width:510px">
-    <div class="box-title">⚙️ Premier accès</div>
-    <p class="box-sub">Créer le compte <strong id="setupLabel" style="color:var(--accent)"></strong></p>
+    <div class="hero-logo" style="margin-bottom:1.2rem">
+      <div class="hero-icon">💰</div>
+      <div class="hero-title"><span class="tc">TI</span>CAISSE</div>
+    </div>
+    <div class="box-title" style="font-size:1.3rem">⚙️ Première configuration</div>
+    <p class="box-sub">Bienvenue ! Créez le tout premier compte de l'association.</p>
     <div id="setupErr" class="err" style="display:none"></div>
-    <div class="form-group"><label>Nom complet</label><input type="text" id="su_nom" placeholder="Prénom et Nom"/></div>
-    <div class="form-group"><label>Identifiant de connexion</label><input type="text" id="su_login" placeholder="ex: president"/></div>
-    <div class="form-group"><label>Mot de passe</label><input type="password" id="su_pwd" placeholder="Choisissez un mot de passe sécurisé"/></div>
+    <div class="irow">
+      <div class="form-group"><label>Prénom</label><input type="text" id="su_prenom" placeholder="Prénom"/></div>
+      <div class="form-group"><label>Nom</label><input type="text" id="su_nomf" placeholder="Nom"/></div>
+    </div>
     <div class="form-group"><label>N° WhatsApp (avec indicatif)</label><input type="text" id="su_wa" placeholder="228XXXXXXXX"/></div>
-    <div id="su_payFields" style="display:none">
-      <hr class="sep">
-      <div class="info">📱 Configurez les numéros mobiles money du(de la) trésorier(ère)</div>
-      <div class="form-group"><label>N° Moov Money (8 chiffres)</label><input type="text" id="su_moov" maxlength="8" placeholder="XXXXXXXX"/></div>
-      <div class="form-group"><label>N° Mixx by Yas (8 chiffres)</label><input type="text" id="su_yas" maxlength="8" placeholder="XXXXXXXX"/></div>
+    <div class="form-group"><label>Votre titre</label>
+      <select id="su_role">
+        <option value="président">Président(e)</option>
+        <option value="trésorier">Trésorier(ère)</option>
+        <option value="secrétaire">Secrétaire</option>
+        <option value="membre">Membre</option>
+      </select>
+    </div>
+    <hr class="sep">
+    <div class="info">📱 Configurez les paramètres de l'association (modifiables plus tard dans Gestion membres)</div>
+    <div class="form-group"><label>N° Moov Money du(de la) trésorier(ère)</label><input type="text" id="su_moov" maxlength="8" placeholder="XXXXXXXX"/></div>
+    <div class="form-group"><label>N° Mixx by Yas du(de la) trésorier(ère)</label><input type="text" id="su_yas" maxlength="8" placeholder="XXXXXXXX"/></div>
+    <div class="irow">
       <div class="form-group"><label>Cotisation ordinaire mensuelle (FCFA)</label><input type="number" id="su_mont" placeholder="ex: 2000"/></div>
+      <div class="form-group"><label>Prix d'adhésion au groupe (FCFA)</label><input type="number" id="su_adh" placeholder="ex: 1000"/></div>
     </div>
     <button class="btn btn-primary" onclick="finishSetup()">✅ Créer le compte</button>
-    <button style="margin-top:.6rem;width:100%;padding:.55rem;border-radius:10px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;font-size:.8rem" onclick="backToRole()">← Retour</button>
   </div>
 </div>
 
@@ -438,6 +412,11 @@ footer a:hover{color:var(--accent2);}
       <div class="card" style="margin-top:1.1rem">
         <div class="card-title">📋 Activités récentes</div>
         <div id="actFeed" style="font-size:.8rem;color:var(--muted)"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">📄 Mon rapport</div>
+        <p style="font-size:.78rem;color:var(--muted);margin-bottom:.9rem">Recevez le résumé de vos cotisations, adhésion et prêts directement sur votre WhatsApp enregistré.</p>
+        <button class="btn-sm btn-primary" style="background:linear-gradient(135deg,#25D366,#128C4A)" onclick="envoyerRapportWhatsapp(cu.id)">📲 Envoyer mon rapport sur WhatsApp</button>
       </div>
     </div>
 
@@ -658,22 +637,18 @@ footer a:hover{color:var(--accent2);}
     <!-- ── MEMBRES (président) ── -->
     <div class="sec" id="sec-membres">
       <div class="card">
-        <div class="card-title">🔑 Modifier mes identifiants</div>
-        <div class="info">En tant que président(e), vous pouvez changer vos identifiants à tout moment.</div>
-        <div class="irow">
-          <div class="form-group"><label>Nouvel identifiant</label><input type="text" id="nLogin" placeholder="nouveau login"/></div>
-          <div class="form-group"><label>Nouveau mot de passe</label><input type="password" id="nPwd" placeholder="nouveau mot de passe"/></div>
-          <div class="form-group"><label>Confirmer</label><input type="password" id="nPwd2" placeholder="confirmez"/></div>
-        </div>
-        <button class="btn-sm btn-warning" style="margin-top:.9rem" onclick="changeIdents()">🔐 Mettre à jour</button>
+        <div class="card-title">🔑 Mon code d'accès</div>
+        <div class="info">Votre code personnel : <strong id="monCodeDisplay" style="font-family:'Syne',sans-serif;letter-spacing:1px"></strong> — utilisez-le pour vous connecter depuis un autre téléphone.</div>
+        <div class="form-group"><label>Mon numéro WhatsApp</label><input type="text" id="nWA" placeholder="228XXXXXXXX"/></div>
+        <button class="btn-sm btn-warning" style="margin-top:.5rem" onclick="updateMyWa()">💾 Mettre à jour mon numéro</button>
       </div>
       <div class="card">
         <div class="card-title">➕ Ajouter un membre</div>
+        <p style="font-size:.78rem;color:var(--muted);margin-bottom:.9rem">Un code d'accès unique (numéro + 2 lettres) sera généré automatiquement et affiché dans le tableau ci-dessous et le répertoire.</p>
         <div class="irow">
-          <div class="form-group"><label>Nom complet</label><input type="text" id="mNom" placeholder="Prénom Nom"/></div>
-          <div class="form-group"><label>Identifiant</label><input type="text" id="mLogin" placeholder="ex: prenom.nom"/></div>
-          <div class="form-group"><label>Mot de passe</label><input type="password" id="mPwd" placeholder="••••••"/></div>
-          <div class="form-group"><label>Rôle</label><select id="mRole"><option value="membre">Membre</option><option value="trésorier">Trésorier</option><option value="secrétaire">Secrétaire</option></select></div>
+          <div class="form-group"><label>Prénom</label><input type="text" id="mPrenom" placeholder="Prénom"/></div>
+          <div class="form-group"><label>Nom</label><input type="text" id="mNomF" placeholder="Nom"/></div>
+          <div class="form-group"><label>Rôle</label><select id="mRole"><option value="membre">Membre</option><option value="trésorier">Trésorier</option><option value="secrétaire">Secrétaire</option><option value="président">Président</option></select></div>
           <div class="form-group"><label>N° WhatsApp</label><input type="text" id="mWA" placeholder="228XXXXXXXX"/></div>
           <div class="form-group"><label>Couleur</label>
             <select id="mCol"><option value="#0f9d8a">Vert</option><option value="#4a7690">Bleu</option><option value="#b8894a">Or</option><option value="#c9504f">Rouge</option><option value="#56708a">Violet</option><option value="#8a5a72">Rose</option></select>
@@ -683,14 +658,15 @@ footer a:hover{color:var(--accent2);}
       </div>
       <div class="card">
         <div class="card-title">👥 Tous les membres</div>
-        <div class="tw"><table><thead><tr><th>Nom</th><th>Identifiant</th><th>Rôle</th><th>WhatsApp</th><th>Action</th></tr></thead><tbody id="membersTable"></tbody></table></div>
+        <div class="tw"><table><thead><tr><th>Nom</th><th>Code d'accès</th><th>Rôle</th><th>WhatsApp</th><th>Action</th></tr></thead><tbody id="membersTable"></tbody></table></div>
       </div>
       <div class="card">
-        <div class="card-title">⚙️ Paramètres paiement</div>
+        <div class="card-title">⚙️ Paramètres association</div>
         <div class="irow">
           <div class="form-group"><label>N° Moov Money trésorier</label><input type="text" id="sMoov" maxlength="8" placeholder="XXXXXXXX"/></div>
           <div class="form-group"><label>N° Mixx by Yas trésorier</label><input type="text" id="sYas" maxlength="8" placeholder="XXXXXXXX"/></div>
           <div class="form-group"><label>Cotisation mensuelle (FCFA)</label><input type="number" id="sMont" placeholder="ex: 2000"/></div>
+          <div class="form-group"><label>Prix d'adhésion au groupe (FCFA)</label><input type="number" id="sAdh" placeholder="ex: 1000"/></div>
         </div>
         <button class="btn-sm btn-primary" style="margin-top:.9rem" onclick="saveSet()">💾 Enregistrer</button>
       </div>
@@ -771,7 +747,7 @@ function sd(k,v){localStorage.setItem(k,JSON.stringify(v));}
 function vv(id){const e=document.getElementById(id);return e?(e.value||'').trim():'';}
 function sv(id,val){const e=document.getElementById(id);if(e)e.value=val;}
 
-let cu=null,setupRole=null;
+let cu=null;
 let selOperO=null,numO='',souscO=false;
 let selOperE=null,numE='',souscE=false;
 let uncheckData=null,pvExtId=null;
@@ -803,6 +779,37 @@ function init(){
       navigator.serviceWorker.register('sw.js').catch(()=>{});
     });
   }
+  showEntryPage();
+}
+
+// ═══════════════════════════════════════════════
+//  PAGE DE DÉMARRAGE : setup si aucun membre, sinon connexion
+// ═══════════════════════════════════════════════
+function showEntryPage(){
+  hide('setupPage'); hide('loginPage');
+  const members=gd('members',[]);
+  if(members.length===0){
+    show('setupPage');
+  } else {
+    show('loginPage');
+    checkBioAvailable();
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  GÉNÉRATION DU CODE D'ACCÈS (numéro + 2 lettres)
+// ═══════════════════════════════════════════════
+function genCode(prenom,nomF){
+  let seq=Number(localStorage.getItem('code_seq')||'0')+1;
+  localStorage.setItem('code_seq',String(seq));
+  const letters=((prenom[0]||'X')+(nomF[0]||'X')).toUpperCase();
+  let code=String(seq).padStart(3,'0')+'-'+letters;
+  const existing=gd('members',[]);
+  while(existing.find(m=>m.code===code)){
+    seq++; localStorage.setItem('code_seq',String(seq));
+    code=String(seq).padStart(3,'0')+'-'+letters;
+  }
+  return code;
 }
 
 // ═══════════════════════════════════════════════
@@ -836,66 +843,39 @@ window.addEventListener('appinstalled',()=>{
 });
 
 // ═══════════════════════════════════════════════
-//  CHOIX RÔLE
-// ═══════════════════════════════════════════════
-function chooseRole(role){
-  const members=gd('members',[]);
-  const exists=members.find(m=>m.role===role);
-  hide('rolePage');
-  if(!exists){
-    setupRole=role;
-    document.getElementById('setupLabel').textContent=role.charAt(0).toUpperCase()+role.slice(1);
-    document.getElementById('su_payFields').style.display=role==='trésorier'?'block':'none';
-    document.getElementById('setupErr').style.display='none';
-    show('setupPage');
-  } else {
-    const icons={président:'👑',trésorier:'💼',membre:'👤',secrétaire:'🗂️'};
-    const colors={président:'linear-gradient(135deg,#b8894a,#8a6234)',trésorier:'linear-gradient(135deg,#4a7690,#355a70)',membre:'linear-gradient(135deg,#0f9d8a,#0c7d6f)',secrétaire:'linear-gradient(135deg,#56708a,#3d4f61)'};
-    const titles={président:'Espace Président(e)',trésorier:'Espace Trésorier(ère)',membre:'Espace Membre',secrétaire:'Espace Secrétaire'};
-    document.getElementById('loginIcon').style.background=colors[role];
-    document.getElementById('loginIcon').textContent=icons[role];
-    document.getElementById('loginTitle').textContent=titles[role];
-    document.getElementById('loginErr').style.display='none';
-    sv('loginUser',''); sv('loginPass','');
-    document.getElementById('loginUser').dataset.role=role;
-    show('loginPage');
-    checkBioAvailable();
-  }
-}
-function backToRole(){hide('loginPage');hide('setupPage');show('rolePage');}
-
-// ═══════════════════════════════════════════════
-//  SETUP
+//  SETUP (première configuration)
 // ═══════════════════════════════════════════════
 function finishSetup(){
   const err=document.getElementById('setupErr'); err.style.display='none';
-  const nom=vv('su_nom'),login=vv('su_login'),pwd=vv('su_pwd'),wa=vv('su_wa');
-  if(!nom||!login||!pwd||!wa){err.textContent='⚠️ Tous les champs sont obligatoires.';err.style.display='block';return;}
+  const prenom=vv('su_prenom'),nomF=vv('su_nomf'),wa=vv('su_wa'),role=vv('su_role')||'président';
+  if(!prenom||!nomF||!wa){err.textContent='⚠️ Prénom, Nom et numéro WhatsApp sont obligatoires.';err.style.display='block';return;}
+  const nom=prenom+' '+nomF;
+  const color={président:'#b8894a',trésorier:'#4a7690',membre:'#0f9d8a',secrétaire:'#56708a'}[role]||'#0f9d8a';
+  const code=genCode(prenom,nomF);
   const members=gd('members',[]);
-  if(members.find(m=>m.login===login)){err.textContent='⚠️ Cet identifiant est déjà pris.';err.style.display='block';return;}
-  const color={président:'#b8894a',trésorier:'#4a7690',membre:'#0f9d8a',secrétaire:'#56708a'}[setupRole]||'#0f9d8a';
-  members.push({id:Date.now(),nom,login,pwd,role:setupRole,wa,color});
+  members.push({id:Date.now(),nom,prenom,nomF,code,role,wa,color});
   sd('members',members);
-  if(setupRole==='trésorier'){
-    const mont=vv('su_mont');
-    if(!mont){err.textContent='⚠️ Indiquez le montant mensuel.';err.style.display='block';return;}
-    sd('settings',{moov:vv('su_moov'),yas:vv('su_yas'),montant:Number(mont)});
-  }
-  toast('✅ Compte créé ! Connectez-vous.');
-  hide('setupPage'); chooseRole(setupRole);
+  sd('settings',{moov:vv('su_moov'),yas:vv('su_yas'),montant:Number(vv('su_mont')||0),adhesionPrix:Number(vv('su_adh')||0)});
+  hide('setupPage');
+  cu=members[members.length-1];
+  document.getElementById('appLayout').style.display='block';
+  initApp();
+  setTimeout(()=>alert('✅ Compte créé !\n\n🔑 Votre code d\'accès personnel est :\n\n'+code+'\n\nNotez-le bien : il vous servira à vous reconnecter, y compris depuis un autre téléphone.'),300);
 }
 
 // ═══════════════════════════════════════════════
-//  AUTH
+//  AUTH — connexion par code d'accès (numéro + 2 lettres)
 // ═══════════════════════════════════════════════
 function doLogin(){
-  const u=vv('loginUser'),p=vv('loginPass');
-  // On retrouve le compte par identifiant + mot de passe uniquement : peu importe
-  // la case cliquée sur la page précédente, ça permet de se connecter avec
-  // n'importe quel compte tant qu'on a ses propres identifiants.
-  const found=gd('members',[]).find(m=>m.login===u&&m.pwd===p);
+  const code=vv('loginCode').toUpperCase();
+  if(!code){
+    document.getElementById('loginErr').textContent='⚠️ Entrez votre code d\'accès.';
+    document.getElementById('loginErr').style.display='block';
+    return;
+  }
+  const found=gd('members',[]).find(m=>m.code===code);
   if(!found){
-    document.getElementById('loginErr').textContent='❌ Identifiant ou mot de passe incorrect.';
+    document.getElementById('loginErr').textContent='❌ Code d\'accès introuvable.';
     document.getElementById('loginErr').style.display='block';
     return;
   }
@@ -912,7 +892,8 @@ function logout(){
   cu=null; selOperO=null; numO=''; souscO=false;
   selOperE=null; numE=''; souscE=false;
   document.getElementById('appLayout').style.display='none';
-  show('rolePage');
+  sv('loginCode','');
+  showEntryPage();
 }
 
 // ═══════════════════════════════════════════════
@@ -1196,6 +1177,7 @@ function renderCotGrid(){
         <div class="avatar" style="background:${m.color}20;color:${m.color};border:1px solid ${m.color}38;width:36px;height:36px;font-size:.8rem">${ini(m.nom)}</div>
         <div style="flex:1"><strong style="font-size:.88rem">${m.nom}</strong><br><span style="font-size:.7rem;color:var(--muted)">${moisPaies.length} mois payés — Total : <strong style="color:var(--accent)">${ff(total)} FCFA</strong></span></div>
         <button class="btn-print" onclick="printBilanMembre(${m.id})">🖨️ Imprimer</button>
+        <button class="btn-print" style="background:#25D36618;border-color:#25D36638;color:#25D366" onclick="envoyerRapportWhatsapp(${m.id})">📲 Envoyer</button>
       </div>
       <div class="cot-months">${months}</div>
     </div>`;
@@ -1308,40 +1290,41 @@ function bilanAlert(){
 // ═══════════════════════════════════════════════
 //  MEMBRES
 // ═══════════════════════════════════════════════
-function changeIdents(){
-  const nL=vv('nLogin'),nP=vv('nPwd'),nP2=vv('nPwd2');
-  if(!nL&&!nP){toast('⚠️ Remplissez au moins un champ');return;}
-  if(nP&&nP!==nP2){toast('⚠️ Les mots de passe ne correspondent pas');return;}
+function updateMyWa(){
+  const nWA=vv('nWA');
+  if(!nWA){toast('⚠️ Numéro requis');return;}
   const mbs=gd('members',[]);
-  if(nL&&mbs.find(m=>m.login===nL&&m.id!==cu.id)){toast('⚠️ Identifiant déjà utilisé');return;}
   const i=mbs.findIndex(m=>m.id===cu.id);
-  if(i>-1){if(nL)mbs[i].login=nL;if(nP)mbs[i].pwd=nP;cu=mbs[i];}
-  sd('members',mbs); sv('nLogin',''); sv('nPwd',''); sv('nPwd2','');
-  toast('🔐 Identifiants mis à jour !');
+  if(i>-1){mbs[i].wa=nWA; cu=mbs[i];}
+  sd('members',mbs);
+  toast('💾 Numéro WhatsApp mis à jour !');
 }
 function renderMembers(){
   const s=gd('settings',{});
-  sv('sMoov',s.moov||''); sv('sYas',s.yas||''); sv('sMont',s.montant||'');
+  sv('sMoov',s.moov||''); sv('sYas',s.yas||''); sv('sMont',s.montant||''); sv('sAdh',s.adhesionPrix||'');
+  const codeEl=document.getElementById('monCodeDisplay'); if(codeEl) codeEl.textContent=cu.code;
+  sv('nWA',cu.wa||'');
   const mbs=gd('members',[]);
   document.getElementById('membersTable').innerHTML=mbs.map(m=>`<tr>
     <td><div style="display:flex;align-items:center;gap:.5rem">
       <div style="width:28px;height:28px;border-radius:50%;background:${m.color}20;color:${m.color};border:1px solid ${m.color}38;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:.68rem">${ini(m.nom)}</div>
       ${m.nom}</div></td>
-    <td style="color:var(--muted)">${m.login}</td>
+    <td style="font-family:'Syne',sans-serif;font-weight:800;letter-spacing:1px;color:var(--accent)">${m.code}</td>
     <td><span class="chip ${m.role==='président'?'cy':m.role==='trésorier'?'cb':'cg'}">${m.role}</span></td>
     <td><a href="https://wa.me/${m.wa}" target="_blank" class="wa-btn">📱 ${m.wa}</a></td>
     <td>${m.role==='président'?'<span style="color:var(--muted);font-size:.72rem">—</span>':`<button class="btn-sm btn-danger" onclick="delMember(${m.id})">Retirer</button>`}</td>
   </tr>`).join('');
 }
 function addMember(){
-  const nom=vv('mNom'),login=vv('mLogin'),pwd=vv('mPwd'),role=vv('mRole')||'membre',wa=vv('mWA'),color=vv('mCol')||'#0f9d8a';
-  if(!nom||!login||!pwd||!wa){toast('⚠️ Remplissez tous les champs');return;}
+  const prenom=vv('mPrenom'),nomF=vv('mNomF'),role=vv('mRole')||'membre',wa=vv('mWA'),color=vv('mCol')||'#0f9d8a';
+  if(!prenom||!nomF||!wa){toast('⚠️ Remplissez tous les champs');return;}
+  const nom=prenom+' '+nomF;
   const mbs=gd('members',[]);
-  if(mbs.find(m=>m.login===login)){toast('⚠️ Identifiant déjà utilisé');return;}
-  mbs.push({id:Date.now(),nom,login,pwd,role,wa,color});
+  const code=genCode(prenom,nomF);
+  mbs.push({id:Date.now(),nom,prenom,nomF,code,role,wa,color});
   sd('members',mbs);
-  ['mNom','mLogin','mPwd','mWA'].forEach(id=>sv(id,''));
-  toast('✅ Membre ajouté !'); renderMembers();
+  ['mPrenom','mNomF','mWA'].forEach(id=>sv(id,''));
+  toast('✅ '+nom+' ajouté(e) ! Code : '+code); renderMembers();
 }
 function delMember(id){
   const mbs=gd('members',[]),m=mbs.find(x=>x.id===id);
@@ -1351,7 +1334,7 @@ function delMember(id){
   toast('🗑 Retiré.'); renderMembers();
 }
 function saveSet(){
-  sd('settings',{moov:vv('sMoov'),yas:vv('sYas'),montant:Number(vv('sMont'))});
+  sd('settings',{moov:vv('sMoov'),yas:vv('sYas'),montant:Number(vv('sMont')||0),adhesionPrix:Number(vv('sAdh')||0)});
   toast('💾 Paramètres enregistrés !');
 }
 
@@ -1362,7 +1345,7 @@ function renderRepert(){
   document.getElementById('repertGrid').innerHTML=gd('members',[]).map(m=>`
     <div class="member-row">
       <div class="avatar" style="background:${m.color}20;color:${m.color};border:1px solid ${m.color}38">${ini(m.nom)}</div>
-      <div class="minfo"><div class="mn">${m.nom}</div><div class="mr">${m.role.charAt(0).toUpperCase()+m.role.slice(1)}</div></div>
+      <div class="minfo"><div class="mn">${m.nom}</div><div class="mr">${m.role.charAt(0).toUpperCase()+m.role.slice(1)} — Code : <strong style="color:var(--accent)">${m.code}</strong></div></div>
       <a href="https://wa.me/${m.wa}" target="_blank" class="wa-btn">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.117 1.528 5.847L0 24l6.335-1.508A11.956 11.956 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.84 0-3.565-.497-5.051-1.364l-.363-.215-3.761.894.948-3.662-.236-.375A9.956 9.956 0 012 12C2 6.486 6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/></svg>
         ${m.wa}
@@ -1410,19 +1393,19 @@ async function activerBio(){
   try {
     const challenge = new Uint8Array(32);
     crypto.getRandomValues(challenge);
-    const userId = new TextEncoder().encode(cu.login);
+    const userId = new TextEncoder().encode(cu.code);
     const cred = await navigator.credentials.create({
       publicKey: {
         challenge,
         rp: { name: 'TICAISSE' },
-        user: { id: userId, name: cu.login, displayName: cu.nom },
+        user: { id: userId, name: cu.code, displayName: cu.nom },
         pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
         authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required' },
         timeout: 25000,
       }
     });
     const credId = btoa(String.fromCharCode(...new Uint8Array(cred.rawId)));
-    const bioData = { credId, login: cu.login, nom: cu.nom };
+    const bioData = { credId, code: cu.code, nom: cu.nom };
     sd(bioDeviceKey(), bioData);
     toast('✅ Biométrie activée ! Connexion rapide disponible.');
     closeModals(); setBioBusy(false);
@@ -1459,7 +1442,7 @@ async function loginBio(){
         timeout: 25000,
       }
     });
-    const found = gd('members',[]).find(m => m.login===bioData.login);
+    const found = gd('members',[]).find(m => m.code===bioData.code);
     if(!found){ toast('❌ Compte introuvable (a-t-il été supprimé ?)'); return; }
     cu = found;
     hide('loginPage');
@@ -1650,6 +1633,43 @@ function soldePret(id){
   const i=prets.findIndex(p=>p.id===id);
   if(i>-1) prets[i].status='soldé';
   sd('prets',prets); toast('✅ Prêt soldé.'); renderPrets();
+}
+
+// ═══════════════════════════════════════════════
+//  ENVOI DU RAPPORT PAR WHATSAPP
+// ═══════════════════════════════════════════════
+function buildRapportTexte(memId){
+  const m=gd('members',[]).find(x=>x.id===memId);
+  if(!m) return '';
+  const cots=gd('cotisations',[]).filter(c=>c.memId===memId);
+  const extras=gd('extras',[]).filter(e=>e.memId===memId&&e.status==='validé');
+  const prets=gd('prets',[]).filter(p=>p.memId===memId);
+  const adh=gd('adhesions',[]).filter(a=>a.memId===memId);
+  const totalOrd=cots.reduce((a,c)=>a+c.montant,0);
+  const totalExt=extras.reduce((a,e)=>a+e.montant,0);
+  const totalAdh=adh.reduce((a,x)=>a+x.montant,0);
+  let txt=`📊 *TICAISSE — Rapport de ${m.nom}*\n`;
+  txt+=`Rôle : ${m.role}\nDate : ${td()}\n\n`;
+  txt+=`💵 *Cotisations ordinaires* — Total : ${ff(totalOrd)} FCFA\n`;
+  txt+=cots.length ? cots.map(c=>`• ${c.mois} : ${ff(c.montant)} FCFA (${c.date})`).join('\n') : 'Aucune';
+  txt+=`\n\n✨ *Cotisations extraordinaires validées* — Total : ${ff(totalExt)} FCFA\n`;
+  txt+=`\n🪪 *Adhésion* — Total payé : ${ff(totalAdh)} FCFA\n`;
+  if(prets.length){
+    txt+=`\n💼 *Prêts*\n`;
+    txt+=prets.map(p=>{const c=calcPret(p);return `• Capital ${ff(p.montant)} FCFA (${p.date}) — Solde dû : ${ff(c.solde)} FCFA — ${p.status}`;}).join('\n');
+    txt+='\n';
+  }
+  txt+=`\n_Rapport généré automatiquement par TICAISSE le ${td()}_`;
+  return txt;
+}
+function envoyerRapportWhatsapp(memId){
+  const m=gd('members',[]).find(x=>x.id===memId);
+  if(!m){toast('⚠️ Membre introuvable');return;}
+  if(!m.wa){toast('⚠️ Aucun numéro WhatsApp enregistré pour ce membre');return;}
+  const texte=buildRapportTexte(memId);
+  const url=`https://wa.me/${m.wa}?text=${encodeURIComponent(texte)}`;
+  window.open(url,'_blank');
+  toast('📲 Ouverture de WhatsApp…');
 }
 
 // ═══════════════════════════════════════════════
