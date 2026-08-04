@@ -340,7 +340,8 @@ footer a:hover{color:var(--accent2);}
       <input type="text" id="loginCode" placeholder="ex: 001-JD" style="text-align:center;letter-spacing:2px;font-family:'Syne',sans-serif;font-weight:700;text-transform:uppercase"/>
     </div>
     <button class="btn btn-primary" onclick="doLogin()">Se connecter →</button>
-    <p style="text-align:center;font-size:.72rem;color:var(--muted);margin-top:1rem">🔒 Pas encore de code ? Demandez au président(e) ou à un membre du comité de vous enregistrer dans <strong>Gestion membres</strong>.</p>
+    <button style="margin-top:.7rem;width:100%;padding:.65rem;border-radius:11px;border:2px solid var(--border);background:none;color:var(--text);cursor:pointer;font-size:.82rem;font-weight:600" onclick="goToSetup()">🆕 Première connexion / Créer mon compte</button>
+    <p style="text-align:center;font-size:.72rem;color:var(--muted);margin-top:1rem">🔒 Vous êtes président(e), trésorier(ère) ou secrétaire et n'avez pas encore de code ? Utilisez le bouton ci-dessus. Pour les autres membres, demandez au président(e) de vous enregistrer dans <strong>Gestion membres</strong>.</p>
     <button id="btnInstallAppRole" onclick="installApp()" style="display:none;width:100%;margin-top:1rem;background:var(--accent);border:none;color:#000;padding:.6rem;border-radius:10px;cursor:pointer;font-size:.82rem;font-weight:700">📲 Installer l'application sur cet appareil</button>
   </div>
 </div>
@@ -368,7 +369,8 @@ footer a:hover{color:var(--accent2);}
         <option value="membre">Membre</option>
       </select>
     </div>
-    <hr class="sep">
+    <hr class="sep" id="su_sepPay">
+    <div id="su_payBlock">
     <div class="info">📱 Configurez les paramètres de l'association (modifiables plus tard dans Gestion membres)</div>
     <div class="form-group"><label>N° Moov Money du(de la) trésorier(ère)</label><input type="text" id="su_moov" maxlength="8" placeholder="XXXXXXXX"/></div>
     <div class="form-group"><label>N° Mixx by Yas du(de la) trésorier(ère)</label><input type="text" id="su_yas" maxlength="8" placeholder="XXXXXXXX"/></div>
@@ -376,7 +378,9 @@ footer a:hover{color:var(--accent2);}
       <div class="form-group"><label>Cotisation ordinaire mensuelle (FCFA)</label><input type="number" id="su_mont" placeholder="ex: 2000"/></div>
       <div class="form-group"><label>Prix d'adhésion au groupe (FCFA)</label><input type="number" id="su_adh" placeholder="ex: 1000"/></div>
     </div>
+    </div>
     <button class="btn btn-primary" onclick="finishSetup()">✅ Créer le compte</button>
+    <button id="su_backBtn" style="display:none;margin-top:.6rem;width:100%;padding:.55rem;border-radius:10px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;font-size:.8rem" onclick="backToLoginFromSetup()">← Retour à la connexion</button>
   </div>
 </div>
 
@@ -843,7 +847,24 @@ window.addEventListener('appinstalled',()=>{
 });
 
 // ═══════════════════════════════════════════════
-//  SETUP (première configuration)
+//  ACCÈS À LA CRÉATION DE COMPTE DEPUIS LA PAGE DE CONNEXION
+// ═══════════════════════════════════════════════
+function goToSetup(){
+  const members=gd('members',[]);
+  const bootstrap=members.length===0;
+  document.getElementById('su_payBlock').style.display=bootstrap?'block':'none';
+  document.getElementById('su_sepPay').style.display=bootstrap?'block':'none';
+  document.getElementById('su_backBtn').style.display=bootstrap?'none':'block';
+  document.getElementById('setupErr').style.display='none';
+  ['su_prenom','su_nomf','su_wa','su_moov','su_yas','su_mont','su_adh'].forEach(id=>sv(id,''));
+  hide('loginPage'); show('setupPage');
+}
+function backToLoginFromSetup(){
+  hide('setupPage'); show('loginPage'); checkBioAvailable();
+}
+
+// ═══════════════════════════════════════════════
+//  SETUP (première configuration, ou nouveau compte président/trésorier/secrétaire)
 // ═══════════════════════════════════════════════
 function finishSetup(){
   const err=document.getElementById('setupErr'); err.style.display='none';
@@ -853,9 +874,12 @@ function finishSetup(){
   const color={président:'#b8894a',trésorier:'#4a7690',membre:'#0f9d8a',secrétaire:'#56708a'}[role]||'#0f9d8a';
   const code=genCode(prenom,nomF);
   const members=gd('members',[]);
+  const bootstrap=members.length===0;
   members.push({id:Date.now(),nom,prenom,nomF,code,role,wa,color});
   sd('members',members);
-  sd('settings',{moov:vv('su_moov'),yas:vv('su_yas'),montant:Number(vv('su_mont')||0),adhesionPrix:Number(vv('su_adh')||0)});
+  if(bootstrap){
+    sd('settings',{moov:vv('su_moov'),yas:vv('su_yas'),montant:Number(vv('su_mont')||0),adhesionPrix:Number(vv('su_adh')||0)});
+  }
   hide('setupPage');
   cu=members[members.length-1];
   document.getElementById('appLayout').style.display='block';
