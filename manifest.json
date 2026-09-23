@@ -1,18 +1,43 @@
 {
-  "id": "/",
-  "name": "TICAISSE - Gestion Association",
-  "short_name": "TICAISSE",
-  "description": "Gestion financière de votre association : cotisations, prêts, adhésions, trésorerie",
+  "id": "/?source=pwa",
+  "name": "Caisse AJKT — Gestion Association",
+  "short_name": "Caisse AJKT",
+  "description": "Gestion financière de l'Association des Jeunes Kankpénam de Toaga : cotisations, prêts, adhésions, trésorerie",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#070d1a",
-  "theme_color": "#0f9d8a",
+  "display_override": ["standalone", "minimal-ui"],
+  "background_color": "#f7f3eb",
+  "theme_color": "#1a5c3a",
   "orientation": "portrait-primary",
+  "lang": "fr",
+  "dir": "ltr",
+  "categories": ["finance", "business", "productivity"],
+  "prefer_related_applications": false,
   "icons": [
-    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
-    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }
