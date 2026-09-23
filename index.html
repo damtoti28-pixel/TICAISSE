@@ -161,7 +161,17 @@ input:focus, select:focus, textarea:focus {
 
 /* ─── APP LAYOUT ─── */
 #appLayout { display: none; }
-.app-wrap { max-width: 960px; margin: 0 auto; padding: 1.1rem 1rem 2.5rem; }
+.app-wrap { max-width: 960px; margin: 0 auto; padding: 1.1rem 1rem 1rem; }
+.site-footer {
+  text-align: center;
+  padding: 1.2rem 1rem 1.5rem;
+  font-size: .72rem;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  margin-top: .5rem;
+  background: var(--surface);
+}
+.site-footer span { color: var(--accent); font-weight: 600; }
 
 /* Tabs simplifiés */
 .tabs {
@@ -361,6 +371,7 @@ tr:last-child td { border-bottom: none; }
       Les données sont partagées entre tous les appareils.
     </p>
     <button id="btnInstallLogin" onclick="installApp()" style="display:none;width:100%;margin-top:1rem;background:var(--gold);border:none;color:#1c2a22;padding:.6rem;border-radius:10px;cursor:pointer;font-size:.82rem;font-weight:700">Installer l'application</button>
+    <p style="text-align:center;font-size:.68rem;color:var(--muted);margin-top:1.2rem">© 2026 <span style="color:var(--accent);font-weight:600">@dametoti</span></p>
   </div>
 </div>
 
@@ -514,6 +525,10 @@ tr:last-child td { border-bottom: none; }
       </div>
     </div>
   </div>
+
+  <footer class="site-footer">
+    © 2026 <span>@dametoti</span> — Caisse AJKT
+  </footer>
 </div>
 
 <!-- ═══════════════ MODALS ═══════════════ -->
@@ -1207,12 +1222,14 @@ function soldePret(id) {
 // ═══════════════════════════════════════════════
 function renderMembers() {
   const mbs = gd('members', []);
+  const canAdmin = ['président','trésorier','secrétaire'].includes(cu.role);
   document.getElementById('membersTable').innerHTML = mbs.map(m => `
     <tr>
       <td>${m.nom}</td>
       <td><span class="chip cg">${m.role}</span></td>
       <td>${m.wa || '—'}</td>
-      <td>
+      <td style="white-space:nowrap">
+        ${canAdmin ? `<button class="btn-sm btn-outline" onclick="telechargerBilanPDF(${m.id})" title="Bilan PDF">📄 PDF</button>` : ''}
         <button class="btn-sm btn-outline" onclick="envoyerRapport(${m.id})" title="WhatsApp">📲</button>
         ${cu.role === 'président' || cu.role === 'trésorier' ? `<button class="btn-sm btn-danger" onclick="delMember(${m.id})">✕</button>` : ''}
       </td>
@@ -1238,6 +1255,7 @@ function delMember(id) {
 function renderRepertoire() {
   const mbs = gd('members', []);
   const icons = { président: '👑', trésorier: '💼', secrétaire: '🗂️', membre: '👤' };
+  const canAdmin = ['président','trésorier','secrétaire'].includes(cu.role);
   document.getElementById('repertoireList').innerHTML = mbs.map(m => `
     <div class="member-item" style="cursor:default">
       <div class="avatar" style="background:${m.color || '#1a5c3a'}22;color:${m.color || '#1a5c3a'}">${ini(m.nom)}</div>
@@ -1245,7 +1263,10 @@ function renderRepertoire() {
         <div style="font-weight:600">${m.nom}</div>
         <div class="role-tag">${icons[m.role] || ''} ${m.role} ${m.wa ? '· ' + m.wa : ''}</div>
       </div>
-      ${m.wa ? `<button class="btn-sm btn-outline" onclick="envoyerRapport(${m.id})">Rapport</button>` : ''}
+      <div style="display:flex;gap:.35rem;flex-wrap:wrap">
+        ${canAdmin ? `<button class="btn-sm btn-outline" onclick="telechargerBilanPDF(${m.id})">📄 PDF</button>` : ''}
+        ${m.wa ? `<button class="btn-sm btn-outline" onclick="envoyerRapport(${m.id})">Rapport</button>` : ''}
+      </div>
     </div>`).join('') || '<p style="color:var(--muted)">Aucun membre.</p>';
 }
 
@@ -1260,6 +1281,151 @@ function envoyerRapport(memId) {
   txt += `\n\n_Généré par Caisse AJKT_`;
   window.open(`https://wa.me/${m.wa.replace(/\D/g,'')}?text=${encodeURIComponent(txt)}`, '_blank');
   toast('Ouverture de WhatsApp…');
+}
+
+// ═══════════════════════════════════════════════
+//  BILAN PDF d'un membre (trésorerie / comité)
+// ═══════════════════════════════════════════════
+function telechargerBilanPDF(memId) {
+  if (!['président','trésorier','secrétaire'].includes(cu.role)) {
+    toast('Accès réservé au comité');
+    return;
+  }
+  const m = gd('members', []).find(x => x.id === memId);
+  if (!m) { toast('Membre introuvable'); return; }
+
+  const cots = gd('cotisations', []).filter(c => c.memId === memId);
+  const extras = gd('extras', []).filter(e => e.memId === memId);
+  const prets = gd('prets', []).filter(p => p.memId === memId);
+  const pretsEnCours = prets.filter(p => p.status !== 'soldé');
+  const totalOrd = cots.reduce((a,c) => a + Number(c.montant||0), 0);
+  const totalExt = extras.reduce((a,e) => a + Number(e.montant||0), 0);
+  const totalVerse = totalOrd + totalExt;
+
+  // Totaux prêts
+  let totalCapital = 0, totalInteret = 0, totalRembourse = 0, totalSoldeDu = 0;
+  prets.forEach(p => {
+    const c = calcPret(p);
+    totalCapital += Number(p.montant||0);
+    totalInteret += c.interet;
+    totalRembourse += c.rembourse;
+    if (p.status !== 'soldé') totalSoldeDu += c.solde;
+  });
+
+  const rowsCot = cots.length
+    ? cots.map(c => `<tr><td>${c.mois||'—'}</td><td>${ff(c.montant)} FCFA</td><td>${c.date||'—'}</td><td>${c.oper||'—'}</td></tr>`).join('')
+    : '<tr><td colspan="4">Aucune cotisation ordinaire</td></tr>';
+
+  const rowsExt = extras.length
+    ? extras.map(e => `<tr><td>${ff(e.montant)} FCFA</td><td>${e.motif||'—'}</td><td>${e.date||'—'}</td><td>${e.status||'—'}</td></tr>`).join('')
+    : '<tr><td colspan="4">Aucune</td></tr>';
+
+  // Détail de chaque prêt (surtout en cours)
+  const blocPrets = prets.length ? prets.map(p => {
+    const c = calcPret(p);
+    const enCours = p.status !== 'soldé';
+    return `
+      <div style="border:1px solid ${enCours ? '#c48a2a' : '#ccc'};border-radius:8px;padding:12px;margin-bottom:10px;background:${enCours ? '#fdf6e9' : '#f9f9f9'}">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <strong style="font-size:14px">${enCours ? '⏳ PRÊT EN COURS' : '✅ PRÊT SOLDÉ'}</strong>
+          <span style="font-size:12px;color:#6b7a70">Date du prêt : <strong>${p.date||'—'}</strong></span>
+        </div>
+        ${p.motif ? `<div style="font-size:12px;margin-bottom:6px">Motif : ${p.motif}</div>` : ''}
+        <table style="width:100%;font-size:12px;border-collapse:collapse">
+          <tr>
+            <td style="padding:4px;border:1px solid #ddd"><strong>Capital emprunté</strong><br>${ff(p.montant)} FCFA</td>
+            <td style="padding:4px;border:1px solid #ddd"><strong>Mois écoulés</strong><br>${c.mEcoules} mois</td>
+            <td style="padding:4px;border:1px solid #ddd"><strong>Intérêt actuel (5%/mois)</strong><br>${ff(c.interet)} FCFA</td>
+          </tr>
+          <tr>
+            <td style="padding:4px;border:1px solid #ddd"><strong>Total dû (capital + intérêt)</strong><br>${ff(c.totalDu)} FCFA</td>
+            <td style="padding:4px;border:1px solid #ddd"><strong>Déjà remboursé</strong><br>${ff(c.rembourse)} FCFA</td>
+            <td style="padding:4px;border:1px solid #ddd;background:${c.solde>0?'#fdecea':'#e8f5ee'}"><strong>Solde restant dû</strong><br><span style="font-size:15px;font-weight:700">${ff(c.solde)} FCFA</span></td>
+          </tr>
+        </table>
+        ${(p.remboursements||[]).length ? `
+          <div style="margin-top:8px;font-size:11px">
+            <strong>Historique des remboursements :</strong>
+            <ul style="margin:4px 0 0 16px;padding:0">
+              ${(p.remboursements||[]).map(r => `<li>${r.date||'—'} : ${ff(r.montant)} FCFA</li>`).join('')}
+            </ul>
+          </div>` : '<div style="margin-top:6px;font-size:11px;color:#6b7a70">Aucun remboursement enregistré</div>'}
+      </div>`;
+  }).join('') : '<p style="font-size:13px;color:#6b7a70">Aucun prêt enregistré pour ce membre.</p>';
+
+  const area = document.getElementById('printArea');
+  area.innerHTML = `
+    <div style="font-family:Georgia,serif;color:#1c2a22;max-width:800px;margin:0 auto;padding:8px">
+      <div style="text-align:center;border-bottom:2px solid #1a5c3a;padding-bottom:12px;margin-bottom:16px">
+        <div style="font-size:22px;font-weight:700;color:#1a5c3a">Caisse AJKT</div>
+        <div style="font-size:12px;color:#6b7a70">Association des Jeunes Kankpénam de Toaga</div>
+        <div style="font-size:17px;font-weight:700;margin-top:8px">BILAN INDIVIDUEL</div>
+      </div>
+
+      <table style="width:100%;margin-bottom:14px;font-size:13px">
+        <tr><td style="padding:3px 0;width:140px"><strong>Membre</strong></td><td>${m.nom}</td></tr>
+        <tr><td style="padding:3px 0"><strong>Rôle</strong></td><td>${m.role}</td></tr>
+        <tr><td style="padding:3px 0"><strong>WhatsApp</strong></td><td>${m.wa||'—'}</td></tr>
+        <tr><td style="padding:3px 0"><strong>Édité le</strong></td><td>${td()}</td></tr>
+        <tr><td style="padding:3px 0"><strong>Édité par</strong></td><td>${cu.nom} (${cu.role})</td></tr>
+      </table>
+
+      <!-- RÉSUMÉ SITUATION -->
+      <div style="background:#e8f5ee;border:2px solid #1a5c3a;border-radius:10px;padding:14px;margin-bottom:18px">
+        <div style="font-size:14px;font-weight:700;color:#1a5c3a;margin-bottom:10px">📊 SITUATION GLOBALE DU MEMBRE</div>
+        <table style="width:100%;font-size:13px;border-collapse:collapse">
+          <tr>
+            <td style="padding:6px;border:1px solid #b8dfc8"><strong>Total cotisations versées</strong><br><span style="font-size:16px;color:#1a5c3a">${ff(totalVerse)} FCFA</span><br><span style="font-size:11px;color:#6b7a70">Ord. ${ff(totalOrd)} + Ext. ${ff(totalExt)}</span></td>
+            <td style="padding:6px;border:1px solid #b8dfc8"><strong>Prêts en cours</strong><br><span style="font-size:16px">${pretsEnCours.length}</span><br><span style="font-size:11px;color:#6b7a70">sur ${prets.length} prêt(s) au total</span></td>
+            <td style="padding:6px;border:1px solid #b8dfc8;background:${totalSoldeDu>0?'#fdecea':'#e8f5ee'}"><strong>Solde total dû (prêts)</strong><br><span style="font-size:16px;font-weight:700;color:${totalSoldeDu>0?'#c0392b':'#1a5c3a'}">${ff(totalSoldeDu)} FCFA</span><br><span style="font-size:11px;color:#6b7a70">intérêts inclus</span></td>
+          </tr>
+        </table>
+      </div>
+
+      <h3 style="color:#1a5c3a;font-size:14px;margin:14px 0 6px">1. Cotisations ordinaires</h3>
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="background:#e8f5ee">
+          <th style="border:1px solid #ccc;padding:5px;text-align:left">Mois</th>
+          <th style="border:1px solid #ccc;padding:5px;text-align:left">Montant</th>
+          <th style="border:1px solid #ccc;padding:5px;text-align:left">Date de paiement</th>
+          <th style="border:1px solid #ccc;padding:5px;text-align:left">Opérateur</th>
+        </tr></thead>
+        <tbody>${rowsCot}</tbody>
+      </table>
+      <p style="font-size:12px;margin:4px 0 12px"><strong>Sous-total ordinaires : ${ff(totalOrd)} FCFA</strong></p>
+
+      <h3 style="color:#1a5c3a;font-size:14px;margin:14px 0 6px">2. Cotisations extraordinaires</h3>
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="background:#e8f5ee">
+          <th style="border:1px solid #ccc;padding:5px;text-align:left">Montant</th>
+          <th style="border:1px solid #ccc;padding:5px;text-align:left">Motif</th>
+          <th style="border:1px solid #ccc;padding:5px;text-align:left">Date</th>
+          <th style="border:1px solid #ccc;padding:5px;text-align:left">Statut</th>
+        </tr></thead>
+        <tbody>${rowsExt}</tbody>
+      </table>
+      <p style="font-size:12px;margin:4px 0 12px"><strong>Sous-total extraordinaires : ${ff(totalExt)} FCFA</strong></p>
+
+      <h3 style="color:#1a5c3a;font-size:14px;margin:14px 0 8px">3. Prêts — détail (date, intérêt en cours, solde)</h3>
+      ${blocPrets}
+
+      ${prets.length ? `
+      <div style="margin-top:12px;padding:10px;background:#f0ebe2;border-radius:8px;font-size:12px">
+        <strong>Récapitulatif prêts :</strong>
+        Capital total emprunté : ${ff(totalCapital)} FCFA —
+        Intérêts cumulés : ${ff(totalInteret)} FCFA —
+        Déjà remboursé : ${ff(totalRembourse)} FCFA —
+        <strong style="color:${totalSoldeDu>0?'#c0392b':'#1a5c3a'}">Solde restant dû : ${ff(totalSoldeDu)} FCFA</strong>
+      </div>` : ''}
+
+      <div style="margin-top:22px;padding-top:10px;border-top:1px solid #ccc;font-size:10px;color:#6b7a70;text-align:center">
+        Document généré automatiquement par Caisse AJKT le ${td()} — Taux d'intérêt : 5 % par mois
+      </div>
+    </div>
+  `;
+
+  toast('Impression → « Enregistrer au format PDF »');
+  setTimeout(() => window.print(), 250);
 }
 
 // ═══════════════════════════════════════════════
