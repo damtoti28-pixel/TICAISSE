@@ -485,7 +485,6 @@ tr:last-child td { border-bottom: none; }
             <div class="dropdown-menu">
               <button class="dropdown-item" onclick="openModal('modalEnregPaiement')">Enregistrer un paiement</button>
               <button class="dropdown-item" onclick="openModal('modalDepense')">Enregistrer une dépense</button>
-              <button class="dropdown-item" onclick="openModal('modalRecette')">Enregistrer une recette</button>
               <button class="dropdown-item" onclick="openModal('modalSettings')">Paramètres caisse</button>
               <button class="dropdown-item" onclick="exportData()">Exporter les données</button>
             </div>
@@ -641,19 +640,6 @@ tr:last-child td { border-bottom: none; }
     <div class="modal-actions">
       <button class="btn-outline" onclick="closeModals()">Annuler</button>
       <button class="btn-sm btn-primary" onclick="addDepense()">Enregistrer</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-bg" id="modalRecette">
-  <div class="modal">
-    <h3>Enregistrer une recette</h3>
-    <div class="form-group"><label>Libellé</label><input type="text" id="recLib"></div>
-    <div class="form-group"><label>Montant (FCFA)</label><input type="number" id="recMont"></div>
-    <div class="form-group"><label>Date</label><input type="text" id="recDate"></div>
-    <div class="modal-actions">
-      <button class="btn-outline" onclick="closeModals()">Annuler</button>
-      <button class="btn-sm btn-primary" onclick="addRecette()">Enregistrer</button>
     </div>
   </div>
 </div>
@@ -1113,17 +1099,15 @@ function calcSoldeCaisse() {
   const adh = gd('adhesions', []);
   const carnets = gd('carnetAchats', []);
   const extras = gd('extras', []);
-  const recs = gd('recettes', []);
   const deps = gd('depenses', []);
   const totalCots = cots.reduce((a,c) => a + Number(c.montant||0), 0);
   const totalAdh = adh.reduce((a,x) => a + Number(x.montant||0), 0);
   const totalCarnet = carnets.reduce((a,x) => a + Number(x.montant||0), 0);
   const totalExt = extras.reduce((a,x) => a + Number(x.montant||0), 0);
-  const totalRec = recs.reduce((a,r) => a + Number(r.montant||0), 0);
   const totalDep = deps.reduce((a,d) => a + Number(d.montant||0), 0);
-  const entrees = totalCots + totalAdh + totalCarnet + totalExt + totalRec;
+  const entrees = totalCots + totalAdh + totalCarnet + totalExt;
   return {
-    totalCots, totalAdh, totalCarnet, totalExt, totalRec, totalDep,
+    totalCots, totalAdh, totalCarnet, totalExt, totalDep,
     entrees, solde: entrees - totalDep
   };
 }
@@ -1133,35 +1117,24 @@ function renderDashboard() {
   const prets = gd('prets', []);
   const s = calcSoldeCaisse();
   const pretsEnCours = prets.filter(p => p.status !== 'soldé').length;
-  const isTreso = cu && (cu.role === 'trésorier' || cu.role === 'président');
 
-  let statsHtml = `
+  // Même tableau de bord pour tous les rôles
+  document.getElementById('statsGrid').innerHTML = `
     <div class="stat"><span class="slabel">Solde caisse</span><span class="sval g">${ff(s.solde)}</span><span class="sunit">FCFA</span></div>
     <div class="stat"><span class="slabel">Membres</span><span class="sval">${members.length}</span><span class="sunit">inscrits</span></div>
+    <div class="stat"><span class="slabel">Cotisations mensuelles</span><span class="sval y">${ff(s.totalCots)}</span><span class="sunit">FCFA</span></div>
+    <div class="stat"><span class="slabel">Adhésions</span><span class="sval">${ff(s.totalAdh)}</span><span class="sunit">FCFA</span></div>
+    <div class="stat"><span class="slabel">Carnets</span><span class="sval">${ff(s.totalCarnet)}</span><span class="sunit">FCFA</span></div>
+    <div class="stat"><span class="slabel">Extraordinaires</span><span class="sval">${ff(s.totalExt)}</span><span class="sunit">FCFA</span></div>
+    <div class="stat"><span class="slabel">Dépenses</span><span class="sval r">${ff(s.totalDep)}</span><span class="sunit">FCFA</span></div>
+    <div class="stat"><span class="slabel">Prêts en cours</span><span class="sval">${pretsEnCours}</span><span class="sunit">actifs</span></div>
   `;
-
-  if (isTreso) {
-    statsHtml += `
-      <div class="stat"><span class="slabel">Cotisations mensuelles</span><span class="sval y">${ff(s.totalCots)}</span><span class="sunit">FCFA</span></div>
-      <div class="stat"><span class="slabel">Adhésions</span><span class="sval">${ff(s.totalAdh)}</span><span class="sunit">FCFA</span></div>
-      <div class="stat"><span class="slabel">Carnets</span><span class="sval">${ff(s.totalCarnet)}</span><span class="sunit">FCFA</span></div>
-      <div class="stat"><span class="slabel">Autres recettes</span><span class="sval">${ff(s.totalExt + s.totalRec)}</span><span class="sunit">FCFA</span></div>
-      <div class="stat"><span class="slabel">Dépenses</span><span class="sval r">${ff(s.totalDep)}</span><span class="sunit">FCFA</span></div>
-      <div class="stat"><span class="slabel">Prêts en cours</span><span class="sval">${pretsEnCours}</span><span class="sunit">actifs</span></div>
-    `;
-  } else {
-    statsHtml += `
-      <div class="stat"><span class="slabel">Cotisations (total)</span><span class="sval y">${ff(s.totalCots)}</span><span class="sunit">FCFA</span></div>
-      <div class="stat"><span class="slabel">Prêts en cours</span><span class="sval">${pretsEnCours}</span><span class="sunit">actifs</span></div>
-    `;
-  }
-
-  document.getElementById('statsGrid').innerHTML = statsHtml;
 
   const acts = [];
   gd('cotisations', []).slice(-4).reverse().forEach(c => acts.push(`Cotisation — ${c.membre || '—'} — ${ff(c.montant)} F (${c.date})`));
   gd('adhesions', []).slice(-3).reverse().forEach(a => acts.push(`Adhésion — ${a.membre || '—'} — ${ff(a.montant)} F (${a.date})`));
   gd('carnetAchats', []).slice(-3).reverse().forEach(c => acts.push(`Carnet — ${c.membre || '—'} — ${ff(c.montant)} F (${c.date})`));
+  gd('depenses', []).slice(-3).reverse().forEach(d => acts.push(`Dépense — ${d.libelle || '—'} — ${ff(d.montant)} F (${d.date})`));
   prets.slice(-2).reverse().forEach(p => acts.push(`Prêt — ${p.membre} — ${ff(p.montant)} F (${p.date})`));
   document.getElementById('actFeed').innerHTML = acts.length
     ? acts.map(a => `<div style="padding:.35rem 0;border-bottom:1px solid var(--border)">${a}</div>`).join('')
@@ -1329,7 +1302,6 @@ function renderTreso() {
       <div class="stat"><span class="slabel">Adhésions</span><span class="sval">${ff(s.totalAdh)}</span><span class="sunit">FCFA</span></div>
       <div class="stat"><span class="slabel">Carnets</span><span class="sval">${ff(s.totalCarnet)}</span><span class="sunit">FCFA</span></div>
       <div class="stat"><span class="slabel">Extraordinaires</span><span class="sval">${ff(s.totalExt)}</span><span class="sunit">FCFA</span></div>
-      <div class="stat"><span class="slabel">Autres recettes</span><span class="sval">${ff(s.totalRec)}</span><span class="sunit">FCFA</span></div>
     </div>
   `;
   const rows = [];
@@ -1337,7 +1309,6 @@ function renderTreso() {
   gd('adhesions', []).slice(-4).forEach(a => rows.push({ date: a.date, type: 'Adhésion', lib: a.membre||'', m: a.montant, sign: '+' }));
   gd('carnetAchats', []).slice(-4).forEach(c => rows.push({ date: c.date, type: 'Carnet', lib: c.membre||'', m: c.montant, sign: '+' }));
   gd('extras', []).slice(-3).forEach(e => rows.push({ date: e.date, type: 'Extra', lib: (e.membre||'') + (e.motif ? ' — ' + e.motif : ''), m: e.montant, sign: '+' }));
-  gd('recettes', []).slice(-4).forEach(r => rows.push({ date: r.date, type: 'Recette', lib: r.libelle, m: r.montant, sign: '+' }));
   gd('depenses', []).slice(-6).forEach(d => rows.push({ date: d.date, type: 'Dépense', lib: d.libelle, m: d.montant, sign: '-' }));
   document.getElementById('mouvementsTable').innerHTML = rows.length
     ? rows.map(r => `<tr><td>${r.date||'—'}</td><td>${r.type}</td><td>${r.lib||'—'}</td><td style="color:${r.sign==='+'?'var(--accent)':'var(--danger)'}">${r.sign}${ff(r.m)}</td></tr>`).join('')
@@ -1351,15 +1322,6 @@ function addDepense() {
   deps.push({ id: Date.now(), libelle: lib, montant: mont, date, par: cu.nom });
   sd('depenses', deps);
   closeModals(); toast('Dépense enregistrée'); renderTreso();
-}
-
-function addRecette() {
-  const lib = vv('recLib'), mont = Number(vv('recMont')), date = vv('recDate') || td();
-  if (!lib || !mont) { toast('Libellé et montant requis'); return; }
-  const recs = gd('recettes', []);
-  recs.push({ id: Date.now(), libelle: lib, montant: mont, date, par: cu.nom });
-  sd('recettes', recs);
-  closeModals(); toast('Recette enregistrée'); renderTreso();
 }
 
 function saveSettings() {
