@@ -152,12 +152,27 @@ input:focus, select:focus, textarea:focus {
   border-radius: 12px; padding: .7rem .9rem; cursor: pointer; transition: .2s;
 }
 .member-item:hover { border-color: var(--accent); background: var(--accent-light); }
+.member-item.bureau-pres {
+  border-color: #c48a2a55; background: linear-gradient(135deg, #fdf6e9 0%, #fff 60%);
+}
+.member-item.bureau-pres:hover { border-color: #c48a2a; background: #fdf6e9; }
+.member-item.bureau-secr {
+  border-color: #5a6b6255; background: linear-gradient(135deg, #f0f2f1 0%, #fff 60%);
+}
+.member-item.bureau-secr:hover { border-color: #5a6b62; background: #f0f2f1; }
+.member-item.bureau-treso {
+  border-color: #1a5c3a55; background: linear-gradient(135deg, #e8f5ee 0%, #fff 60%);
+}
+.member-item.bureau-treso:hover { border-color: #1a5c3a; background: #e8f5ee; }
 .avatar {
   width: 38px; height: 38px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   font-weight: 700; font-size: .85rem; flex-shrink: 0;
 }
 .role-tag { font-size: .68rem; color: var(--muted); }
+.role-tag.rt-pres { color: #c48a2a; font-weight: 700; }
+.role-tag.rt-secr { color: #5a6b62; font-weight: 700; }
+.role-tag.rt-treso { color: #1a5c3a; font-weight: 700; }
 
 /* ─── APP LAYOUT ─── */
 #appLayout { display: none; }
@@ -891,23 +906,50 @@ function showEntryPage() {
   }
 }
 
+function sortMembers(list) {
+  const ordre = { président: 0, secrétaire: 1, trésorier: 2, membre: 3 };
+  return [...list].sort((a, b) => {
+    const ra = ordre[a.role] !== undefined ? ordre[a.role] : 3;
+    const rb = ordre[b.role] !== undefined ? ordre[b.role] : 3;
+    if (ra !== rb) return ra - rb;
+    return (a.nom || '').localeCompare(b.nom || '', 'fr', { sensitivity: 'base' });
+  });
+}
+
+function bureauClass(role) {
+  if (role === 'président') return 'bureau-pres';
+  if (role === 'secrétaire') return 'bureau-secr';
+  if (role === 'trésorier') return 'bureau-treso';
+  return '';
+}
+
+function roleTagClass(role) {
+  if (role === 'président') return 'rt-pres';
+  if (role === 'secrétaire') return 'rt-secr';
+  if (role === 'trésorier') return 'rt-treso';
+  return '';
+}
+
 function renderLoginMembers() {
   const list = document.getElementById('loginMembersList');
-  const mbs = gd('members', []);
+  const mbs = sortMembers(gd('members', []));
   const icons = { président: '👑', trésorier: '💼', secrétaire: '🗂️', membre: '👤' };
   if (!mbs.length) {
     list.innerHTML = '<p style="text-align:center;color:var(--muted);font-size:.82rem">Aucun compte. Créez le vôtre.</p>';
     return;
   }
-  list.innerHTML = mbs.map(m => `
-    <div class="member-item" onclick="loginAs(${m.id})">
+  list.innerHTML = mbs.map(m => {
+    const role = m.role || 'membre';
+    return `
+    <div class="member-item ${bureauClass(role)}" onclick="loginAs(${m.id})">
       ${avatarHTML(m, 38)}
       <div style="flex:1">
         <div style="font-weight:600;font-size:.88rem">${m.nom}</div>
-        <div class="role-tag">${icons[m.role] || ''} ${(m.role || 'membre').charAt(0).toUpperCase() + (m.role || 'membre').slice(1)}</div>
+        <div class="role-tag ${roleTagClass(role)}">${icons[role] || '👤'} ${role.charAt(0).toUpperCase() + role.slice(1)}</div>
       </div>
       <span style="color:var(--muted)">›</span>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 function loginAs(id) {
@@ -1492,7 +1534,7 @@ function soldePret(id) {
 //  MEMBRES & RÉPERTOIRE
 // ═══════════════════════════════════════════════
 function renderMembers() {
-  const mbs = gd('members', []);
+  const mbs = sortMembers(gd('members', []));
   const canAdmin = ['président','trésorier','secrétaire'].includes(cu.role);
   document.getElementById('membersTable').innerHTML = mbs.map(m => `
     <tr>
@@ -1580,21 +1622,24 @@ function delMember(id) {
 }
 
 function renderRepertoire() {
-  const mbs = gd('members', []);
+  const mbs = sortMembers(gd('members', []));
   const icons = { président: '👑', trésorier: '💼', secrétaire: '🗂️', membre: '👤' };
   const canAdmin = ['président','trésorier','secrétaire'].includes(cu.role);
-  document.getElementById('repertoireList').innerHTML = mbs.map(m => `
-    <div class="member-item" style="cursor:default">
+  document.getElementById('repertoireList').innerHTML = mbs.map(m => {
+    const role = m.role || 'membre';
+    return `
+    <div class="member-item ${bureauClass(role)}" style="cursor:default">
       ${avatarHTML(m, 40)}
       <div style="flex:1">
         <div style="font-weight:600">${m.nom}</div>
-        <div class="role-tag">${icons[m.role] || ''} ${m.role || 'membre'} ${m.wa ? '· ' + m.wa : ''}</div>
+        <div class="role-tag ${roleTagClass(role)}">${icons[role] || '👤'} ${role}${m.wa ? ' · ' + m.wa : ''}</div>
       </div>
       <div style="display:flex;gap:.35rem;flex-wrap:wrap">
         ${canAdmin ? `<button class="btn-sm btn-outline" onclick="telechargerBilanPDF(${m.id})">📄 PDF</button>` : ''}
         ${m.wa ? `<button class="btn-sm btn-outline" onclick="envoyerRapport(${m.id})">Rapport</button>` : ''}
       </div>
-    </div>`).join('') || '<p style="color:var(--muted)">Aucun membre.</p>';
+    </div>`;
+  }).join('') || '<p style="color:var(--muted)">Aucun membre.</p>';
 }
 
 function envoyerRapport(memId) {
