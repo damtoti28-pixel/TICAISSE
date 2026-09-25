@@ -384,17 +384,18 @@ tr:last-child td { border-bottom: none; }
       <div class="hero-sub">Caisse AJKT</div>
     </div>
     <div id="setupErr" class="err" style="display:none"></div>
+    <p style="font-size:.75rem;color:var(--muted);margin-bottom:.9rem;text-align:center">Seuls le nom affiché et le rôle sont obligatoires. Le reste pourra être complété plus tard.</p>
     <div class="form-group">
-      <label>Prénom</label>
-      <input type="text" id="su_prenom" placeholder="Votre prénom" autocomplete="given-name">
+      <label>Nom affiché *</label>
+      <input type="text" id="su_nomf" placeholder="Ex: Koffi ou Koffi Mensah" autocomplete="name">
     </div>
     <div class="form-group">
-      <label>Nom de famille</label>
-      <input type="text" id="su_nomf" placeholder="Votre nom" autocomplete="family-name">
+      <label>Prénom (optionnel)</label>
+      <input type="text" id="su_prenom" placeholder="Optionnel" autocomplete="given-name">
     </div>
     <div class="form-group">
-      <label>Numéro WhatsApp (avec indicatif pays, ex: 228…)</label>
-      <input type="tel" id="su_wa" placeholder="22890123456">
+      <label>WhatsApp (optionnel)</label>
+      <input type="tel" id="su_wa" placeholder="Optionnel — ex: 22890123456">
     </div>
     <div class="form-group">
       <label>Rôle</label>
@@ -429,6 +430,10 @@ tr:last-child td { border-bottom: none; }
       </div>
     </div>
     <div class="nav-right">
+      <button type="button" id="navAvatarBtn" onclick="openModal('modalProfil')" title="Mon profil" style="width:36px;height:36px;border-radius:50%;border:2px solid var(--border);padding:0;overflow:hidden;cursor:pointer;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:var(--accent)">
+        <span id="navAvatarIni">?</span>
+        <img id="navAvatarImg" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover">
+      </button>
       <span class="badge" id="navBadge">MEMBRE</span>
       <button class="btn-logout" onclick="logout()">Déconnexion</button>
     </div>
@@ -446,20 +451,11 @@ tr:last-child td { border-bottom: none; }
       </div>
     </div>
 
-    <!-- MES COTISATIONS -->
+    <!-- MES COTISATIONS (lecture seule — seul le trésorier enregistre) -->
     <div class="sec" id="sec-cotisations">
       <div class="card">
-        <div class="card-title" style="justify-content:space-between">
-          <span>Mes cotisations</span>
-          <div class="dropdown">
-            <button class="dropdown-btn" onclick="toggleDrop(this)">Actions ▾</button>
-            <div class="dropdown-menu">
-              <button class="dropdown-item" onclick="openModal('modalPayOrd')">Payer cotisation ordinaire</button>
-              <button class="dropdown-item" onclick="openModal('modalPayExt')">Cotisation extraordinaire</button>
-              <button class="dropdown-item" onclick="showMyHistory()">Voir mon historique</button>
-            </div>
-          </div>
-        </div>
+        <div class="card-title">Mes cotisations</div>
+        <p style="font-size:.78rem;color:var(--muted);margin-bottom:.9rem">Les paiements sont enregistrés par la <strong>trésorière</strong> (espèces ou Mobile Money). Ils apparaissent ici automatiquement.</p>
         <div id="myCotsSummary" style="font-size:.85rem"></div>
       </div>
     </div>
@@ -472,6 +468,7 @@ tr:last-child td { border-bottom: none; }
           <div class="dropdown">
             <button class="dropdown-btn" onclick="toggleDrop(this)">Gérer ▾</button>
             <div class="dropdown-menu">
+              <button class="dropdown-item" onclick="openModal('modalEnregPaiement')">Enregistrer un paiement</button>
               <button class="dropdown-item" onclick="openModal('modalDepense')">Enregistrer une dépense</button>
               <button class="dropdown-item" onclick="openModal('modalRecette')">Enregistrer une recette</button>
               <button class="dropdown-item" onclick="openModal('modalSettings')">Paramètres caisse</button>
@@ -535,21 +532,28 @@ tr:last-child td { border-bottom: none; }
 <div class="modal-bg" id="modalPayOrd">
   <div class="modal">
     <h3>Payer cotisation ordinaire</h3>
+    <div class="form-group"><label>Année</label>
+      <select id="cotAnneeO"></select>
+    </div>
     <div class="form-group"><label>Mois</label>
       <select id="cotMoisO"></select>
     </div>
     <div class="form-group"><label>Montant (FCFA)</label>
       <input type="number" id="cotMontO" readonly>
     </div>
-    <p style="font-size:.78rem;color:var(--muted);margin-bottom:.8rem">Choisissez l’opérateur puis validez le paiement via USSD ou application.</p>
+    <p style="font-size:.78rem;color:var(--muted);margin-bottom:.6rem">1. Choisissez votre opérateur — 2. Composez le code — 3. Validez avec votre code secret</p>
     <div class="oper-grid">
-      <div class="oper-card" id="opMoov" onclick="selOper('moov')"><div class="oname">Moov Money</div></div>
-      <div class="oper-card" id="opYas" onclick="selOper('yas')"><div class="oname">Mixx by Yas</div></div>
+      <div class="oper-card" id="opMoov" onclick="selOper('moov','ord')"><div class="oname">Moov Money</div></div>
+      <div class="oper-card" id="opYas" onclick="selOper('yas','ord')"><div class="oname">Mixx by Yas</div></div>
     </div>
-    <div id="ussdHint" class="info" style="display:none"></div>
-    <div class="modal-actions">
+    <div id="ussdBoxOrd" style="display:none;margin:.8rem 0">
+      <div class="info" id="ussdHintOrd" style="margin-bottom:.6rem"></div>
+      <a id="btnDialOrd" href="#" style="display:block;text-align:center;background:var(--accent);color:#fff;padding:.7rem;border-radius:10px;font-weight:700;text-decoration:none;margin-bottom:.6rem">📞 Composer le code maintenant</a>
+      <p style="font-size:.72rem;color:var(--muted);text-align:center;margin-bottom:.6rem">Sur votre téléphone : validez avec votre code secret. L’argent sera prélevé sur votre compte.</p>
+      <button class="btn btn-primary" onclick="confirmPayOrd()">J’ai validé le paiement ✓</button>
+    </div>
+    <div class="modal-actions" id="payOrdCancelOnly">
       <button class="btn-outline" onclick="closeModals()">Annuler</button>
-      <button class="btn-sm btn-primary" onclick="confirmPayOrd()">Confirmer le paiement</button>
     </div>
   </div>
 </div>
@@ -557,11 +561,22 @@ tr:last-child td { border-bottom: none; }
 <div class="modal-bg" id="modalPayExt">
   <div class="modal">
     <h3>Cotisation extraordinaire</h3>
+    <div class="form-group"><label>Année</label><select id="extAnnee"></select></div>
     <div class="form-group"><label>Montant (FCFA)</label><input type="number" id="extMont" placeholder="Montant"></div>
     <div class="form-group"><label>Motif</label><input type="text" id="extMotif" placeholder="Ex: Contribution événement"></div>
+    <p style="font-size:.78rem;color:var(--muted);margin-bottom:.6rem">Choisissez l’opérateur, composez le code, puis validez avec votre code secret.</p>
+    <div class="oper-grid">
+      <div class="oper-card" id="opMoovE" onclick="selOper('moov','ext')"><div class="oname">Moov Money</div></div>
+      <div class="oper-card" id="opYasE" onclick="selOper('yas','ext')"><div class="oname">Mixx by Yas</div></div>
+    </div>
+    <div id="ussdBoxExt" style="display:none;margin:.8rem 0">
+      <div class="info" id="ussdHintExt" style="margin-bottom:.6rem"></div>
+      <a id="btnDialExt" href="#" style="display:block;text-align:center;background:var(--accent);color:#fff;padding:.7rem;border-radius:10px;font-weight:700;text-decoration:none;margin-bottom:.6rem">📞 Composer le code maintenant</a>
+      <p style="font-size:.72rem;color:var(--muted);text-align:center;margin-bottom:.6rem">Validez avec votre code secret sur le téléphone. L’argent sera prélevé sur votre compte.</p>
+      <button class="btn btn-primary" onclick="confirmPayExt()">J’ai validé le paiement ✓</button>
+    </div>
     <div class="modal-actions">
       <button class="btn-outline" onclick="closeModals()">Annuler</button>
-      <button class="btn-sm btn-primary" onclick="addExtra()">Enregistrer</button>
     </div>
   </div>
 </div>
@@ -628,6 +643,48 @@ tr:last-child td { border-bottom: none; }
   </div>
 </div>
 
+<div class="modal-bg" id="modalEnregPaiement">
+  <div class="modal">
+    <h3>Enregistrer un paiement</h3>
+    <div class="form-group">
+      <label>Type de paiement</label>
+      <select id="epType" onchange="onEpTypeChange()">
+        <option value="cotisation">Cotisation mensuelle</option>
+        <option value="adhesion">Adhésion</option>
+        <option value="carnet">Achat du carnet</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Membre</label>
+      <select id="epMem"></select>
+    </div>
+    <div class="form-group" id="epAnneeWrap">
+      <label>Année</label>
+      <select id="epAnnee"></select>
+    </div>
+    <div class="form-group" id="epMoisWrap">
+      <label>Mois concerné</label>
+      <select id="epMois"></select>
+    </div>
+    <div class="form-group">
+      <label>Montant (FCFA)</label>
+      <input type="number" id="epMont" placeholder="Montant">
+    </div>
+    <div class="form-group">
+      <label>Date</label>
+      <input type="text" id="epDate" placeholder="JJ/MM/AAAA">
+    </div>
+    <div class="form-group">
+      <label>Note (optionnel)</label>
+      <input type="text" id="epNote" placeholder="Ex: payé en espèces">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-outline" onclick="closeModals()">Annuler</button>
+      <button class="btn-sm btn-primary" onclick="enregistrerPaiementTreso()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-bg" id="modalSettings">
   <div class="modal">
     <h3>Paramètres de la caisse</h3>
@@ -635,6 +692,7 @@ tr:last-child td { border-bottom: none; }
     <div class="form-group"><label>N° Mixx by Yas</label><input type="tel" id="setYas"></div>
     <div class="form-group"><label>Cotisation ordinaire (FCFA)</label><input type="number" id="setMont"></div>
     <div class="form-group"><label>Prix adhésion (FCFA)</label><input type="number" id="setAdh"></div>
+    <div class="form-group"><label>Prix carnet (FCFA)</label><input type="number" id="setCarnet"></div>
     <div class="modal-actions">
       <button class="btn-outline" onclick="closeModals()">Annuler</button>
       <button class="btn-sm btn-primary" onclick="saveSettings()">Enregistrer</button>
@@ -648,6 +706,27 @@ tr:last-child td { border-bottom: none; }
     <div id="historyContent" style="font-size:.82rem"></div>
     <div class="modal-actions">
       <button class="btn-outline" onclick="closeModals()">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modalProfil">
+  <div class="modal">
+    <h3>Mon profil</h3>
+    <div style="text-align:center;margin-bottom:1rem">
+      <div id="profilPreview" style="width:80px;height:80px;border-radius:50%;margin:0 auto .6rem;overflow:hidden;background:var(--surface2);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:700;color:var(--accent)"></div>
+      <label class="btn-sm btn-outline" style="display:inline-block;cursor:pointer">
+        Photo (optionnel)
+        <input type="file" id="profilPhoto" accept="image/*" style="display:none" onchange="onProfilPhoto(event)">
+      </label>
+      <button type="button" class="btn-sm" style="margin-left:.3rem;background:none;border:1px solid var(--border);color:var(--muted)" onclick="clearProfilPhoto()">Retirer</button>
+    </div>
+    <div class="form-group"><label>Nom affiché</label><input type="text" id="prNom"></div>
+    <div class="form-group"><label>Prénom (optionnel)</label><input type="text" id="prPrenom"></div>
+    <div class="form-group"><label>WhatsApp (optionnel)</label><input type="tel" id="prWa" placeholder="228…"></div>
+    <div class="modal-actions">
+      <button class="btn-outline" onclick="closeModals()">Annuler</button>
+      <button class="btn-sm btn-primary" onclick="saveProfil()">Enregistrer</button>
     </div>
   </div>
 </div>
@@ -687,7 +766,7 @@ const fdb = firebase.database();
 // Cache mémoire (miroir de Firebase)
 const store = {
   members: [], cotisations: [], prets: [], depenses: [],
-  recettes: [], extras: [], settings: {}, carnet: [], carnetAchats: []
+  recettes: [], extras: [], adhesions: [], settings: {}, carnet: [], carnetAchats: []
 };
 const KEYS = Object.keys(store);
 let dataReady = false;
@@ -739,6 +818,8 @@ function init() {
     sel.innerHTML = MOIS.map(m => `<option>${m}</option>`).join('');
     sel.value = MOIS[new Date().getMonth()];
   }
+  fillYearSelect('cotAnneeO');
+  fillYearSelect('extAnnee');
 
   setupInstall();
   if ('serviceWorker' in navigator) {
@@ -758,7 +839,7 @@ function init() {
       else store[k] = [];
     });
     // Firebase peut renvoyer des objets au lieu de tableaux
-    ['members','cotisations','prets','depenses','recettes','extras','carnet','carnetAchats'].forEach(k => {
+    ['members','cotisations','prets','depenses','recettes','extras','adhesions','carnet','carnetAchats'].forEach(k => {
       if (store[k] && !Array.isArray(store[k])) store[k] = Object.values(store[k]);
       if (!Array.isArray(store[k])) store[k] = [];
     });
@@ -784,8 +865,12 @@ function init() {
 
 function refreshCurrentView() {
   if (!cu) return;
+  // Resync profil depuis Firebase
+  const fresh = gd('members', []).find(m => m.id === cu.id);
+  if (fresh) cu = fresh;
   const navName = document.getElementById('navName');
   if (navName) navName.textContent = cu.nom;
+  updateNavAvatar();
   if (currentSec === 'dashboard') renderDashboard();
   else if (currentSec === 'cotisations') renderMyCots();
   else if (currentSec === 'tresorerie') renderTreso();
@@ -816,10 +901,10 @@ function renderLoginMembers() {
   }
   list.innerHTML = mbs.map(m => `
     <div class="member-item" onclick="loginAs(${m.id})">
-      <div class="avatar" style="background:${m.color || '#1a5c3a'}22;color:${m.color || '#1a5c3a'};border:1px solid ${m.color || '#1a5c3a'}40">${ini(m.nom)}</div>
+      ${avatarHTML(m, 38)}
       <div style="flex:1">
         <div style="font-weight:600;font-size:.88rem">${m.nom}</div>
-        <div class="role-tag">${icons[m.role] || ''} ${m.role.charAt(0).toUpperCase() + m.role.slice(1)}</div>
+        <div class="role-tag">${icons[m.role] || ''} ${(m.role || 'membre').charAt(0).toUpperCase() + (m.role || 'membre').slice(1)}</div>
       </div>
       <span style="color:var(--muted)">›</span>
     </div>`).join('');
@@ -855,15 +940,16 @@ function finishSetup() {
   const err = document.getElementById('setupErr');
   const prenom = vv('su_prenom'), nomF = vv('su_nomf'), wa = vv('su_wa');
   const role = vv('su_role') || 'membre';
-  if (!prenom || !nomF || !wa) {
-    err.textContent = 'Prénom, nom et numéro WhatsApp sont obligatoires.';
+  if (!nomF) {
+    err.textContent = 'Indiquez au moins un nom affiché.';
     err.style.display = 'block';
     return;
   }
+  err.style.display = 'none';
   const members = gd('members', []);
-  const nom = prenom + ' ' + nomF;
+  const nom = prenom ? (prenom + ' ' + nomF) : nomF;
   const colors = { président: '#c48a2a', trésorier: '#1a5c3a', membre: '#2d7a4f', secrétaire: '#5a6b62' };
-  const newM = { id: Date.now(), nom, prenom, nomF, role, wa, color: colors[role] || '#1a5c3a' };
+  const newM = { id: Date.now(), nom, prenom: prenom || '', nomF, role, wa: wa || '', photo: '', color: colors[role] || '#1a5c3a' };
   members.push(newM);
   sd('members', members);
 
@@ -896,12 +982,36 @@ function logout() {
 //  APP
 // ═══════════════════════════════════════════════
 function initApp() {
-  document.getElementById('navName').textContent = cu.nom;
+  document.getElementById('navName').textContent = cu.nom || '—';
   const b = document.getElementById('navBadge');
-  b.textContent = cu.role.toUpperCase();
+  b.textContent = (cu.role || 'membre').toUpperCase();
   b.className = 'badge' + (cu.role === 'trésorier' ? ' treso' : cu.role === 'membre' ? ' member' : cu.role === 'secrétaire' ? ' secr' : '');
+  updateNavAvatar();
   buildTabs();
   showSec('dashboard');
+}
+
+function updateNavAvatar() {
+  const iniEl = document.getElementById('navAvatarIni');
+  const img = document.getElementById('navAvatarImg');
+  if (!iniEl || !img || !cu) return;
+  if (cu.photo) {
+    img.src = cu.photo;
+    img.style.display = 'block';
+    iniEl.style.display = 'none';
+  } else {
+    img.style.display = 'none';
+    iniEl.style.display = 'block';
+    iniEl.textContent = ini(cu.nom || '?');
+  }
+}
+
+function avatarHTML(m, size) {
+  const s = size || 38;
+  if (m.photo) {
+    return `<img src="${m.photo}" alt="" style="width:${s}px;height:${s}px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1px solid var(--border)">`;
+  }
+  return `<div class="avatar" style="width:${s}px;height:${s}px;background:${m.color || '#1a5c3a'}22;color:${m.color || '#1a5c3a'};border:1px solid ${m.color || '#1a5c3a'}40;font-size:${s > 36 ? '.85rem' : '.7rem'}">${ini(m.nom)}</div>`;
 }
 
 function buildTabs() {
@@ -948,29 +1058,69 @@ function showSec(id, btn) {
 // ═══════════════════════════════════════════════
 //  DASHBOARD
 // ═══════════════════════════════════════════════
-function renderDashboard() {
-  const members = gd('members', []);
+function fillYearSelect(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const y = new Date().getFullYear();
+  const years = [y - 1, y, y + 1];
+  el.innerHTML = years.map(yr => `<option value="${yr}" ${yr === y ? 'selected' : ''}>${yr}</option>`).join('');
+}
+
+function calcSoldeCaisse() {
   const cots = gd('cotisations', []);
-  const prets = gd('prets', []);
-  const deps = gd('depenses', []);
+  const adh = gd('adhesions', []);
+  const carnets = gd('carnetAchats', []);
+  const extras = gd('extras', []);
   const recs = gd('recettes', []);
-  const settings = gd('settings', {});
+  const deps = gd('depenses', []);
   const totalCots = cots.reduce((a,c) => a + Number(c.montant||0), 0);
+  const totalAdh = adh.reduce((a,x) => a + Number(x.montant||0), 0);
+  const totalCarnet = carnets.reduce((a,x) => a + Number(x.montant||0), 0);
+  const totalExt = extras.reduce((a,x) => a + Number(x.montant||0), 0);
   const totalRec = recs.reduce((a,r) => a + Number(r.montant||0), 0);
   const totalDep = deps.reduce((a,d) => a + Number(d.montant||0), 0);
-  const solde = totalCots + totalRec - totalDep;
-  const pretsEnCours = prets.filter(p => p.status !== 'soldé').length;
+  const entrees = totalCots + totalAdh + totalCarnet + totalExt + totalRec;
+  return {
+    totalCots, totalAdh, totalCarnet, totalExt, totalRec, totalDep,
+    entrees, solde: entrees - totalDep
+  };
+}
 
-  document.getElementById('statsGrid').innerHTML = `
-    <div class="stat"><span class="slabel">Solde caisse</span><span class="sval g">${ff(solde)}</span><span class="sunit">FCFA</span></div>
+function renderDashboard() {
+  const members = gd('members', []);
+  const prets = gd('prets', []);
+  const s = calcSoldeCaisse();
+  const pretsEnCours = prets.filter(p => p.status !== 'soldé').length;
+  const isTreso = cu && (cu.role === 'trésorier' || cu.role === 'président');
+
+  let statsHtml = `
+    <div class="stat"><span class="slabel">Solde caisse</span><span class="sval g">${ff(s.solde)}</span><span class="sunit">FCFA</span></div>
     <div class="stat"><span class="slabel">Membres</span><span class="sval">${members.length}</span><span class="sunit">inscrits</span></div>
-    <div class="stat"><span class="slabel">Cotisations</span><span class="sval y">${ff(totalCots)}</span><span class="sunit">FCFA</span></div>
-    <div class="stat"><span class="slabel">Prêts en cours</span><span class="sval">${pretsEnCours}</span><span class="sunit">actifs</span></div>
   `;
 
+  if (isTreso) {
+    statsHtml += `
+      <div class="stat"><span class="slabel">Cotisations mensuelles</span><span class="sval y">${ff(s.totalCots)}</span><span class="sunit">FCFA</span></div>
+      <div class="stat"><span class="slabel">Adhésions</span><span class="sval">${ff(s.totalAdh)}</span><span class="sunit">FCFA</span></div>
+      <div class="stat"><span class="slabel">Carnets</span><span class="sval">${ff(s.totalCarnet)}</span><span class="sunit">FCFA</span></div>
+      <div class="stat"><span class="slabel">Autres recettes</span><span class="sval">${ff(s.totalExt + s.totalRec)}</span><span class="sunit">FCFA</span></div>
+      <div class="stat"><span class="slabel">Dépenses</span><span class="sval r">${ff(s.totalDep)}</span><span class="sunit">FCFA</span></div>
+      <div class="stat"><span class="slabel">Prêts en cours</span><span class="sval">${pretsEnCours}</span><span class="sunit">actifs</span></div>
+    `;
+  } else {
+    statsHtml += `
+      <div class="stat"><span class="slabel">Cotisations (total)</span><span class="sval y">${ff(s.totalCots)}</span><span class="sunit">FCFA</span></div>
+      <div class="stat"><span class="slabel">Prêts en cours</span><span class="sval">${pretsEnCours}</span><span class="sunit">actifs</span></div>
+    `;
+  }
+
+  document.getElementById('statsGrid').innerHTML = statsHtml;
+
   const acts = [];
-  cots.slice(-5).reverse().forEach(c => acts.push(`Cotisation de ${c.membre || '—'} — ${ff(c.montant)} F (${c.date})`));
-  prets.slice(-3).reverse().forEach(p => acts.push(`Prêt à ${p.membre} — ${ff(p.montant)} F (${p.date})`));
+  gd('cotisations', []).slice(-4).reverse().forEach(c => acts.push(`Cotisation — ${c.membre || '—'} — ${ff(c.montant)} F (${c.date})`));
+  gd('adhesions', []).slice(-3).reverse().forEach(a => acts.push(`Adhésion — ${a.membre || '—'} — ${ff(a.montant)} F (${a.date})`));
+  gd('carnetAchats', []).slice(-3).reverse().forEach(c => acts.push(`Carnet — ${c.membre || '—'} — ${ff(c.montant)} F (${c.date})`));
+  prets.slice(-2).reverse().forEach(p => acts.push(`Prêt — ${p.membre} — ${ff(p.montant)} F (${p.date})`));
   document.getElementById('actFeed').innerHTML = acts.length
     ? acts.map(a => `<div style="padding:.35rem 0;border-bottom:1px solid var(--border)">${a}</div>`).join('')
     : '<p>Aucune activité récente.</p>';
@@ -982,66 +1132,140 @@ function renderDashboard() {
 function renderMyCots() {
   const cots = gd('cotisations', []).filter(c => c.memId === cu.id);
   const extras = gd('extras', []).filter(e => e.memId === cu.id);
-  const total = cots.reduce((a,c) => a + Number(c.montant||0), 0) + extras.reduce((a,e) => a + Number(e.montant||0), 0);
+  const adh = gd('adhesions', []).filter(a => a.memId === cu.id);
+  const carnets = gd('carnetAchats', []).filter(c => c.memId === cu.id);
+  const total = cots.reduce((a,c) => a + Number(c.montant||0), 0)
+    + extras.reduce((a,e) => a + Number(e.montant||0), 0)
+    + adh.reduce((a,x) => a + Number(x.montant||0), 0)
+    + carnets.reduce((a,x) => a + Number(x.montant||0), 0);
   const settings = gd('settings', {});
   document.getElementById('myCotsSummary').innerHTML = `
     <p style="margin-bottom:.6rem"><strong>Total versé :</strong> ${ff(total)} FCFA</p>
-    <p style="font-size:.78rem;color:var(--muted)">Cotisation mensuelle : ${ff(settings.montant || 0)} FCFA</p>
-    <div style="margin-top:.8rem">
-      ${cots.length ? '<p style="font-size:.78rem;font-weight:600;margin-bottom:.3rem">Ordinaires</p>' + cots.map(c => `<div style="font-size:.8rem;padding:.25rem 0">${c.mois} — ${ff(c.montant)} F — ${c.date}</div>`).join('') : '<p style="font-size:.8rem;color:var(--muted)">Aucune cotisation ordinaire.</p>'}
-    </div>
+    <p style="font-size:.78rem;color:var(--muted);margin-bottom:.8rem">Tarif mensuel indicatif : ${ff(settings.montant || 0)} FCFA</p>
+    ${cots.length
+      ? '<p style="font-size:.78rem;font-weight:600;margin-bottom:.3rem">Cotisations mensuelles</p>' +
+        cots.map(c => `<div style="font-size:.8rem;padding:.25rem 0;border-bottom:1px solid var(--border)">${c.mois || ''} ${c.annee || ''} — <strong>${ff(c.montant)} F</strong> — ${c.date || ''}${c.par ? ' · par ' + c.par : ''}</div>`).join('')
+      : '<p style="font-size:.8rem;color:var(--muted)">Aucune cotisation mensuelle.</p>'}
+    ${adh.length
+      ? '<p style="font-size:.78rem;font-weight:600;margin:0.8rem 0 .3rem">Adhésions</p>' +
+        adh.map(a => `<div style="font-size:.8rem;padding:.25rem 0;border-bottom:1px solid var(--border)">${ff(a.montant)} F — ${a.date || ''}${a.annee ? ' · ' + a.annee : ''}</div>`).join('')
+      : ''}
+    ${carnets.length
+      ? '<p style="font-size:.78rem;font-weight:600;margin:0.8rem 0 .3rem">Carnets</p>' +
+        carnets.map(c => `<div style="font-size:.8rem;padding:.25rem 0;border-bottom:1px solid var(--border)">${ff(c.montant)} F — ${c.date || ''}</div>`).join('')
+      : ''}
+    ${extras.length
+      ? '<p style="font-size:.78rem;font-weight:600;margin:0.8rem 0 .3rem">Extraordinaires</p>' +
+        extras.map(e => `<div style="font-size:.8rem;padding:.25rem 0;border-bottom:1px solid var(--border)">${ff(e.montant)} F — ${e.motif || '—'} — ${e.date || ''}</div>`).join('')
+      : ''}
   `;
-  // Prefill montant
-  sv('cotMontO', settings.montant || '');
 }
 
-function selOper(op) {
+function buildUssd(op, num, mont) {
+  // Codes USSD transfert Togo (Moov / Yas) — l'utilisateur valide avec son code secret
+  if (op === 'moov') {
+    // Moov Money : transfert vers un numéro
+    return `*155*1*1*${num}*${mont}#`;
+  }
+  // Mixx by Yas (ex-TMoney)
+  return `*145*1*${num}*${mont}#`;
+}
+
+function selOper(op, context) {
   selOp = op;
-  document.getElementById('opMoov').classList.toggle('sel', op === 'moov');
-  document.getElementById('opYas').classList.toggle('sel', op === 'yas');
   const s = gd('settings', {});
-  const num = op === 'moov' ? s.moov : s.yas;
-  const hint = document.getElementById('ussdHint');
-  if (num) {
-    hint.style.display = 'block';
-    hint.textContent = op === 'moov'
-      ? `Composez *155*1*1*${num}*${vv('cotMontO')||'...'}# puis validez`
-      : `Utilisez Mixx by Yas vers le ${num}`;
+  const num = (op === 'moov' ? s.moov : s.yas) || '';
+  const mont = context === 'ext' ? (Number(vv('extMont')) || 0) : (Number(vv('cotMontO')) || 0);
+
+  if (context === 'ord') {
+    document.getElementById('opMoov').classList.toggle('sel', op === 'moov');
+    document.getElementById('opYas').classList.toggle('sel', op === 'yas');
   } else {
-    hint.style.display = 'block';
-    hint.textContent = 'Numéro de caisse non configuré. Contactez le trésorier.';
+    document.getElementById('opMoovE').classList.toggle('sel', op === 'moov');
+    document.getElementById('opYasE').classList.toggle('sel', op === 'yas');
+  }
+
+  if (!num) {
+    toast('Numéro de caisse non configuré. Contactez le trésorier.');
+    return;
+  }
+  if (!mont) {
+    toast(context === 'ext' ? 'Indiquez d’abord le montant' : 'Montant manquant (paramètres caisse)');
+    return;
+  }
+
+  const ussd = buildUssd(op, num, mont);
+  // tel: link — sur mobile ouvre le composeur avec le code USSD
+  const telHref = 'tel:' + encodeURIComponent(ussd);
+
+  if (context === 'ord') {
+    const box = document.getElementById('ussdBoxOrd');
+    const hint = document.getElementById('ussdHintOrd');
+    const btn = document.getElementById('btnDialOrd');
+    box.style.display = 'block';
+    hint.innerHTML = `<strong>Code à composer :</strong><br><span style="font-family:monospace;font-size:1rem;letter-spacing:1px">${ussd}</span><br><span style="font-size:.72rem">Vers le compte caisse : ${num}</span>`;
+    btn.href = telHref;
+  } else {
+    const box = document.getElementById('ussdBoxExt');
+    const hint = document.getElementById('ussdHintExt');
+    const btn = document.getElementById('btnDialExt');
+    box.style.display = 'block';
+    hint.innerHTML = `<strong>Code à composer :</strong><br><span style="font-family:monospace;font-size:1rem;letter-spacing:1px">${ussd}</span><br><span style="font-size:.72rem">Vers le compte caisse : ${num}</span>`;
+    btn.href = telHref;
   }
 }
 
 function confirmPayOrd() {
-  const mois = vv('cotMoisO'), mont = Number(vv('cotMontO'));
+  if (!selOp) { toast('Choisissez d’abord un opérateur et composez le code'); return; }
+  const mois = vv('cotMoisO');
+  const annee = vv('cotAnneeO') || String(new Date().getFullYear());
+  const mont = Number(vv('cotMontO'));
   if (!mont) { toast('Montant manquant (paramétrez la caisse)'); return; }
+  if (!confirm('Avez-vous bien validé le paiement avec votre code secret ? L’argent a été prélevé ?')) return;
   const cots = gd('cotisations', []);
-  cots.push({ id: Date.now(), memId: cu.id, membre: cu.nom, mois, montant: mont, date: td(), oper: selOp || '—' });
+  cots.push({
+    id: Date.now(), memId: cu.id, membre: cu.nom,
+    mois, annee, montant: mont, date: td(),
+    oper: selOp, status: 'payé', source: 'ussd'
+  });
   sd('cotisations', cots);
   closeModals();
-  toast('Cotisation enregistrée !');
+  toast('Cotisation enregistrée — ' + mois + ' ' + annee);
   renderMyCots();
+  if (currentSec === 'dashboard') renderDashboard();
 }
 
-function addExtra() {
-  const mont = Number(vv('extMont')), motif = vv('extMotif');
+function confirmPayExt() {
+  if (!selOp) { toast('Choisissez d’abord un opérateur et composez le code'); return; }
+  const mont = Number(vv('extMont'));
+  const motif = vv('extMotif');
+  const annee = vv('extAnnee') || String(new Date().getFullYear());
   if (!mont) { toast('Indiquez un montant'); return; }
+  if (!confirm('Avez-vous bien validé le paiement avec votre code secret ? L’argent a été prélevé ?')) return;
   const extras = gd('extras', []);
-  extras.push({ id: Date.now(), memId: cu.id, membre: cu.nom, montant: mont, motif, date: td(), status: 'en attente' });
+  extras.push({
+    id: Date.now(), memId: cu.id, membre: cu.nom,
+    montant: mont, motif, annee, date: td(),
+    oper: selOp, status: 'payé', source: 'ussd'
+  });
   sd('extras', extras);
   closeModals();
-  toast('Cotisation extraordinaire enregistrée (en attente de validation)');
+  toast('Cotisation extraordinaire enregistrée');
   renderMyCots();
+  if (currentSec === 'dashboard') renderDashboard();
 }
 
 function showMyHistory() {
   const cots = gd('cotisations', []).filter(c => c.memId === cu.id);
   const extras = gd('extras', []).filter(e => e.memId === cu.id);
   let html = '<p style="font-weight:600;margin-bottom:.5rem">Cotisations ordinaires</p>';
-  html += cots.length ? cots.map(c => `<div>${c.mois} — ${ff(c.montant)} F — ${c.date}</div>`).join('') : '<div style="color:var(--muted)">Aucune</div>';
+  html += cots.length
+    ? cots.map(c => `<div>${c.mois || ''} ${c.annee || ''} — ${ff(c.montant)} F — ${c.date || ''} ${c.oper ? '(' + c.oper + ')' : ''}</div>`).join('')
+    : '<div style="color:var(--muted)">Aucune</div>';
   html += '<p style="font-weight:600;margin:1rem 0 .5rem">Extraordinaires</p>';
-  html += extras.length ? extras.map(e => `<div>${ff(e.montant)} F — ${e.motif || '—'} — ${e.status}</div>`).join('') : '<div style="color:var(--muted)">Aucune</div>';
+  html += extras.length
+    ? extras.map(e => `<div>${ff(e.montant)} F — ${e.motif || '—'} — ${e.annee || ''} — ${e.date || ''}</div>`).join('')
+    : '<div style="color:var(--muted)">Aucune</div>';
   document.getElementById('historyContent').innerHTML = html;
   openModal('modalHistory');
 }
@@ -1050,25 +1274,31 @@ function showMyHistory() {
 //  TRÉSORERIE
 // ═══════════════════════════════════════════════
 function renderTreso() {
-  const cots = gd('cotisations', []);
-  const deps = gd('depenses', []);
-  const recs = gd('recettes', []);
-  const totalIn = cots.reduce((a,c) => a + Number(c.montant||0), 0) + recs.reduce((a,r) => a + Number(r.montant||0), 0);
-  const totalOut = deps.reduce((a,d) => a + Number(d.montant||0), 0);
+  const s = calcSoldeCaisse();
   document.getElementById('tresoSummary').innerHTML = `
+    <div class="stats" style="margin-bottom:.9rem">
+      <div class="stat"><span class="slabel">Solde caisse</span><span class="sval g">${ff(s.solde)}</span><span class="sunit">FCFA</span></div>
+      <div class="stat"><span class="slabel">Total entrées</span><span class="sval">${ff(s.entrees)}</span></div>
+      <div class="stat"><span class="slabel">Total dépenses</span><span class="sval r">${ff(s.totalDep)}</span></div>
+    </div>
+    <div style="font-size:.78rem;font-weight:600;color:var(--muted);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.3px">Détail des entrées</div>
     <div class="stats" style="margin-bottom:0">
-      <div class="stat"><span class="slabel">Entrées</span><span class="sval g">${ff(totalIn)}</span></div>
-      <div class="stat"><span class="slabel">Sorties</span><span class="sval r">${ff(totalOut)}</span></div>
-      <div class="stat"><span class="slabel">Solde</span><span class="sval">${ff(totalIn - totalOut)}</span></div>
+      <div class="stat"><span class="slabel">Cotisations mensuelles</span><span class="sval y">${ff(s.totalCots)}</span><span class="sunit">FCFA</span></div>
+      <div class="stat"><span class="slabel">Adhésions</span><span class="sval">${ff(s.totalAdh)}</span><span class="sunit">FCFA</span></div>
+      <div class="stat"><span class="slabel">Carnets</span><span class="sval">${ff(s.totalCarnet)}</span><span class="sunit">FCFA</span></div>
+      <div class="stat"><span class="slabel">Extraordinaires</span><span class="sval">${ff(s.totalExt)}</span><span class="sunit">FCFA</span></div>
+      <div class="stat"><span class="slabel">Autres recettes</span><span class="sval">${ff(s.totalRec)}</span><span class="sunit">FCFA</span></div>
     </div>
   `;
   const rows = [];
-  cots.slice(-8).forEach(c => rows.push({ date: c.date, type: 'Cotisation', lib: c.membre + ' (' + c.mois + ')', m: c.montant, sign: '+' }));
-  deps.slice(-5).forEach(d => rows.push({ date: d.date, type: 'Dépense', lib: d.libelle, m: d.montant, sign: '-' }));
-  recs.slice(-5).forEach(r => rows.push({ date: r.date, type: 'Recette', lib: r.libelle, m: r.montant, sign: '+' }));
-  rows.sort((a,b) => 0); // keep order
+  gd('cotisations', []).slice(-6).forEach(c => rows.push({ date: c.date, type: 'Cotisation', lib: (c.membre||'') + (c.mois ? ' (' + c.mois + ')' : ''), m: c.montant, sign: '+' }));
+  gd('adhesions', []).slice(-4).forEach(a => rows.push({ date: a.date, type: 'Adhésion', lib: a.membre||'', m: a.montant, sign: '+' }));
+  gd('carnetAchats', []).slice(-4).forEach(c => rows.push({ date: c.date, type: 'Carnet', lib: c.membre||'', m: c.montant, sign: '+' }));
+  gd('extras', []).slice(-3).forEach(e => rows.push({ date: e.date, type: 'Extra', lib: (e.membre||'') + (e.motif ? ' — ' + e.motif : ''), m: e.montant, sign: '+' }));
+  gd('recettes', []).slice(-4).forEach(r => rows.push({ date: r.date, type: 'Recette', lib: r.libelle, m: r.montant, sign: '+' }));
+  gd('depenses', []).slice(-6).forEach(d => rows.push({ date: d.date, type: 'Dépense', lib: d.libelle, m: d.montant, sign: '-' }));
   document.getElementById('mouvementsTable').innerHTML = rows.length
-    ? rows.map(r => `<tr><td>${r.date}</td><td>${r.type}</td><td>${r.lib}</td><td style="color:${r.sign==='+'?'var(--accent)':'var(--danger)'}">${r.sign}${ff(r.m)}</td></tr>`).join('')
+    ? rows.map(r => `<tr><td>${r.date||'—'}</td><td>${r.type}</td><td>${r.lib||'—'}</td><td style="color:${r.sign==='+'?'var(--accent)':'var(--danger)'}">${r.sign}${ff(r.m)}</td></tr>`).join('')
     : '<tr><td colspan="4" style="text-align:center;color:var(--muted)">Aucun mouvement</td></tr>';
 }
 
@@ -1097,18 +1327,59 @@ function saveSettings() {
     moov: vv('setMoov'),
     yas: vv('setYas'),
     montant: Number(vv('setMont') || 0),
-    adhesionPrix: Number(vv('setAdh') || 0)
+    adhesionPrix: Number(vv('setAdh') || 0),
+    prixCarnet: Number(vv('setCarnet') || 0)
   });
   closeModals(); toast('Paramètres enregistrés');
 }
 
-function openSettingsModal() {
+function onEpTypeChange() {
+  const type = vv('epType');
   const s = gd('settings', {});
-  sv('setMoov', s.moov || '');
-  sv('setYas', s.yas || '');
-  sv('setMont', s.montant || '');
-  sv('setAdh', s.adhesionPrix || '');
-  openModal('modalSettings');
+  document.getElementById('epMoisWrap').style.display = type === 'cotisation' ? 'block' : 'none';
+  if (type === 'cotisation') sv('epMont', s.montant || '');
+  else if (type === 'adhesion') sv('epMont', s.adhesionPrix || '');
+  else if (type === 'carnet') sv('epMont', s.prixCarnet || '');
+}
+
+function enregistrerPaiementTreso() {
+  if (!cu || !['trésorier','président'].includes(cu.role)) {
+    toast('Réservé à la trésorerie');
+    return;
+  }
+  const type = vv('epType');
+  const memId = Number(vv('epMem'));
+  const mont = Number(vv('epMont'));
+  const date = vv('epDate') || td();
+  const note = vv('epNote');
+  const mois = vv('epMois');
+  if (!memId || !mont) { toast('Choisissez un membre et un montant'); return; }
+  const m = gd('members', []).find(x => x.id === memId);
+  if (!m) { toast('Membre introuvable'); return; }
+
+  const annee = vv('epAnnee') || String(new Date().getFullYear());
+  if (type === 'cotisation') {
+    if (!mois) { toast('Indiquez le mois'); return; }
+    const cots = gd('cotisations', []);
+    cots.push({ id: Date.now(), memId, membre: m.nom, mois, annee, montant: mont, date, note, par: cu.nom, source: 'trésorerie', status: 'payé' });
+    sd('cotisations', cots);
+    toast('Cotisation enregistrée');
+  } else if (type === 'adhesion') {
+    const adh = gd('adhesions', []);
+    adh.push({ id: Date.now(), memId, membre: m.nom, montant: mont, annee, date, note, par: cu.nom });
+    sd('adhesions', adh);
+    toast('Adhésion enregistrée');
+  } else if (type === 'carnet') {
+    const carnets = gd('carnetAchats', []);
+    carnets.push({ id: Date.now(), memId, membre: m.nom, montant: mont, annee, date, note, par: cu.nom });
+    sd('carnetAchats', carnets);
+    const s = gd('settings', {});
+    if (mont) sd('settings', { ...s, prixCarnet: mont });
+    toast('Achat de carnet enregistré');
+  }
+  closeModals();
+  renderTreso();
+  if (currentSec === 'dashboard') renderDashboard();
 }
 
 // ═══════════════════════════════════════════════
@@ -1225,12 +1496,12 @@ function renderMembers() {
   const canAdmin = ['président','trésorier','secrétaire'].includes(cu.role);
   document.getElementById('membersTable').innerHTML = mbs.map(m => `
     <tr>
-      <td>${m.nom}</td>
+      <td style="display:flex;align-items:center;gap:.5rem">${avatarHTML(m, 32)} ${m.nom}</td>
       <td><span class="chip cg">${m.role}</span></td>
       <td>${m.wa || '—'}</td>
       <td style="white-space:nowrap">
         ${canAdmin ? `<button class="btn-sm btn-outline" onclick="telechargerBilanPDF(${m.id})" title="Bilan PDF">📄 PDF</button>` : ''}
-        <button class="btn-sm btn-outline" onclick="envoyerRapport(${m.id})" title="WhatsApp">📲</button>
+        ${m.wa ? `<button class="btn-sm btn-outline" onclick="envoyerRapport(${m.id})" title="WhatsApp">📲</button>` : ''}
         ${cu.role === 'président' || cu.role === 'trésorier' ? `<button class="btn-sm btn-danger" onclick="delMember(${m.id})">✕</button>` : ''}
       </td>
     </tr>`).join('') || '<tr><td colspan="4" style="text-align:center;color:var(--muted)">Aucun membre</td></tr>';
@@ -1238,12 +1509,68 @@ function renderMembers() {
 
 function addMember() {
   const prenom = vv('mPrenom'), nomF = vv('mNomf'), wa = vv('mWa'), role = vv('mRole') || 'membre';
-  if (!prenom || !nomF) { toast('Prénom et nom requis'); return; }
+  if (!nomF && !prenom) { toast('Indiquez au moins un nom'); return; }
   const members = gd('members', []);
   const colors = { président: '#c48a2a', trésorier: '#1a5c3a', membre: '#2d7a4f', secrétaire: '#5a6b62' };
-  members.push({ id: Date.now(), nom: prenom + ' ' + nomF, prenom, nomF, role, wa, color: colors[role] || '#1a5c3a' });
+  const nom = prenom && nomF ? prenom + ' ' + nomF : (nomF || prenom);
+  members.push({ id: Date.now(), nom, prenom: prenom || '', nomF: nomF || '', role, wa: wa || '', photo: '', color: colors[role] || '#1a5c3a' });
   sd('members', members);
   closeModals(); toast('Membre ajouté'); renderMembers();
+}
+
+let pendingPhoto = null;
+
+function onProfilPhoto(ev) {
+  const file = ev.target.files && ev.target.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) { toast('Image trop lourde (max 2 Mo)'); return; }
+  const reader = new FileReader();
+  reader.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const max = 200;
+      let w = img.width, h = img.height;
+      if (w > h) { if (w > max) { h = h * max / w; w = max; } }
+      else { if (h > max) { w = w * max / h; h = max; } }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      pendingPhoto = canvas.toDataURL('image/jpeg', 0.7);
+      const prev = document.getElementById('profilPreview');
+      prev.innerHTML = `<img src="${pendingPhoto}" style="width:100%;height:100%;object-fit:cover">`;
+    };
+    img.src = reader.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearProfilPhoto() {
+  pendingPhoto = '';
+  const prev = document.getElementById('profilPreview');
+  if (prev) prev.innerHTML = ini(cu ? cu.nom : '?');
+  const inp = document.getElementById('profilPhoto');
+  if (inp) inp.value = '';
+}
+
+function saveProfil() {
+  if (!cu) return;
+  const nomAffiche = vv('prNom');
+  if (!nomAffiche) { toast('Le nom affiché est requis'); return; }
+  const members = gd('members', []);
+  const i = members.findIndex(m => m.id === cu.id);
+  if (i < 0) { toast('Compte introuvable'); return; }
+  members[i].nom = nomAffiche;
+  members[i].prenom = vv('prPrenom');
+  members[i].wa = vv('prWa');
+  if (pendingPhoto !== null) members[i].photo = pendingPhoto || '';
+  sd('members', members);
+  cu = members[i];
+  pendingPhoto = null;
+  initApp();
+  closeModals();
+  toast('Profil mis à jour');
+  if (currentSec === 'repertoire') renderRepertoire();
+  if (currentSec === 'membres') renderMembers();
 }
 
 function delMember(id) {
@@ -1258,10 +1585,10 @@ function renderRepertoire() {
   const canAdmin = ['président','trésorier','secrétaire'].includes(cu.role);
   document.getElementById('repertoireList').innerHTML = mbs.map(m => `
     <div class="member-item" style="cursor:default">
-      <div class="avatar" style="background:${m.color || '#1a5c3a'}22;color:${m.color || '#1a5c3a'}">${ini(m.nom)}</div>
+      ${avatarHTML(m, 40)}
       <div style="flex:1">
         <div style="font-weight:600">${m.nom}</div>
-        <div class="role-tag">${icons[m.role] || ''} ${m.role} ${m.wa ? '· ' + m.wa : ''}</div>
+        <div class="role-tag">${icons[m.role] || ''} ${m.role || 'membre'} ${m.wa ? '· ' + m.wa : ''}</div>
       </div>
       <div style="display:flex;gap:.35rem;flex-wrap:wrap">
         ${canAdmin ? `<button class="btn-sm btn-outline" onclick="telechargerBilanPDF(${m.id})">📄 PDF</button>` : ''}
@@ -1437,6 +1764,31 @@ function openModal(id) {
     const s = gd('settings', {});
     sv('setMoov', s.moov || ''); sv('setYas', s.yas || '');
     sv('setMont', s.montant || ''); sv('setAdh', s.adhesionPrix || '');
+    sv('setCarnet', s.prixCarnet || '');
+  }
+  if (id === 'modalProfil' && cu) {
+    sv('prNom', cu.nom || '');
+    sv('prPrenom', cu.prenom || '');
+    sv('prWa', cu.wa || '');
+    pendingPhoto = null;
+    const prev = document.getElementById('profilPreview');
+    if (prev) {
+      if (cu.photo) prev.innerHTML = `<img src="${cu.photo}" style="width:100%;height:100%;object-fit:cover">`;
+      else prev.textContent = ini(cu.nom || '?');
+    }
+  }
+  if (id === 'modalEnregPaiement') {
+    const sel = document.getElementById('epMem');
+    sel.innerHTML = gd('members', []).map(m => `<option value="${m.id}">${m.nom} (${m.role})</option>`).join('')
+      || '<option value="">Aucun membre</option>';
+    fillYearSelect('epAnnee');
+    const moisSel = document.getElementById('epMois');
+    moisSel.innerHTML = MOIS.map(m => `<option>${m}</option>`).join('');
+    moisSel.value = MOIS[new Date().getMonth()];
+    sv('epDate', td());
+    sv('epNote', '');
+    sv('epType', 'cotisation');
+    onEpTypeChange();
   }
   if (id === 'modalPayOrd') {
     const s = gd('settings', {});
@@ -1444,7 +1796,24 @@ function openModal(id) {
     selOp = null;
     document.getElementById('opMoov').classList.remove('sel');
     document.getElementById('opYas').classList.remove('sel');
-    document.getElementById('ussdHint').style.display = 'none';
+    const box = document.getElementById('ussdBoxOrd');
+    if (box) box.style.display = 'none';
+    fillYearSelect('cotAnneeO');
+    const moisSel = document.getElementById('cotMoisO');
+    if (moisSel && !moisSel.options.length) {
+      moisSel.innerHTML = MOIS.map(m => `<option>${m}</option>`).join('');
+    }
+    if (moisSel) moisSel.value = MOIS[new Date().getMonth()];
+  }
+  if (id === 'modalPayExt') {
+    selOp = null;
+    document.getElementById('opMoovE').classList.remove('sel');
+    document.getElementById('opYasE').classList.remove('sel');
+    const box = document.getElementById('ussdBoxExt');
+    if (box) box.style.display = 'none';
+    fillYearSelect('extAnnee');
+    sv('extMont', '');
+    sv('extMotif', '');
   }
   if (id === 'modalAddPret') {
     const sel = document.getElementById('prMem');
@@ -1479,6 +1848,8 @@ function exportData() {
   const data = {
     members: gd('members', []),
     cotisations: gd('cotisations', []),
+    adhesions: gd('adhesions', []),
+    carnetAchats: gd('carnetAchats', []),
     prets: gd('prets', []),
     depenses: gd('depenses', []),
     recettes: gd('recettes', []),
